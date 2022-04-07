@@ -1,0 +1,5 @@
+add_subdirectory ("config")
+add_subdirectory ("input")
+add_subdirectory ("player")
+add_subdirectory ("scene")
+add_subdirectory ("window")

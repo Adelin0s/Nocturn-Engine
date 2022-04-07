@@ -1,0 +1,7 @@
+{
+    "name" : "grass",
+    "id" : 1,
+    "texture_top" : [0, 0],
+    "texture_side" : [1, 0],
+    "texture_bottom" : [2, 0]
+}

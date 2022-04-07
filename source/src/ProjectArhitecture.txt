@@ -1,0 +1,35 @@
+->assets
+	->blockstates
+	->models
+	->shaders
+	->textures
+->lib
+	->include??? not sure
+	->lib
+		->assimp
+		->assimp_file
+		->json..
+		->stb_image..
+->src
+	->application
+		->config
+		->input
+		->player
+		->scene
+		->window
+	->core
+		->algorithms
+		->error
+		->GL
+		->logging
+		->math
+		->pshysics
+		->platform
+		->threads
+		->types
+		->util
+	->rendering
+		->compoents
+		->data
+		->renderer
+		->world

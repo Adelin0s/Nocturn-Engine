@@ -1,0 +1,7 @@
+{
+    "name" : "oakbark",
+    "id" : 4,
+	"texture_top" : [5, 0],
+	"texture_side" : [4, 0],
+	"texture_bottom" : [5, 0]
+}
