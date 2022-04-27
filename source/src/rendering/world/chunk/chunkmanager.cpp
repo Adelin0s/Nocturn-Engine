@@ -15,72 +15,57 @@ namespace Nocturn::rendering
 		m_noiseParams.offset	 = 10;
 		m_noiseParams.roughness	 = 0.51;
 
-		InitInitialChunks( camera );
+		InitInitialChunks( );
 	}
 
-	void ChunkManager::InitInitialChunks( const Camera &camera )
+	void ChunkManager::InitInitialChunks( ) noexcept
 	{
-		const Noise noise( m_noiseParams, 2432 );
-
 		for( int32_t x = 0; x < 10; x++ )
 			for( int32_t z = 0; z < 10; z++ )
 			{
-				GenerateNewChunk( noise, x, z );
+				m_pendingChunks.emplace_back( ivec2( x, z ) );
 			}
-		m_pendingChunks.clear( );
 	}
 
-	void ChunkManager::LoadFutureChunks( const Camera &camera )
+	void ChunkManager::LoadPendingChunks( const ivec3 &currentPosition )
 	{
-		const auto px = static_cast< int >( camera.getCameraPosition( ).x / CHUNK_X );
-		const auto pz = static_cast< int >( camera.getCameraPosition( ).z / CHUNK_Z );
+		const auto px = static_cast< int >( currentPosition.x / CHUNK_X );
+		const auto pz = static_cast< int >( currentPosition.z / CHUNK_Z );
 
 		const Noise noise( m_noiseParams, 2432 );
 
 		if( px != m_lastPosition.x || pz != m_lastPosition.z ) // unique position
 		{
-			GenerateNewChunk( noise, px, pz );
-
+			if( !m_mapChunks[ { px, pz } ].hasMesh( ) )
+			{
+				m_pendingChunks.emplace_back( ivec2( px, pz ) );
+				m_pendingChunks.emplace_back( ivec2( px, pz + 1 ) );
+				m_pendingChunks.emplace_back( ivec2( px, pz + 2 ) );
+				m_pendingChunks.emplace_back( ivec2( px, pz + 3 ) );
+				m_pendingChunks.emplace_back( ivec2( px, pz + 4 ) );
+				m_pendingChunks.emplace_back( ivec2( px, pz + 5 ) );
+			}
 			m_lastPosition.x = px;
 			m_lastPosition.z = pz;
 		}
 	}
 
-	void ChunkManager::InitTasks( )
+	void ChunkManager::ThreadUpdate( const ivec3 &currentPosition )
 	{
-		for( const auto &chunk : m_mapChunks )
-		{
-			if( !chunk.second.hasMesh( ) )
-			{
-				m_pool.PushTask( [ & ]
-								 { m_mapChunks[ chunk.first ].createChunk( ); } );
-			}
-		}
-	}
+		// LoadPendingChunks( currentPosition );
 
-	void ChunkManager::ThreadUpdate( )
-	{
-		/*for( const auto &chunk : m_updateChunks )
+		for( const auto &pchunk : m_pendingChunks )
 		{
-			m_activeChunks.insert( chunk );
-
-			m_pool.PushTask( [ & ]
-							 { m_activeChunks[ chunk.first ].createChunk( ); } );
-		}*/
-
-		for( const auto &chunk : m_pendingChunks )
-		{
-			m_pool.PushTask( [ & ]
-							 { m_mapChunks[ chunk ].createChunk( ); } );
+			m_mapChunks.insert( { pchunk, ChunkSection( Chunk_t( pchunk.x, 0, pchunk.y ) ) } );
+			// m_pool.PushTask( [ & ]
+			//{ GenerateNewChunk( m_mapChunks[ pchunk ] ); } );
 		}
 		m_pendingChunks.clear( );
 
-		int32 cnt = 0;
 		for( const auto &[ first, second ] : m_mapChunks )
 		{
 			if( m_mapChunks[ first ].hasMesh( ) )
 			{
-				++cnt;
 				m_mapChunks[ first ].loadBufferData( );
 			}
 		}
@@ -88,29 +73,27 @@ namespace Nocturn::rendering
 
 	void ChunkManager::Render( const Camera &camera, ChunkRendering &chunkRender )
 	{
-		uint32 c = 0;
 		for( const auto &[ first, second ] : m_mapChunks )
 		{
 			if( m_mapChunks[ first ].hasMesh( ) )
 			{
 				chunkRender.add( second.getRenderInfo( ) );
-				++c;
 			}
 		}
-		std::cout << "Task executed: " << c << '\n';
 		chunkRender.render( camera );
 	}
 
-	void ChunkManager::GenerateNewChunk( const Noise &noise, const int32 chunk_x, const int32 chunk_z ) noexcept
+	void ChunkManager::GenerateNewChunk( ChunkSection &chunk ) const noexcept
 	{
-		ChunkSection chunk( Chunk_t( chunk_x, 0, chunk_z ) );
+		const Noise noise( m_noiseParams, 2432 );
+
+		const auto pchunk = static_cast< ivec3 >( chunk.getLocation( ) );
 
 		for( int32 px = 0; px < CHUNK_X; px++ )
 		{
 			for( int32 pz = 0; pz < CHUNK_X; pz++ )
 			{
-				// get max-value for each block of Y chunk
-				const auto max = static_cast< int32 >( noise.getHeight( px, pz, chunk_x, chunk_z ) );
+				const auto max = static_cast< int32 >( noise.getHeight( px, pz, pchunk.x, pchunk.z ) );
 				for( int32 py = 0; py < max; py++ )
 				{
 					if( py == max - 1 )
@@ -122,8 +105,7 @@ namespace Nocturn::rendering
 				}
 			}
 		}
-		m_mapChunks.insert( { { chunk_x, chunk_z }, chunk } );
-		m_pendingChunks.emplace_back( ivec2( chunk_x, chunk_z ) );
+		chunk.createChunk( );
 	}
 
 } // namespace Nocturn::rendering

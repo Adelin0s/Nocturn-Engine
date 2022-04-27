@@ -18,7 +18,7 @@
 #include <thread>
 #include <vector>
 
-#include "core/threads/queuesafe.h"
+//#include "core/async/queuesafe.h"
 #include "core/types/typedef.hpp"
 
 #include "rendering/data/camera.h"
@@ -39,36 +39,36 @@ namespace Nocturn
 	class ThreadPool
 	{
 	public:
-		ThreadPool( ) noexcept;
-		ThreadPool( const ThreadPool &smth ) = delete;
-		ThreadPool( ThreadPool &&smth )		 = delete;
+		// ThreadPool( ) noexcept;
+		// ThreadPool( const ThreadPool &smth ) = delete;
+		// ThreadPool( ThreadPool &&smth )		 = delete;
 
-		ThreadPool &operator=( const ThreadPool &smth ) = delete;
-		ThreadPool &operator=( ThreadPool &&smth ) = delete;
+		// ThreadPool &operator=( const ThreadPool &smth ) = delete;
+		// ThreadPool &operator=( ThreadPool &&smth ) = delete;
 
-		void BeginWork( const bool notifyAll = false ) noexcept;
+		// void BeginWork( const bool notifyAll = false ) noexcept;
 
-		NODISCARD size_t GetSize( ) const noexcept
-		{
-			return m_tasks.GetSize( );
-		}
+		// NODISCARD size_t GetSize( ) const noexcept
+		//{
+		//	// return m_tasks.GetSize( );
+		// }
 
-		NODISCARD size_t GetCountExecutedTasks( ) const noexcept
-		{
-			return m_executedTasks;
-		}
+		// NODISCARD size_t GetCountExecutedTasks( ) const noexcept
+		//{
+		//	return m_executedTasks;
+		// }
 
-		template< typename T >
-		void PushTask( T &&t ) noexcept
-		{
-			m_tasks.Push( std::forward< T >( t ) );
-			m_cv.notify_one( );
-		}
+		// template< typename T >
+		// void PushTask( T &&t ) noexcept
+		//{
+		//	// m_tasks.Push( std::forward< T >( t ) );
+		//	// m_cv.notify_one( );
+		// }
 
-		~ThreadPool( ) noexcept;
+		//~ThreadPool( ) noexcept;
 
 	private:
-		QueueSafe				   m_tasks;
+		// QueueSafe				   m_tasks;
 		std::vector< std::thread > m_threads;
 		std::mutex				   m_queueMutex;
 		mutable std::mutex		   m_mutex;

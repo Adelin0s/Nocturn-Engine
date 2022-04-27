@@ -16,8 +16,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "core/async/threadpool.h"
 #include "core/math/noise.h"
-#include "core/threads/threadpool.h"
 #include "core/types/constants.h"
 #include "core/types/typedef.hpp"
 
@@ -45,16 +45,15 @@ namespace Nocturn::rendering
 		ChunkManager operator=( const ChunkManager &chunk ) = delete;
 		ChunkManager operator=( ChunkManager &&chunk ) = delete;
 
-		void InitInitialChunks( const Camera &camera );
-		void InitTasks( );
-		void LoadFutureChunks( const Camera &camera );
-		void ThreadUpdate( );
+		void InitInitialChunks( ) noexcept;
+		void LoadPendingChunks( const ivec3 &currentPosition );
+		void ThreadUpdate( const ivec3 &currentPosition );
 		void Render( const Camera &camera, ChunkRendering &chunkRender );
 
 		~ChunkManager( ) noexcept = default;
 
 	private:
-		void GenerateNewChunk( const Noise &noise, const int32 chunk_x, const int32 chunk_z ) noexcept;
+		void GenerateNewChunk( ChunkSection &chunk ) const noexcept;
 
 		NoiseParams			 m_noiseParams{ };
 		ivec3				 m_lastPosition{ };

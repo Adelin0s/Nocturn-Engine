@@ -20,7 +20,7 @@
 
 #include "application/input/mouse.h"
 
-// #include "core/math/glm.hpp"
+#include "core/types/typedef.hpp"
 
 namespace Nocturn
 {
@@ -47,14 +47,13 @@ namespace Nocturn
 		void processInput( const float dt );
 
 		void updateCameraPosition( CameraDirection movement, const float deltaTime ) noexcept;
-		void updateCameraPosition( const float i ) noexcept;
 		void updateCameraPosition( const glm::vec3 &cameraPosition ) noexcept;
 		void updateCameraDirection( const double dx, const double dy ) noexcept;
 		void updateCameraVectors( ) noexcept;
 
-		glm::mat4 getViewMatrix( ) const noexcept;
-		glm::mat4 getProjectionMatrix( ) const noexcept;
-		glm::vec3 getCameraPosition( ) const noexcept;
+		NODISCARD glm::mat4 getViewMatrix( ) const noexcept;
+		NODISCARD glm::mat4 getProjectionMatrix( ) const noexcept;
+		NODISCARD vec3		getCameraPosition( ) const noexcept;
 
 		~Camera( ) noexcept = default;
 

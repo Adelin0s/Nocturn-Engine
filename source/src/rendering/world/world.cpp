@@ -1,6 +1,6 @@
 #include "rendering/world/world.h"
 
-#include "core/threads/threadpool.h"
+#include "core/async/threadpool.h"
 
 #include "core/math/noise.h"
 #include "core/util/time.hpp"
@@ -15,19 +15,17 @@ namespace Nocturn
 
 		m_skyboxRender->init( );
 		m_chunkRender.init( );
-
-		m_chunk->InitTasks( );
 	}
 
 	void World::Update( const float dt )
 	{
 		m_camera->processInput( dt );
 
+		const auto currentPosition = static_cast< ivec3 >( m_camera->getCameraPosition( ) );
+
 		m_skyboxRender->render( *m_camera );
 
-		m_chunk->LoadFutureChunks( *m_camera );
-
-		m_chunk->ThreadUpdate( );
+		m_chunk->ThreadUpdate( currentPosition );
 
 		m_chunk->Render( *m_camera, m_chunkRender );
 	}

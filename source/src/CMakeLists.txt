@@ -24,7 +24,7 @@ file(GLOB _core_logging_files						LIST_DIRECTORIES false "${_src_root_path}/cor
 file(GLOB _core_math_files							LIST_DIRECTORIES false "${_src_root_path}/core/math/*.h" "${_src_root_path}/core/math/*.hpp" "${_src_root_path}/core/math/*.cpp")
 file(GLOB _core_physics_files						LIST_DIRECTORIES false "${_src_root_path}/core/physics/*.h" "${_src_root_path}/core/physics/*.cpp")
 file(GLOB _core_platform_files						LIST_DIRECTORIES false "${_src_root_path}/core/platform/*.h" "${_src_root_path}/core/platform/*.cpp")
-file(GLOB _core_threads_files						LIST_DIRECTORIES false "${_src_root_path}/core/threads/*.h" "${_src_root_path}/core/threads/*.cpp")
+file(GLOB _core_async_files							LIST_DIRECTORIES false "${_src_root_path}/core/async/*.h" "${_src_root_path}/core/async/*.cpp")
 file(GLOB _core_types_files							LIST_DIRECTORIES false "${_src_root_path}/core/types/*.h" "${_src_root_path}/core/types/*.hpp" "${_src_root_path}/core/types/*.cpp")
 file(GLOB _core_util_files							LIST_DIRECTORIES false "${_src_root_path}/core/util/*.h" "${_src_root_path}/core/util/*.cpp")
 
@@ -56,7 +56,7 @@ add_executable(NocturnProject
 	${_core_math_files}
 	${_core_physics_files}
 	${_core_platform_files}
-	${_core_threads_files}
+	${_core_async_files}
 	${_core_types_files}
 	${_core_util_files}
 	
@@ -115,7 +115,7 @@ source_group("core/logging"  FILES ${_core_logging_files})
 source_group("core/math"  FILES ${_core_math_files})
 source_group("core/physics"  FILES ${_core_physics_files})
 source_group("core/platform"  FILES ${_core_platform_files})
-source_group("core/threads"  FILES ${_core_threads_files})
+source_group("core/async"  FILES ${_core_async_files})
 source_group("core/types"  FILES ${_core_types_files})
 source_group("core/util"  FILES ${_core_util_files})
 

@@ -55,9 +55,9 @@ namespace Nocturn::rendering
 		return m_model;
 	}
 
-	NODISCARD size_t ChunkMesh::getIndicesSize( ) const noexcept
+	NODISCARD uint32 ChunkMesh::getIndicesSize( ) const noexcept
 	{
-		return m_mesh.indices.size( );
+		return static_cast< uint32 >( m_mesh.indices.size( ) );
 	}
 
 	void ChunkMesh::makeMesh( ChunkSection &pchunk )

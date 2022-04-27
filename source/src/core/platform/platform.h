@@ -3,12 +3,6 @@
 
 #define NOCTURN_CPP17V 201703L
 
-/**
- *  @def FORCEINLINE
- *  @brief Force a function to be inline
- */
-#define FORCEINLINE inline
-
 #if __cplusplus >= NOCTURN_CPP17V
 /** @def NODISCARD
  *  @brief Marks a function as "NODISCARD" meaning that result must be captured and should not be discarded.
@@ -16,6 +10,14 @@
 #define NODISCARD [[nodiscard]]
 #else
 #define NODISCARD
+#endif
+
+/**
+ *  @def FORCEINLINE
+ *  @brief Force a function to be inline
+ */
+#ifndef FORCE_INLINE
+#define FORCE_INLINE __forceinline
 #endif
 
 #if __cplusplus >= NOCTURN_CPP17V

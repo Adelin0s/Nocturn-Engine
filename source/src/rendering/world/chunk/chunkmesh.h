@@ -48,7 +48,7 @@ namespace Nocturn::rendering
 		ChunkMesh &operator=( ChunkMesh &&mesh ) = delete;
 
 		NODISCARD const Model &getModel( ) const;
-		NODISCARD size_t	   getIndicesSize( ) const noexcept;
+		NODISCARD uint32	   getIndicesSize( ) const noexcept;
 		void				   makeMesh( ChunkSection &pchunk );
 		void				   loadBufferData( );
 		NODISCARD bool		   hasMesh( ) const noexcept;
