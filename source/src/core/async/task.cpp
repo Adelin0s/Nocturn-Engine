@@ -4,8 +4,7 @@
 
 namespace Nocturn
 {
-	/******************************* Base Task *******************************/
-
+#pragma region "BaseTask"
 	BaseTask::BaseTask( BaseTask &&task ) noexcept
 	{
 		std::swap( m_task, task.m_task );
@@ -20,9 +19,9 @@ namespace Nocturn
 		std::swap( m_task, task.m_task );
 		return *this;
 	}
+#pragma endregion
 
-	/******************************* Priority Task *******************************/
-
+#pragma region "PriorityTask"
 	PriorityTask::PriorityTask( PriorityTask &&task ) noexcept :
 		BaseTask( std::move( task.m_task ) ),
 		m_priority( task.m_priority )
@@ -45,12 +44,12 @@ namespace Nocturn
 		return static_cast< bool >( m_task );
 	}
 
-	ETaskPriorityLevel PriorityTask::GetEnumPriority( ) const noexcept
+	ETaskPriorityLevel PriorityTask::EGetPriority( ) const noexcept
 	{
 		return m_priority;
 	}
 
-	uint8 PriorityTask::GetIntPriority( ) const noexcept
+	uint8 PriorityTask::IGetPriority( ) const noexcept
 	{
 		return static_cast< uint8 >( m_priority );
 	}
@@ -66,9 +65,9 @@ namespace Nocturn
 	{
 		Release( )( );
 	}
+#pragma endregion
 
-	/******************************* Priority Queue *******************************/
-
+#pragma region "PriorityQueue"
 	PriorityTask PriorityQueue::TryPop( const ETaskPriorityLevel priority )
 	{
 		const std::unique_lock lock{ m_mutex, std::try_to_lock };
@@ -95,8 +94,9 @@ namespace Nocturn
 		std::unique_lock lock( m_mutex );
 		while( !m_end && IsEmpty( ) )
 		{
-			m_cv.wait( lock, [ & ]( )
-					   { return !IsEmpty( ) && !m_end; } );
+			/*m_cv.wait( lock, [ & ]( )
+					   { return !IsEmpty( ) && !m_end; } );*/
+			m_cv.wait( lock );
 		}
 		for( auto priority = CPriorityMaxIndex; priority > -1; --priority )
 		{
@@ -110,24 +110,24 @@ namespace Nocturn
 		return { };
 	}
 
-	bool PriorityQueue::TryPush( PriorityTask &&task )
+	bool PriorityQueue::TryPush( PriorityTask &task )
 	{
 		{
 			const std::unique_lock lock( m_mutex, std::try_to_lock );
 			if( !lock )
 				return false;
 
-			m_queueTasks.at( task.GetIntPriority( ) ).push_front( task.Release( ) );
+			m_queueTasks.at( task.IGetPriority( ) ).push_front( task.Release( ) );
 		}
 		m_cv.notify_all( );
-		return false;
+		return true;
 	}
 
-	void PriorityQueue::ForcePush( PriorityTask &&task )
+	void PriorityQueue::ForcePush( PriorityTask &task )
 	{
 		{
-			std::lock_guard lock( m_mutex );
-			m_queueTasks.at( task.GetIntPriority( ) ).push_front( task.Release( ) );
+			std::unique_lock lock( m_mutex );
+			m_queueTasks.at( task.IGetPriority( ) ).push_front( task.Release( ) );
 		}
 		m_cv.notify_all( );
 	}
@@ -135,15 +135,15 @@ namespace Nocturn
 	void PriorityQueue::ForceQuit( )
 	{
 		{
-			std::lock_guard lock( m_mutex );
+			std::unique_lock lock( m_mutex );
 			m_end = true;
 		}
 		m_cv.notify_all( );
 	}
 
-	uint32 PriorityQueue::GetNumOfTasks( ) const noexcept
+	size_t PriorityQueue::GetNumOfTasks( ) const noexcept
 	{
-		uint32 count = 0;
+		size_t count = 0;
 		for( int32 i = 0; i < CNumberOfPriorities; ++i )
 			count += m_queueTasks[ i ].size( );
 		return count;
@@ -156,9 +156,9 @@ namespace Nocturn
 				return false;
 		return true;
 	}
+#pragma endregion
 
-	/******************************* Task System *******************************/
-
+#pragma region "TaskSystem"
 	TaskSystem::TaskSystem( const uint32 nthreads ) :
 		m_numberOfWorkers( std::min( std::thread::hardware_concurrency( ), nthreads ) ),
 		m_queue( nthreads )
@@ -171,24 +171,25 @@ namespace Nocturn
 		}
 	}
 
-	void TaskSystem::Async( PriorityTask &&task )
+	void TaskSystem::Async( PriorityTask task )
 	{
 		assert( task );
 
-		const auto index = m_numberOfTasks[ task.GetIntPriority( ) ]++;
+		const auto index = m_numberOfTasks[ task.IGetPriority( ) ]++;
 
-		for( uint8_t i = 0; i < m_numberOfWorkers; i++ )
+		for( uint32_t i = 0; i < m_numberOfWorkers; i++ )
 		{
-			if( m_queue[ ( i + index ) % m_numberOfWorkers ].TryPush( std::move( task ) ) )
+			if( m_queue[ ( i + index ) % m_numberOfWorkers ].TryPush( task ) )
 				return;
 		}
-		m_queue[ index % m_numberOfWorkers ].ForcePush( std::move( task ) );
+
+		m_queue[ index % m_numberOfWorkers ].ForcePush( task );
 	}
 
-	void TaskSystem::Async( Task task, const ETaskPriorityLevel priority )
-	{
-		Async( { std::move( task ), priority } );
-	}
+	// void TaskSystem::Async( Task task, const ETaskPriorityLevel priority )
+	//{
+	//  Async( { std::move( task ), priority } );
+	//}
 
 	/**
 	 * \brief The main function that all worker execute
@@ -196,14 +197,13 @@ namespace Nocturn
 	 */
 	void TaskSystem::RunTaskLoop( const uint8 queueIndex )
 	{
-		return;
 		while( true )
 		{
 			PriorityTask task;
 			for( int8 priority = CPriorityMaxIndex; priority >= 0; --priority )
 			{
 				// TODO : Iterate over all threads if current thread has not any task to execute
-				task = m_queue[ ( queueIndex ) ].TryPop( ETaskPriorityLevel::Low );
+				task = m_queue[ ( queueIndex % m_numberOfWorkers ) ].TryPop( ETaskPriorityLevel::Low );
 				if( task )
 					break;
 			}
@@ -217,16 +217,17 @@ namespace Nocturn
 
 	void TaskSystem::TryRunTask( )
 	{
-		PriorityTask task;
+		// Iterate over the levels of priority starting from highest to lowest priority
 		for( auto priority = CPriorityMaxIndex; priority >= 0; --priority )
 		{
-			for( uint8 i = 0; i < m_numberOfWorkers; ++i )
+			// In case in that we couldn't find any task we start searching to neighbor
+			for( uint32 i = 0; i < m_numberOfWorkers; ++i )
 			{
-				auto t = m_queue[ i ].TryPop( priority );
-				if( task )
+				if( auto task = m_queue[ i ].TryPop( priority ); task )
 				{
+					std::cout << "here\n";
 					task.Execute( );
-					break;
+					return;
 				}
 			}
 		}
@@ -237,7 +238,7 @@ namespace Nocturn
 		this->~TaskSystem( );
 	}
 
-	uint8 TaskSystem ::GetNumOfThreads( ) const noexcept
+	uint32 TaskSystem ::GetNumOfThreads( ) const noexcept
 	{
 		return m_numberOfWorkers;
 	}
@@ -264,5 +265,5 @@ namespace Nocturn
 		for( auto &t : m_threads )
 			t.join( );
 	}
-
+#pragma endregion
 } // namespace Nocturn

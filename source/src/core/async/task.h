@@ -52,14 +52,14 @@ namespace Nocturn
 		PriorityTask( ) noexcept				 = default;
 		PriorityTask( const PriorityTask &task ) = delete;
 		PriorityTask( PriorityTask &&task ) noexcept;
-		PriorityTask( Task &&task, const ETaskPriorityLevel priority = ETaskPriorityLevel::Low ) noexcept;
+		explicit PriorityTask( Task &&task, const ETaskPriorityLevel priority = ETaskPriorityLevel::Low ) noexcept;
 
 		PriorityTask &operator=( const PriorityTask &task ) = delete;
 		PriorityTask &operator								=( PriorityTask &&task ) noexcept;
 		explicit	  operator bool( ) const noexcept;
 
-		NODISCARD ETaskPriorityLevel GetEnumPriority( ) const noexcept;
-		NODISCARD uint8				 GetIntPriority( ) const noexcept;
+		NODISCARD ETaskPriorityLevel EGetPriority( ) const noexcept;
+		NODISCARD uint8				 IGetPriority( ) const noexcept;
 
 		Task Release( ) noexcept override;
 		void Execute( ) override;
@@ -83,12 +83,12 @@ namespace Nocturn
 		PriorityTask			 TryPop( const ETaskPriorityLevel priority );
 		PriorityTask			 TryPop( const uint8 priority );
 		PriorityTask			 ForcePop( );
-		bool					 TryPush( PriorityTask &&task );
-		void					 ForcePush( PriorityTask &&task );
+		bool					 TryPush( PriorityTask &task );	  // && -> &
+		void					 ForcePush( PriorityTask &task ); // && -> &
 		void					 ForceQuit( );
 		NODISCARD constexpr bool IsEmpty( ) const noexcept;
 
-		NODISCARD uint32 GetNumOfTasks( ) const noexcept;
+		NODISCARD size_t GetNumOfTasks( ) const noexcept;
 
 		~PriorityQueue( ) noexcept = default;
 
@@ -109,13 +109,13 @@ namespace Nocturn
 		TaskSystem operator=( const TaskSystem &task ) = delete;
 		TaskSystem operator=( TaskSystem &&task ) = delete;
 
-		void Async( PriorityTask &&task );
-		void Async( Task task, const ETaskPriorityLevel priority );
+		void Async( PriorityTask task );
+		// void Async( Task task, const ETaskPriorityLevel priority );
 		void RunTaskLoop( const uint8 queueIndex );
 		void TryRunTask( );
 		void ForceQuit( ) const noexcept;
 
-		uint8  GetNumOfThreads( ) const noexcept;
+		uint32 GetNumOfThreads( ) const noexcept;
 		uint32 GetNumOfTasks( ) const noexcept;
 		void   PrintTaskEachQueue( ) const noexcept;
 
@@ -130,6 +130,98 @@ namespace Nocturn
 
 		// Total number of tasks pushed in each priority level.
 		std::array< std::atomic< uint32 >, CNumberOfPriorities > m_numberOfTasks;
+	};
+
+	class TaskGroup
+	{
+	public:
+		explicit TaskGroup( TaskSystem *taskSystem ) :
+			m_pTaskSystem( taskSystem )
+		{}
+
+		TaskGroup( const TaskGroup & ) = delete;
+		TaskGroup( TaskGroup && )	   = delete;
+
+		TaskGroup &operator=( const TaskGroup & ) = delete;
+		TaskGroup &operator=( TaskGroup && ) = delete;
+
+		template< typename TCallable >
+		using callable = std::decay_t< TCallable >;
+
+		template< typename TWrapFunction >
+		class Wrap
+		{
+		public:
+			template< typename TInitFunction >
+			explicit Wrap( TInitFunction &&other, std::atomic< uint64 > &counter ) :
+				m_f( std::forward< TInitFunction >( other ) ),
+				m_counter( counter )
+			{}
+
+			Wrap( const Wrap &other ) :
+				m_f( other.m_f ),
+				m_counter( other.m_counter )
+			{}
+
+			Wrap( Wrap &&other ) noexcept :
+				m_f( std::move( other.m_f ) ),
+				m_counter( other.m_counter )
+			{}
+
+			Wrap &operator=( const Wrap & ) = delete;
+			Wrap &operator=( Wrap && ) = delete;
+
+			void operator( )( )
+			{
+				m_f( );
+				--m_counter;
+			}
+
+			~Wrap( ) noexcept = default;
+
+		private:
+			TWrapFunction		   m_f;
+			std::atomic< uint64 > &m_counter;
+		};
+
+		template< typename F >
+		Wrap< callable< F > > MakeWrapFunction( F &&f, std::atomic< uint64 > &counter )
+		{
+			return Wrap< callable< F > >( std::forward< F >( f ), counter );
+		}
+
+		template< typename F >
+		void Run( F &&f )
+		{
+			// TODO : get current priority(static variable in TaskSystem)
+			constexpr auto priority = 0; /*=TaskSystem::GetCurrentTaskPriority();*/
+			Run( std::forward< F >( f ), priority );
+			return priority;
+		}
+
+		template< typename F >
+		void Run( F &&f, const uint32 priority )
+		{
+			m_running = true;
+			++m_inFlight;
+			m_pTaskSystem->Async( PriorityTask{ MakeWrapFunction( std::forward< F >( f ), m_inFlight ), ETaskPriorityLevel::Low } );
+		}
+
+		void Wait( ) const
+		{
+			while( m_inFlight )
+			{
+				m_pTaskSystem->TryRunTask( );
+			}
+		}
+
+		~TaskGroup( ) noexcept = default;
+
+		std::atomic< std::size_t > m_inFlight{ 0 };
+
+	private:
+		bool		m_running = false;
+		TaskSystem *m_pTaskSystem;
 	};
 
 } // namespace Nocturn

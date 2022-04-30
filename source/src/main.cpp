@@ -16,28 +16,37 @@ using namespace Nocturn;
 std::mutex m;
 
 std::atomic_int count = 0;
+int32			ii	  = 0;
 
 void f( )
 {
-	std::cout << std::this_thread::get_id( ) << ' ';
-	++count;
+	++ii;
+}
+
+void rand_wait( )
+{
+	const auto seconds = ( std::rand( ) + 100 ) % 500;
+
+	std::this_thread::sleep_for( std::chrono::milliseconds( seconds ) );
 }
 
 int main( )
 {
 	TaskSystem taskSystem( 8 );
 
-	for( int i = 0; i < 100; i++ )
+	for( int i = 0; i < 20; i++ )
 	{
-		PriorityTask task( [ = ]( )
-						   { f( ); },
-						   ETaskPriorityLevel::Low );
+		PriorityTask task( [ & ]
+						   { f( ); } );
 		taskSystem.Async( std::move( task ) );
 	}
 
-	taskSystem.PrintTaskEachQueue( );
+	std::cout << taskSystem.GetNumOfTasks( );
 
 	taskSystem.ForceQuit( );
+
+	for( int i = 0; i < 20; i++ )
+		std::cout << ii << '\n';
 
 	// Nocturn::Application::init( );
 	// Nocturn::Application::run( );
