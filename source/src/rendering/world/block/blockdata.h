@@ -9,13 +9,12 @@
 #ifndef BLOCK_DATA
 #define BLOCK_DATA
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <nlohmann/json.hpp>
 
 #include "core/platform/platform.h"
 #include "rendering/components/textures/texturecube.h"
-#include "rendering/world/block/blockid.hpp"
 #include "rendering/world/block/blockdataholder.hpp"
 
 namespace Nocturn::rendering
@@ -23,20 +22,20 @@ namespace Nocturn::rendering
 	class BlockData
 	{
 	public:
-		BlockData() noexcept = default;
-		BlockData(const std::string& blockName);
-		BlockData(const BlockData& smth) = delete;
-		BlockData(BlockData&& smth) = delete;
+		BlockData( ) noexcept = default;
+		BlockData( const std::string &blockName );
+		BlockData( const BlockData &smth ) = delete;
+		BlockData( BlockData &&smth )	   = delete;
 
-		BlockData& operator=(const BlockData& smth) = delete;
-		BlockData& operator=(BlockData&& smth) = delete;
+		BlockData &operator=( const BlockData &smth ) = delete;
+		BlockData &operator=( BlockData &&smth ) = delete;
 
-		NODISCARD const BlockDataHolder& getData() const noexcept;
+		NODISCARD const BlockDataHolder &getData( ) const noexcept;
 
-		~BlockData() noexcept = default;
+		~BlockData( ) noexcept = default;
 
 	private:
 		BlockDataHolder m_blockDataHolder;
 	};
-}
+} // namespace Nocturn::rendering
 #endif

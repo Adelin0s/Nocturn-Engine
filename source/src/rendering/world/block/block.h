@@ -3,17 +3,33 @@
 
 #include "core/platform/platform.h"
 #include "core/types/typedef.hpp"
-#include "rendering/world/block/blockid.hpp"
 
 namespace Nocturn::rendering
 {
 	struct BlockDataHolder; /* forward decalartion */
 
+	enum class BlockId : uint8
+	{
+		Air		  = 0,
+		Grass	  = 1,
+		Dirt	  = 2,
+		Stone	  = 3,
+		OakBark	  = 4,
+		OakLeaf	  = 5,
+		Sand	  = 6,
+		Water	  = 7,
+		Cactus	  = 8,
+		Rose	  = 9,
+		TallGrass = 10,
+		DeadShrub = 11,
+		END
+	};
+
 	struct Block
 	{
 		Block( ) noexcept = default;
 		Block( const BlockId id );
-		Block( const BlockId_t id );
+		Block( const uint8 id );
 		Block( const Block &block ) = default;
 		Block( Block &&block )		= default;
 
@@ -28,7 +44,7 @@ namespace Nocturn::rendering
 
 		~Block( ) noexcept = default;
 
-		uint8_t m_id = static_cast< uint8_t >( BlockId::Air ); /* default BlockId::Air */
+		uint8 m_id = static_cast< uint8 >( BlockId::Air ); /* default BlockId::Air */
 	};
 } // namespace Nocturn::rendering
 

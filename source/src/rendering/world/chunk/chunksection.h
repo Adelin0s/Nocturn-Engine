@@ -24,60 +24,123 @@
 
 namespace Nocturn::rendering
 {
-	using ChunkBlockMap = std::unordered_map< ivec3, Block >;
+	// use std::vector instead of std::unordered_map because we need to init 16*16*256 block directly
+	// all of those blocks will be initialized with BlockId::Air
+	using ChunkBlockMap = std::vector< Block >;
 
 	struct ChunkLayer
 	{
-		void Update( ) noexcept
+		ChunkLayer( ) :
+			m_numberOfBlocks( 0 )
+		{}
+
+		void Increase( ) noexcept
 		{
-			m_numberOfBlocks++;
+			++m_numberOfBlocks;
+		}
+
+		void Decrease( ) noexcept
+		{
+			--m_numberOfBlocks;
 		}
 
 		NODISCARD bool IsAllSolid( ) const
 		{
-			return m_numberOfBlocks == CHUNK_SIDE;
+			return static_cast< uint32 >( m_numberOfBlocks ) == CHUNK_BASE;
+		}
+
+		NODISCARD auto getNumberOfBlocks( ) const noexcept
+		{
+			return m_numberOfBlocks;
 		}
 
 	private:
-		uint8_t m_numberOfBlocks = 0;
+		uint16 m_numberOfBlocks;
+	};
+
+	enum class NeighborType : uint8
+	{
+		Left = 0,
+		Right,
+		Top,
+		Bottom
+	};
+
+	struct Neighbor
+	{
+		ChunkSection *left	 = nullptr;
+		ChunkSection *right	 = nullptr;
+		ChunkSection *top	 = nullptr;
+		ChunkSection *bottom = nullptr;
+
+		ChunkSection *operator[]( NeighborType type ) const noexcept
+		{
+		}
+
+		void Increase( ) noexcept
+		{
+			if( counts < 4 )
+				counts++;
+		}
+
+		NODISCARD bool IsAllSet( ) const noexcept
+		{
+			return counts == 4;
+		}
+
+		void Reset( ) noexcept
+		{
+			counts = 0;
+		}
+
+	private:
+		uint8 counts = 0;
 	};
 
 	class ChunkSection
 	{
 	public:
 		ChunkSection( ) noexcept = default;
-		explicit ChunkSection( const glm::vec3 &location );
+		explicit ChunkSection( const ivec2 &location );
 		ChunkSection( const ChunkSection &chunk ) = default;
 		ChunkSection( ChunkSection &&chunk )	  = delete;
 
 		ChunkSection &operator=( const ChunkSection &chunk ) = delete;
 		ChunkSection &operator=( ChunkSection &&chunk ) = delete;
 
-		void setBlock( const BlockId id, const glm::ivec3 &position );
-		void setBlock( const BlockId id, const int32 x, const int32 y, const int32 z );
+		Block operator[]( const ivec3 &position ) const noexcept;
 
-		NODISCARD vec3				   getLocation( ) const;
+		void setBlock( const BlockId id, const ivec3 &position );
+		void setBlock( const BlockId id, const int32 x, const int32 y, const int32 z );
+		void setNeighbor( const NeighborType type, ChunkSection &chunk ) noexcept;
+
+		NODISCARD ivec2				   getLocation( ) const;
 		NODISCARD const RenderInfo	   &getRenderInfo( ) const;
 		NODISCARD const ChunkBlockMap &getChunk( ) const;
-		NODISCARD ChunkLayer		   getLayer( const int y ) const noexcept;
-		NODISCARD Block				   getBlock( const int32_t x, const int32_t y, const int32_t z );
-		NODISCARD Block				   getBlock( const glm::ivec3 &coords );
-		NODISCARD size_t			   getSizeOfBlockArray( ) const noexcept;
-		NODISCARD size_t			   getSizeOfBlock( ) const noexcept;
+		NODISCARD ChunkLayer		   getLayer( const int y ) const;
+		NODISCARD Block				   getBlock( const int32_t x, const int32_t y, const int32_t z ) const noexcept;
+		NODISCARD Block				   getBlock( const ivec3 &coords ) const noexcept;
+		NODISCARD ChunkSection const	 *tryGetNeighbor( NeighborType type ) const noexcept;
 		NODISCARD bool				   hasMesh( ) const noexcept;
+		NODISCARD bool				   hasLoaded( ) const noexcept;
 
 		void createChunk( );
 		void loadBufferData( );
 		void render( ) const;
 
+		static NODISCARD constexpr size_t getSizeOfBlock( ) noexcept;
+		static NODISCARD uint32			  getSizeFromIndex( const uint32 x, const uint32 y, const uint32 z ) noexcept;
+		static NODISCARD uint32			  getSizeFromIndex( const ivec3 &vec ) noexcept;
+		static NODISCARD ivec3			  getIndexFromSize( const uint32 size ) noexcept;
+
 		~ChunkSection( ) noexcept = default;
 
 	private:
-		std::vector< Block >			  m_blocks;
-		std::array< ChunkLayer, CHUNK_Y > m_layers;
 		ChunkBlockMap					  m_chunk;
 		ChunkMesh						  m_mesh;
-		glm::vec3						  m_location; /* chunk position */
+		Neighbor						  m_neighbor;
+		std::array< ChunkLayer, CHUNK_Y > m_layers;
+		ivec2							  m_location; /* chunk position */
 
 		static bool outOfBound( const int32_t x, const int32_t y, const int32_t z ) noexcept;
 	};

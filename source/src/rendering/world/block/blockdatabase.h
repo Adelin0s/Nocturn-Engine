@@ -16,7 +16,6 @@
 #include "rendering/components/textures/textureatlas.h"
 #include "rendering/world/block/blockdata.h"
 #include "rendering/world/block/blockdataholder.hpp"
-#include "rendering/world/block/blockid.hpp"
 
 namespace Nocturn::rendering
 {
@@ -42,7 +41,7 @@ namespace Nocturn::rendering
 		BlockDatabase( ) noexcept;
 		~BlockDatabase( ) noexcept = default;
 
-		std::array< std::unique_ptr< BlockData >, ( unsigned )BlockId::END > m_blocks;
+		std::array< std::unique_ptr< BlockData >, static_cast< unsigned >( BlockId::END ) > m_blocks;
 	};
 } // namespace Nocturn::rendering
 

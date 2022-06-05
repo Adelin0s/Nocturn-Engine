@@ -11,18 +11,18 @@
 
 #include <glm/glm.hpp>
 
-#include "rendering/world/block/blockid.hpp"
+#include "rendering/world/block/block.h"
 
 namespace Nocturn::rendering
 {
-    struct BlockDataHolder
-    {
-        BlockId m_id;
-        
-        glm::vec2 m_textureTop;
-        glm::vec2 m_textureSide;
-        glm::vec2 m_textureBottom;
-    };
-}
+	struct BlockDataHolder
+	{
+		BlockId m_id;
+
+		glm::vec2 m_textureTop;
+		glm::vec2 m_textureSide;
+		glm::vec2 m_textureBottom;
+	};
+} // namespace Nocturn::rendering
 
 #endif

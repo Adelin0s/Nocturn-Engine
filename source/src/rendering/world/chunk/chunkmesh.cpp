@@ -62,21 +62,24 @@ namespace Nocturn::rendering
 
 	void ChunkMesh::makeMesh( ChunkSection &pchunk )
 	{
+		// We don't need to generate where our chunk's neighbors have all blocks solid.
+		// Can continue because the current layer is basically hidden in real scenario.
 		m_pChunk = &pchunk;
 		AdjacentBlock directions;
 
 		auto chunk = m_pChunk->getChunk( );
 
-		for( int32 x = 0; x < CHUNK_X; x++ )
+		uint32 cnt = 0;
+		for( int32 z = 0; z < CHUNK_Z; z++ )
 			for( int32 y = 0; y < CHUNK_Y; y++ )
-				for( int32 z = 0; z < CHUNK_Z; z++ )
+				for( int32 x = 0; x < CHUNK_X; x++ )
 				{
-					if( !shouldMakeLayer( y ) || chunk[ ivec3( x, y, z ) ] == BlockId::Air )
+					if( shouldMakeLayer( y ) == true )
 					{
 						continue;
 					}
 
-					const auto &data = chunk[ ivec3( x, y, z ) ].getData( );
+					const auto &data = chunk[ ChunkSection::getSizeFromIndex( x, y, z ) ].getData( );
 
 					const Block_t position( x, y, z );
 					directions.update( x, y, z );
@@ -126,22 +129,59 @@ namespace Nocturn::rendering
 
 	NODISCARD bool ChunkMesh::shouldMakeFace( const Block_t &blockCoords, const AdjacentBlock &adjCoords ) const noexcept
 	{
-		if( m_pChunk->getBlock( adjCoords.top ) == BlockId::Air )
-		{
-			return true;
-		}
-		return false;
+		if( m_pChunk->getBlock( blockCoords ) == BlockId::Air )
+			return false;
+
+		if( m_pChunk->getBlock( adjCoords.left ) != BlockId::Air &&
+			m_pChunk->getBlock( adjCoords.right ) != BlockId::Air &&
+			m_pChunk->getBlock( adjCoords.top ) != BlockId::Air &&
+			m_pChunk->getBlock( adjCoords.bottom ) != BlockId::Air )
+			return false;
+
+		return true;
 	}
 
-	NODISCARD bool ChunkMesh::shouldMakeLayer( const int y ) const noexcept
+	/// <summary>
+	/// This function checks if the current chunk has all neighbors generated
+	/// </summary>
+	/// <param name="y"></param>
+	/// <returns></returns>
+	NODISCARD bool ChunkMesh::shouldMakeLayer( const int32 y ) const noexcept
 	{
-		// @TODO : To be reviewed
-		return ( !m_pChunk->getLayer( y ).IsAllSolid( ) );
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Left ); nullptr != neighbor && neighbor->hasMesh( ) )
+			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			{
+				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				return false;
+			}
+
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Right ); nullptr != neighbor && neighbor->hasMesh( ) )
+			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			{
+				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				return false;
+			}
+
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Top ); nullptr != neighbor && neighbor->hasMesh( ) )
+			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			{
+				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				return false;
+			}
+
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Bottom ); nullptr != neighbor && neighbor->hasMesh( ) )
+			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			{
+				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				return false;
+			}
+
+		return true;
 	}
 
-	void ChunkMesh::addFace( const Vertices_t &face, const Textures_t &texturesCoords, const Chunk_t &chunkPosition, const Block_t &blockPosition )
+	void ChunkMesh::addFace( const Vertices_t &face, const Textures_t &texturesCoords, const ivec2 &chunkPosition, const Block_t &blockPosition )
 	{
-		faces++;
+		m_faces++;
 
 		auto &indices  = m_mesh.indices;
 		auto &vertices = m_mesh.vertices;
@@ -153,9 +193,9 @@ namespace Nocturn::rendering
 		/* we have 4 set of vertices with 3 coords x, y, z  */
 		for( uint32_t i = 0, index = 0; i < 4; i++ )
 		{
-			vertices.push_back( face[ index++ ] + chunkPosition.x * CHUNK_X + blockPosition.x );
-			vertices.push_back( face[ index++ ] + chunkPosition.y * CHUNK_Y + blockPosition.y );
-			vertices.push_back( face[ index++ ] + chunkPosition.z * CHUNK_Z + blockPosition.z );
+			vertices.push_back( face[ index++ ] + chunkPosition[ 0 ] * CHUNK_X + blockPosition.x );
+			vertices.push_back( face[ index++ ] + blockPosition.y );
+			vertices.push_back( face[ index++ ] + chunkPosition[ 1 ] * CHUNK_Z + blockPosition.z );
 		}
 		textures.insert( textures.end( ), texturesCoords.begin( ), texturesCoords.end( ) );
 	}

@@ -28,7 +28,9 @@ namespace Nocturn::rendering
 
 		void init( );
 		void add( const RenderInfo &renderInfo );
-		void render( const Camera &camera );
+		// void			 add( const RenderInfo &renderInfo );
+		NODISCARD size_t size( ) const noexcept;
+		void			 render( const Camera &camera );
 
 		~ChunkRendering( ) noexcept = default;
 

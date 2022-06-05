@@ -94,9 +94,8 @@ namespace Nocturn
 		std::unique_lock lock( m_mutex );
 		while( !m_end && IsEmpty( ) )
 		{
-			/*m_cv.wait( lock, [ & ]( )
-					   { return !IsEmpty( ) && !m_end; } );*/
-			m_cv.wait( lock );
+			m_cv.wait( lock, [ & ]
+					   { return !IsEmpty( ) && !m_end; } );
 		}
 		for( auto priority = CPriorityMaxIndex; priority > -1; --priority )
 		{
@@ -186,10 +185,10 @@ namespace Nocturn
 		m_queue[ index % m_numberOfWorkers ].ForcePush( task );
 	}
 
-	// void TaskSystem::Async( Task task, const ETaskPriorityLevel priority )
-	//{
-	//  Async( { std::move( task ), priority } );
-	//}
+	void TaskSystem::Async( Task task, const ETaskPriorityLevel priority )
+	{
+		Async( PriorityTask{ std::move( task ), priority } );
+	}
 
 	/**
 	 * \brief The main function that all worker execute
@@ -217,10 +216,8 @@ namespace Nocturn
 
 	void TaskSystem::TryRunTask( )
 	{
-		// Iterate over the levels of priority starting from highest to lowest priority
 		for( auto priority = CPriorityMaxIndex; priority >= 0; --priority )
 		{
-			// In case in that we couldn't find any task we start searching to neighbor
 			for( uint32 i = 0; i < m_numberOfWorkers; ++i )
 			{
 				if( auto task = m_queue[ i ].TryPop( priority ); task )

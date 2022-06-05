@@ -5,6 +5,8 @@
 
 #include "application/config/config.hpp"
 
+#include "core/async/task.h"
+
 #include "rendering/data/camera.h"
 #include "rendering/renderer/chunkrenderer.h"
 #include "rendering/renderer/skyboxrenderer.h"
@@ -28,7 +30,7 @@ namespace Nocturn
 		World &operator=( World && ) = delete;
 
 		void Init( );
-		void Update( const float dt );
+		void Update( const double dt );
 		void Free( );
 
 		~World( ) noexcept = default;
@@ -38,6 +40,7 @@ namespace Nocturn
 		std::unique_ptr< SkyboxRendering > m_skyboxRender;
 		std::unique_ptr< Camera >		   m_camera;
 		std::unique_ptr< ChunkManager >	   m_chunk;
+		std::unique_ptr< TaskSystem >	   m_taskSystem;
 	};
 } // namespace Nocturn
 

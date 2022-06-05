@@ -27,11 +27,11 @@ namespace Nocturn::Application
 	{
 		window->create( );
 
-		float lastX = 640.0f;
-		float lastY = 360.0f;
+		double lastX = 640.0f;
+		double lastY = 360.0f;
 
-		float dt		= 0.0f;
-		float lastFrame = 0.0f;
+		double dt		 = 0.0f;
+		double lastFrame = 0.0f;
 
 		glEnable( GL_DEPTH_TEST );
 
@@ -42,9 +42,9 @@ namespace Nocturn::Application
 			if( Keyboard::keyWentDown( GLFW_KEY_ESCAPE ) )
 				window->close( );
 
-			float currentFrame = glfwGetTime( );
-			dt				   = currentFrame - lastFrame;
-			lastFrame		   = currentFrame;
+			const double currentFrame = glfwGetTime( );
+			dt						  = currentFrame - lastFrame;
+			lastFrame				  = currentFrame;
 
 			glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );

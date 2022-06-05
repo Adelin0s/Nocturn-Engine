@@ -9,13 +9,12 @@
 #ifndef CHUNK_MESH_H
 #define CHUNK_MESH_H
 
-#include <array>
 #include <cstdint>
 #include <glm/glm.hpp>
 
 #include "core/platform/platform.h"
+#include "core/types/typedef.hpp"
 #include "rendering/data/model.h"
-#include "rendering/world/block/blockid.hpp"
 
 namespace Nocturn::rendering
 {
@@ -28,12 +27,12 @@ namespace Nocturn::rendering
 	{
 		void update( const uint32_t x, const uint32_t y, const uint32_t z );
 
-		glm::ivec3 top;
-		glm::ivec3 bottom;
-		glm::ivec3 left;
-		glm::ivec3 right;
-		glm::ivec3 front;
-		glm::ivec3 back;
+		ivec3 top;
+		ivec3 bottom;
+		ivec3 left;
+		ivec3 right;
+		ivec3 front;
+		ivec3 back;
 	};
 
 	class ChunkMesh
@@ -57,7 +56,7 @@ namespace Nocturn::rendering
 		~ChunkMesh( ) noexcept = default;
 
 	private:
-		uint32_t	  faces		  = 0;
+		uint32_t	  m_faces	  = 0;
 		uint32_t	  m_index	  = 0; /* lolita lolita , cichi cichi bambita */
 		bool		  m_hasMesh	  = false;
 		bool		  m_hasLoaded = false;
@@ -67,8 +66,8 @@ namespace Nocturn::rendering
 
 		void		   makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const AdjacentBlock &adjBlock );
 		NODISCARD bool shouldMakeFace( const Block_t &blockCoords, const AdjacentBlock &adjCoords ) const noexcept;
-		NODISCARD bool shouldMakeLayer( const int y ) const noexcept;
-		void		   addFace( const Vertices_t &face, const Textures_t &texturesCoords, const Chunk_t &chunkPosition, const Block_t &blockPosition );
+		NODISCARD bool shouldMakeLayer( const int32 y ) const noexcept;
+		void		   addFace( const Vertices_t &face, const Textures_t &texturesCoords, const ivec2 &chunkPosition, const Block_t &blockPosition );
 	};
 } // namespace Nocturn::rendering
 #endif

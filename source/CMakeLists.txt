@@ -4,5 +4,7 @@ project (Nocturn VERSION 1.0.0)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+set(CMAKE_SUPPRESS_REGENERATION true)
+
 add_subdirectory ("libs")
 add_subdirectory ("src")

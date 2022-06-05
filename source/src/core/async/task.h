@@ -1,7 +1,6 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include <cassert>
 #include <condition_variable>
 #include <deque>
 #include <functional>
@@ -110,7 +109,7 @@ namespace Nocturn
 		TaskSystem operator=( TaskSystem &&task ) = delete;
 
 		void Async( PriorityTask task );
-		// void Async( Task task, const ETaskPriorityLevel priority );
+		void Async( Task task, const ETaskPriorityLevel priority = ETaskPriorityLevel::Low );
 		void RunTaskLoop( const uint8 queueIndex );
 		void TryRunTask( );
 		void ForceQuit( ) const noexcept;
@@ -122,8 +121,7 @@ namespace Nocturn
 		~TaskSystem( ) noexcept;
 
 	private:
-		uint32					  m_numberOfWorkers;
-		static thread_local int32 m_currentTaskQueue;
+		uint32 m_numberOfWorkers;
 
 		std::vector< std::thread >	 m_threads;
 		std::vector< PriorityQueue > m_queue;
@@ -196,7 +194,6 @@ namespace Nocturn
 			// TODO : get current priority(static variable in TaskSystem)
 			constexpr auto priority = 0; /*=TaskSystem::GetCurrentTaskPriority();*/
 			Run( std::forward< F >( f ), priority );
-			return priority;
 		}
 
 		template< typename F >

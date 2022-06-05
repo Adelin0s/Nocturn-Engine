@@ -1,37 +1,92 @@
 #include "rendering/world/chunk/chunksection.h"
 #include "rendering/world/block/block.h"
 
-#include <iostream>
-
 #include "core/math/noise.h"
 
 namespace Nocturn::rendering
 {
-	ChunkSection::ChunkSection( const glm::vec3 &location ) :
+	ChunkSection::ChunkSection( const ivec2 &location ) :
+		m_chunk( CHUNK_SIZE ),
 		m_location( location )
+	{}
+
+	Block ChunkSection::operator[]( const ivec3 &position ) const noexcept
 	{
-		m_blocks.reserve( CHUNK_SIZE );
+		return m_chunk[ getSizeFromIndex( position ) ];
 	}
 
 	void ChunkSection::setBlock( const BlockId id, const int32 x, const int32 y, const int32 z )
 	{
 		if( !outOfBound( x, y, z ) )
 		{
-			m_chunk.insert_or_assign( ivec3( x, y, z ), Block( id ) );
-			m_layers[ y ].Update( );
+			const auto block = m_chunk[ getSizeFromIndex( x, y, z ) ];
+
+			if( BlockId::Air == block && id != BlockId::Air )
+			{
+				m_layers[ y ].Increase( );
+			}
+
+			if( BlockId::Air != block && BlockId::Air == id )
+				m_layers[ y ].Decrease( );
+
+			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;
 		}
 	}
 
-	void ChunkSection::setBlock( const BlockId id, const glm::ivec3 &position )
+	void ChunkSection::setBlock( const BlockId id, const ivec3 &position )
 	{
 		if( !outOfBound( position.x, position.y, position.z ) )
 		{
-			m_chunk.insert_or_assign( position, Block( id ) );
-			m_layers[ position.y ].Update( );
+			const auto block = m_chunk[ getSizeFromIndex( position ) ];
+
+			if( BlockId::Air == block && BlockId::Air != id )
+				m_layers[ position.y ].Increase( );
+
+			if( BlockId::Air != block && BlockId::Air == id )
+				m_layers[ position.y ].Decrease( );
+
+			m_chunk[ getSizeFromIndex( position ) ] = id;
 		}
 	}
 
-	glm::vec3 ChunkSection::getLocation( ) const
+	void ChunkSection::setNeighbor( const NeighborType type, ChunkSection &chunk ) noexcept
+	{
+		if( NeighborType::Left == type )
+		{
+			m_neighbor.left = &chunk;
+		}
+		else if( NeighborType::Right == type )
+		{
+			m_neighbor.right = &chunk;
+		}
+		else if( NeighborType::Top == type )
+		{
+			m_neighbor.top = &chunk;
+		}
+		else if( NeighborType::Bottom == type )
+		{
+			m_neighbor.bottom = &chunk;
+		}
+	}
+
+	ChunkSection const *ChunkSection::tryGetNeighbor( NeighborType type ) const noexcept
+	{
+		if( type == NeighborType::Left && m_neighbor.left )
+			return m_neighbor.left;
+
+		if( type == NeighborType::Right && m_neighbor.right )
+			return m_neighbor.right;
+
+		if( type == NeighborType::Top && m_neighbor.top )
+			return m_neighbor.top;
+
+		if( type == NeighborType::Bottom && m_neighbor.bottom )
+			return m_neighbor.bottom;
+
+		return nullptr;
+	}
+
+	ivec2 ChunkSection::getLocation( ) const
 	{
 		return m_location;
 	}
@@ -41,38 +96,66 @@ namespace Nocturn::rendering
 		return m_chunk;
 	}
 
-	NODISCARD ChunkLayer ChunkSection::getLayer( const int y ) const noexcept
+	NODISCARD ChunkLayer ChunkSection::getLayer( const int y ) const
 	{
 		return m_layers[ y ];
 	}
 
-	NODISCARD Block ChunkSection::getBlock( const int32_t x, const int32_t y, const int32_t z )
+	NODISCARD Block ChunkSection::getBlock( const int32_t x, const int32_t y, const int32_t z ) const noexcept
 	{
 		if( outOfBound( x, y, z ) )
 			return BlockId::Air;
-		return m_chunk[ ivec3( x, y, z ) ];
+		return m_chunk[ getSizeFromIndex( x, y, z ) ];
 	}
 
-	NODISCARD Block ChunkSection::getBlock( const glm::ivec3 &coords )
+	NODISCARD Block ChunkSection::getBlock( const ivec3 &coords ) const noexcept
 	{
 		if( outOfBound( coords.x, coords.y, coords.z ) )
 			return BlockId::Air;
-		return m_chunk[ coords ];
+		return m_chunk[ getSizeFromIndex( coords ) ];
 	}
 
-	NODISCARD size_t ChunkSection::getSizeOfBlockArray( ) const noexcept
-	{
-		return sizeof( m_blocks );
-	}
-
-	NODISCARD size_t ChunkSection::getSizeOfBlock( ) const noexcept
+	NODISCARD constexpr size_t ChunkSection::getSizeOfBlock( ) noexcept
 	{
 		return sizeof( Block );
+	}
+
+	/// <summary>
+	/// Return a size from a x, y and z for chunk position
+	/// </summary>
+	/// <param name="x">column</param>
+	/// <param name="y">height</param>
+	/// <param name="z">row</param>
+	/// <returns>Vector size</returns>
+	NODISCARD uint32 ChunkSection::getSizeFromIndex( const uint32 x, const uint32 y, const uint32 z ) noexcept
+	{
+		return z * 16 + y * 256 + x;
+	}
+
+	/// <summary>
+	/// Return a size from a ivec3 for chunk position
+	/// </summary>
+	/// <param name="vec">A vec3 with chunk position(column/height/row)</param>
+	/// <returns>uint32 that represent size of current chunk</returns>
+	NODISCARD uint32 ChunkSection::getSizeFromIndex( const ivec3 &vec ) noexcept
+	{
+		return vec.z * 16 + vec.y * 256 + vec.x;
+	}
+
+	NODISCARD ivec3 ChunkSection::getIndexFromSize( const uint32 size ) noexcept
+	{
+		const auto pz = size % CHUNK_Y;
+		return { pz % CHUNK_X, pz / CHUNK_X, pz };
 	}
 
 	NODISCARD bool ChunkSection::hasMesh( ) const noexcept
 	{
 		return m_mesh.hasMesh( );
+	}
+
+	bool ChunkSection::hasLoaded( ) const noexcept
+	{
+		return m_mesh.hasLoaded( );
 	}
 
 	const RenderInfo &ChunkSection::getRenderInfo( ) const

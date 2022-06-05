@@ -23,7 +23,6 @@ namespace Nocturn
 	using uint64 = uint64_t;
 	using int64	 = int64_t;
 
-	using BlockId_t	 = int8_t;
 	using Chunk_t	 = glm::ivec3;
 	using Block_t	 = glm::ivec3;
 	using Vertices_t = std::array< float, 12 >;

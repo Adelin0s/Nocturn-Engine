@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "core/async/threadpool.h"
+#include "core/async/task.h"
 #include "core/math/noise.h"
 #include "core/types/constants.h"
 #include "core/types/typedef.hpp"
@@ -29,25 +29,31 @@ namespace Nocturn::rendering
 {
 	using ChunkMap = std::unordered_map< vec2, ChunkSection >;
 
-	enum class ThreadCommand : uint8
+	struct AdjacentChunk
 	{
-		GenerateTerrain = 0
+		AdjacentChunk( const int32 x, const int32 z ) noexcept;
+		AdjacentChunk( const ivec2 &vec ) noexcept;
+
+		ivec2 top;
+		ivec2 bottom;
+		ivec2 left;
+		ivec2 right;
 	};
 
 	class ChunkManager
 	{
 	public:
 		ChunkManager( ) noexcept = delete;
-		ChunkManager( const Camera &camera ) noexcept;
+		explicit ChunkManager( TaskSystem &taskSystem ) noexcept;
 		ChunkManager( const ChunkManager &chunk ) = delete;
 		ChunkManager( ChunkManager &&chunk )	  = delete;
 
 		ChunkManager operator=( const ChunkManager &chunk ) = delete;
 		ChunkManager operator=( ChunkManager &&chunk ) = delete;
 
-		void InitInitialChunks( ) noexcept;
 		void LoadPendingChunks( const ivec3 &currentPosition );
-		void ThreadUpdate( const ivec3 &currentPosition );
+		void LoadChunkNeighbors( const ivec2 &chunkPosition ) noexcept;
+		void Update( const ivec3 &currentPosition );
 		void Render( const Camera &camera, ChunkRendering &chunkRender );
 
 		~ChunkManager( ) noexcept = default;
@@ -55,12 +61,13 @@ namespace Nocturn::rendering
 	private:
 		void GenerateNewChunk( ChunkSection &chunk ) const noexcept;
 
-		NoiseParams			 m_noiseParams{ };
-		ivec3				 m_lastPosition{ };
-		ThreadPool			 m_pool;
-		ChunkMap			 m_mapChunks;
-		std::vector< ivec2 > m_pendingChunks;
-		const uint32		 m_renderDistance;
+		TaskSystem					   *m_pTaskSystem;
+		NoiseParams						  m_noiseParams{ };
+		ivec3							  m_lastPosition{ };
+		ChunkMap						  m_mapChunks;
+		std::unordered_map< ivec2, bool > m_hasLoaded;
+		std::vector< ivec2 >			  m_pendingChunks;
+		const uint32					  m_renderDistance;
 	};
 } // namespace Nocturn::rendering
 #endif

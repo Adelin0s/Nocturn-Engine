@@ -12,6 +12,11 @@ namespace Nocturn::rendering
 		m_chunks.emplace_back( renderInfo );
 	}
 
+	NODISCARD size_t ChunkRendering::size( ) const noexcept
+	{
+		return m_chunks.size( );
+	}
+
 	void ChunkRendering::render( const Camera &camera )
 	{
 		if( m_chunks.empty( ) )
