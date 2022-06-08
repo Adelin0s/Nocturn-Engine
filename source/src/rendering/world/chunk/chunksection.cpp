@@ -8,7 +8,8 @@ namespace Nocturn::rendering
 	ChunkSection::ChunkSection( const ivec2 &location ) :
 		m_chunk( CHUNK_SIZE ),
 		m_location( location )
-	{}
+	{
+	}
 
 	Block ChunkSection::operator[]( const ivec3 &position ) const noexcept
 	{
@@ -59,17 +60,22 @@ namespace Nocturn::rendering
 		{
 			m_neighbor.right = &chunk;
 		}
-		else if( NeighborType::Top == type )
+		else if( NeighborType::Front == type )
 		{
 			m_neighbor.top = &chunk;
 		}
-		else if( NeighborType::Bottom == type )
+		else if( NeighborType::Back == type )
 		{
 			m_neighbor.bottom = &chunk;
 		}
 	}
 
-	ChunkSection const *ChunkSection::tryGetNeighbor( NeighborType type ) const noexcept
+	void ChunkSection::setRenderableChunk( ) noexcept
+	{
+		m_renderableChunk = true;
+	}
+
+	ChunkSection *ChunkSection::tryGetNeighbor( const NeighborType type ) const noexcept
 	{
 		if( type == NeighborType::Left && m_neighbor.left )
 			return m_neighbor.left;
@@ -77,10 +83,10 @@ namespace Nocturn::rendering
 		if( type == NeighborType::Right && m_neighbor.right )
 			return m_neighbor.right;
 
-		if( type == NeighborType::Top && m_neighbor.top )
+		if( type == NeighborType::Front && m_neighbor.top )
 			return m_neighbor.top;
 
-		if( type == NeighborType::Bottom && m_neighbor.bottom )
+		if( type == NeighborType::Back && m_neighbor.bottom )
 			return m_neighbor.bottom;
 
 		return nullptr;
@@ -113,6 +119,48 @@ namespace Nocturn::rendering
 		if( outOfBound( coords.x, coords.y, coords.z ) )
 			return BlockId::Air;
 		return m_chunk[ getSizeFromIndex( coords ) ];
+	}
+
+	NODISCARD Block ChunkSection::getAdjacentBlock( const ivec3 &coords ) const noexcept
+	{
+		const auto px = coords.x;
+		const auto py = coords.y;
+		const auto pz = coords.z;
+
+		if( px == -1 )
+		{
+			const auto &neighbor = tryGetNeighbor( NeighborType::Back );
+
+			assert( neighbor != nullptr );
+
+			return neighbor->getBlock( CHUNK_X - 1, py, pz );
+		}
+		if( px == CHUNK_X )
+		{
+			const auto &neighbor = tryGetNeighbor( NeighborType::Front );
+
+			assert( neighbor != nullptr );
+
+			return neighbor->getBlock( 0, py, pz );
+		}
+		if( pz == -1 )
+		{
+			const auto &neighbor = tryGetNeighbor( NeighborType::Left );
+
+			assert( neighbor != nullptr );
+
+			return neighbor->getBlock( px, py, CHUNK_Z - 1 );
+		}
+		if( pz == CHUNK_Z )
+		{
+			const auto &neighbor = tryGetNeighbor( NeighborType::Right );
+
+			assert( neighbor != nullptr );
+
+			return neighbor->getBlock( px, py, 0 );
+		}
+
+		return getBlock( px, py, pz );
 	}
 
 	NODISCARD constexpr size_t ChunkSection::getSizeOfBlock( ) noexcept
@@ -156,6 +204,16 @@ namespace Nocturn::rendering
 	bool ChunkSection::hasLoaded( ) const noexcept
 	{
 		return m_mesh.hasLoaded( );
+	}
+
+	bool ChunkSection::shouldToRender( ) const noexcept
+	{
+		return hasMesh( ) && m_renderableChunk;
+	}
+
+	bool ChunkSection::isRenderable( ) const noexcept
+	{
+		return m_renderableChunk;
 	}
 
 	const RenderInfo &ChunkSection::getRenderInfo( ) const

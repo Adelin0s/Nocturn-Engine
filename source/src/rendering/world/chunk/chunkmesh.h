@@ -35,6 +35,16 @@ namespace Nocturn::rendering
 		ivec3 back;
 	};
 
+	enum class FaceType
+	{
+		Up = 0,
+		Down,
+		Left,
+		Right,
+		Back,
+		Front
+	};
+
 	class ChunkMesh
 	{
 	public:
@@ -64,9 +74,9 @@ namespace Nocturn::rendering
 		Model		  m_model;
 		ChunkSection *m_pChunk = nullptr; /* pointer to the current chunk */
 
-		void		   makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const AdjacentBlock &adjBlock );
-		NODISCARD bool shouldMakeFace( const Block_t &blockCoords, const AdjacentBlock &adjCoords ) const noexcept;
-		NODISCARD bool shouldMakeLayer( const int32 y ) const noexcept;
+		void		   makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const ivec3 &adjBlock );
+		NODISCARD bool shouldMakeFace( const Block_t &blockCoords, const ivec3 &adjCoords ) const noexcept;
+		NODISCARD bool shouldPassLayer( const int32 y ) const noexcept;
 		void		   addFace( const Vertices_t &face, const Textures_t &texturesCoords, const ivec2 &chunkPosition, const Block_t &blockPosition );
 	};
 } // namespace Nocturn::rendering

@@ -29,17 +29,6 @@ namespace Nocturn::rendering
 {
 	using ChunkMap = std::unordered_map< vec2, ChunkSection >;
 
-	struct AdjacentChunk
-	{
-		AdjacentChunk( const int32 x, const int32 z ) noexcept;
-		AdjacentChunk( const ivec2 &vec ) noexcept;
-
-		ivec2 top;
-		ivec2 bottom;
-		ivec2 left;
-		ivec2 right;
-	};
-
 	class ChunkManager
 	{
 	public:
@@ -51,23 +40,22 @@ namespace Nocturn::rendering
 		ChunkManager operator=( const ChunkManager &chunk ) = delete;
 		ChunkManager operator=( ChunkManager &&chunk ) = delete;
 
-		void LoadPendingChunks( const ivec3 &currentPosition );
-		void LoadChunkNeighbors( const ivec2 &chunkPosition ) noexcept;
+		void GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept;
 		void Update( const ivec3 &currentPosition );
 		void Render( const Camera &camera, ChunkRendering &chunkRender );
 
 		~ChunkManager( ) noexcept = default;
 
 	private:
-		void GenerateNewChunk( ChunkSection &chunk ) const noexcept;
+		void GenerateNewChunk( ChunkSection &chunk, const bool shouldToCreateMesh = false ) const noexcept;
 
-		TaskSystem					   *m_pTaskSystem;
-		NoiseParams						  m_noiseParams{ };
-		ivec3							  m_lastPosition{ };
-		ChunkMap						  m_mapChunks;
-		std::unordered_map< ivec2, bool > m_hasLoaded;
-		std::vector< ivec2 >			  m_pendingChunks;
-		const uint32					  m_renderDistance;
+		TaskSystem							   *m_pTaskSystem;
+		NoiseParams								m_noiseParams{ };
+		ivec3									m_lastPosition{ };
+		ChunkMap								m_mapChunks;
+		std::unordered_map< ivec2, bool >		m_hasLoaded;
+		std::vector< std::function< void( ) > > m_pendingChunks;
+		const uint32							m_renderDistance;
 	};
 } // namespace Nocturn::rendering
 #endif

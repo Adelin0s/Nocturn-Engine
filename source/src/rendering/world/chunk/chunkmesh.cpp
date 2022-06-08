@@ -72,9 +72,10 @@ namespace Nocturn::rendering
 		uint32 cnt = 0;
 		for( int32 z = 0; z < CHUNK_Z; z++ )
 			for( int32 y = 0; y < CHUNK_Y; y++ )
+			{
 				for( int32 x = 0; x < CHUNK_X; x++ )
 				{
-					if( shouldMakeLayer( y ) == true )
+					if( shouldPassLayer( y ) )
 					{
 						continue;
 					}
@@ -85,17 +86,18 @@ namespace Nocturn::rendering
 					directions.update( x, y, z );
 
 					/* Up/Down */
-					makeFace( topFace, data.m_textureTop, position, directions );
-					makeFace( bottomFace, data.m_textureBottom, position, directions );
+					makeFace( topFace, data.m_textureTop, position, directions.top );
+					makeFace( bottomFace, data.m_textureBottom, position, directions.bottom );
 
 					/* Left/Right */
-					makeFace( leftFace, data.m_textureSide, position, directions );
-					makeFace( rightFace, data.m_textureSide, position, directions );
+					makeFace( leftFace, data.m_textureSide, position, directions.left );
+					makeFace( rightFace, data.m_textureSide, position, directions.right );
 
 					/* Back/Front */
-					makeFace( backFace, data.m_textureSide, position, directions );
-					makeFace( frontFace, data.m_textureSide, position, directions );
+					makeFace( backFace, data.m_textureSide, position, directions.back );
+					makeFace( frontFace, data.m_textureSide, position, directions.front );
 				}
+			}
 		m_hasMesh = true; // flag to know if the buffer data can be loaded
 	}
 
@@ -118,7 +120,7 @@ namespace Nocturn::rendering
 		return m_hasLoaded;
 	}
 
-	void ChunkMesh::makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const AdjacentBlock &adjBlock )
+	void ChunkMesh::makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const ivec3 &adjBlock )
 	{
 		if( shouldMakeFace( blockPosition, adjBlock ) )
 		{
@@ -127,54 +129,66 @@ namespace Nocturn::rendering
 		}
 	}
 
-	NODISCARD bool ChunkMesh::shouldMakeFace( const Block_t &blockCoords, const AdjacentBlock &adjCoords ) const noexcept
+	NODISCARD bool ChunkMesh::shouldMakeFace( const Block_t &blockCoords, const ivec3 &adjCoords ) const noexcept
 	{
 		if( m_pChunk->getBlock( blockCoords ) == BlockId::Air )
 			return false;
 
-		if( m_pChunk->getBlock( adjCoords.left ) != BlockId::Air &&
-			m_pChunk->getBlock( adjCoords.right ) != BlockId::Air &&
-			m_pChunk->getBlock( adjCoords.top ) != BlockId::Air &&
-			m_pChunk->getBlock( adjCoords.bottom ) != BlockId::Air )
+		if( m_pChunk->getAdjacentBlock( adjCoords ) != BlockId::Air )
+		{
 			return false;
+		}
 
 		return true;
 	}
 
 	/// <summary>
-	/// This function checks if the current chunk has all neighbors generated
+	/// Checks if the neighbors have all the blocks set on the current layer y
 	/// </summary>
-	/// <param name="y"></param>
-	/// <returns></returns>
-	NODISCARD bool ChunkMesh::shouldMakeLayer( const int32 y ) const noexcept
+	/// <param name="y">current layer</param>
+	/// <returns>True if all blocks are set or False</returns>
+	NODISCARD bool ChunkMesh::shouldPassLayer( const int32 y ) const noexcept
 	{
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Left ); nullptr != neighbor && neighbor->hasMesh( ) )
-			if( !neighbor->getLayer( y ).IsAllSolid( ) )
-			{
-				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
-				return false;
-			}
+		if( y + 1 < CHUNK_Y && !m_pChunk->getLayer( y + 1 ).IsAllSolid( ) )
+		{
+			return false;
+		}
 
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Right ); nullptr != neighbor && neighbor->hasMesh( ) )
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Left ); nullptr != neighbor )
+		{
 			if( !neighbor->getLayer( y ).IsAllSolid( ) )
 			{
 				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
+		}
 
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Top ); nullptr != neighbor && neighbor->hasMesh( ) )
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Right ); nullptr != neighbor )
+		{
 			if( !neighbor->getLayer( y ).IsAllSolid( ) )
 			{
 				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
+		}
 
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Bottom ); nullptr != neighbor && neighbor->hasMesh( ) )
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Front ); nullptr != neighbor )
+		{
 			if( !neighbor->getLayer( y ).IsAllSolid( ) )
 			{
 				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
+		}
+
+		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Back ); nullptr != neighbor )
+		{
+			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			{
+				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				return false;
+			}
+		}
 
 		return true;
 	}

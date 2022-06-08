@@ -6,18 +6,18 @@ namespace Nocturn::rendering
 {
 	FORCE_INLINE AdjacentChunk::AdjacentChunk( const int32 x, const int32 z ) noexcept
 	{
-		top	   = { x, z + 1 };
-		bottom = { x, z - 1 };
-		left   = { x - 1, z };
-		right  = { x + 1, z };
+		front = { x + 1, z };
+		back  = { x - 1, z };
+		left  = { x, z - 1 };
+		right = { x, z + 1 };
 	}
 
 	FORCE_INLINE AdjacentChunk::AdjacentChunk( const ivec2 &vec ) noexcept
 	{
-		top	   = { vec.x, vec.y + 1 };
-		bottom = { vec.x, vec.y - 1 };
-		left   = { vec.x - 1, vec.y };
-		right  = { vec.x + 1, vec.y };
+		front = { vec.x + 1, vec.y };
+		back  = { vec.x - 1, vec.y };
+		left  = { vec.x, vec.y - 1 };
+		right = { vec.x, vec.y + 1 };
 	}
 
 	ChunkManager::ChunkManager( TaskSystem &taskSystem ) noexcept :
@@ -30,96 +30,102 @@ namespace Nocturn::rendering
 		m_noiseParams.offset	 = 10;
 		m_noiseParams.roughness	 = 0.51;
 
-		LoadChunkNeighbors( { 0, 3 } );
-	}
-
-	void ChunkManager::LoadPendingChunks( const ivec3 &currentPosition )
-	{
-		const auto px = currentPosition.x / CHUNK_X;
-		const auto pz = currentPosition.z / CHUNK_Z;
-
-		const Noise noise( m_noiseParams, 2432 );
-
-		if( px != m_lastPosition.x || pz != m_lastPosition.z ) // unique position
-		{
-			if( m_mapChunks.contains( { px, pz } ) && !m_mapChunks[ { px, pz } ].hasMesh( ) )
+		for( int x = 0; x < 50; x++ )
+			for( int z = 0; z < 50; z++ )
 			{
-				m_pendingChunks.emplace_back( ivec2( px, pz ) );
+				m_pendingChunks.emplace_back( [ =, this ]( )
+											  { this->GenerateChunkMesh( { x, z } ); } );
 			}
-			m_lastPosition.x = px;
-			m_lastPosition.z = pz;
-		}
 	}
 
-	// TODO : Find a way to process firstly neighbors chunk and after that process main chunk(current chunk)
-	// the way is currently to process the chunks by one thread (instead of multi-threading)
-	void ChunkManager::LoadChunkNeighbors( const ivec2 &chunkPosition ) noexcept
+	/// <summary>
+	///	TODO: Need to update!!!
+	///	This function generates the current chunk and its 4 neighbors(left, right, top, bottom).
+	///	The main idea was to generate the current chunk and its neighbors and then render only the current chunk.
+	///	Whether the current chunk was generated or not(it already exists) it is marked as a renderable chunk.
+	/// </summary>
+	/// <param name="chunkPosition">The current chunk's position</param>
+	void ChunkManager::GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept
 	{
 		AdjacentChunk adjacentChunk{ chunkPosition };
+		ChunkSection  middleChunk{ chunkPosition };
+		auto		 *pMiddleChunk = &middleChunk;
 
-		ChunkSection middleChunk{ chunkPosition };
-		ChunkSection chunkLeft{ adjacentChunk.left };
-		ChunkSection chunkRight{ adjacentChunk.right };
-		ChunkSection chunkTop{ adjacentChunk.top };
-		ChunkSection chunkBottom{ adjacentChunk.bottom };
-
-		// set current chunk's neighbors
-		middleChunk.setNeighbor( NeighborType::Left, chunkLeft );
-		middleChunk.setNeighbor( NeighborType::Right, chunkRight );
-		middleChunk.setNeighbor( NeighborType::Top, chunkTop );
-		middleChunk.setNeighbor( NeighborType::Bottom, chunkBottom );
-
-		// make sure that the neighbors have set the middle neighbor
-		chunkLeft.setNeighbor( NeighborType::Right, middleChunk );
-		chunkRight.setNeighbor( NeighborType::Left, middleChunk );
-		chunkTop.setNeighbor( NeighborType::Bottom, middleChunk );
-		chunkBottom.setNeighbor( NeighborType::Top, middleChunk );
-
-		// update m_pending with chunk vec2 positions and insert current chunk and its neighbors
-		if( !m_mapChunks.contains( adjacentChunk.top ) )
+		if( m_mapChunks.contains( chunkPosition ) )
 		{
-			m_mapChunks.emplace( adjacentChunk.top, chunkTop );
-			m_pendingChunks.emplace_back( adjacentChunk.top );
+			pMiddleChunk = &m_mapChunks[ chunkPosition ];
 		}
 
-		if( !m_mapChunks.contains( adjacentChunk.bottom ) )
+		// Top Chunk
+		if( !m_mapChunks.contains( adjacentChunk.front ) )
 		{
-			m_mapChunks.emplace( adjacentChunk.bottom, chunkBottom );
-			m_pendingChunks.emplace_back( adjacentChunk.bottom );
+			m_mapChunks.emplace( adjacentChunk.front, ChunkSection{ adjacentChunk.front } );
+			auto &chunk = m_mapChunks[ adjacentChunk.front ];
+			GenerateNewChunk( chunk );
+			pMiddleChunk->setNeighbor( NeighborType::Front, chunk );
+		}
+		else
+		{
+			auto &chunk = m_mapChunks[ adjacentChunk.front ];
+			pMiddleChunk->setNeighbor( NeighborType::Front, chunk );
 		}
 
+		// Bottom Chunk
+		if( !m_mapChunks.contains( adjacentChunk.back ) )
+		{
+			m_mapChunks.emplace( adjacentChunk.back, ChunkSection{ adjacentChunk.back } );
+			auto &chunk = m_mapChunks[ adjacentChunk.back ];
+			GenerateNewChunk( chunk );
+			pMiddleChunk->setNeighbor( NeighborType::Back, chunk );
+		}
+		else
+		{
+			auto &chunk = m_mapChunks[ adjacentChunk.back ];
+			pMiddleChunk->setNeighbor( NeighborType::Back, chunk );
+		}
+
+		// Left Chunk
 		if( !m_mapChunks.contains( adjacentChunk.left ) )
 		{
-			m_mapChunks.emplace( adjacentChunk.left, chunkLeft );
-			m_pendingChunks.emplace_back( adjacentChunk.left );
+			m_mapChunks.emplace( adjacentChunk.left, ChunkSection{ adjacentChunk.left } );
+			auto &chunk = m_mapChunks[ adjacentChunk.left ];
+			GenerateNewChunk( chunk );
+			pMiddleChunk->setNeighbor( NeighborType::Left, chunk );
+		}
+		else
+		{
+			auto &chunk = m_mapChunks[ adjacentChunk.left ];
+			pMiddleChunk->setNeighbor( NeighborType::Left, chunk );
 		}
 
+		// Right Chunk
 		if( !m_mapChunks.contains( adjacentChunk.right ) )
 		{
-			m_mapChunks.emplace( adjacentChunk.right, chunkRight );
-			m_pendingChunks.emplace_back( adjacentChunk.right );
+			m_mapChunks.emplace( adjacentChunk.right, ChunkSection{ adjacentChunk.right } );
+			auto &chunk = m_mapChunks[ adjacentChunk.right ];
+			GenerateNewChunk( chunk );
+			pMiddleChunk->setNeighbor( NeighborType::Right, chunk );
+		}
+		else
+		{
+			auto &chunk = m_mapChunks[ adjacentChunk.right ];
+			pMiddleChunk->setNeighbor( NeighborType::Right, chunk );
 		}
 
 		if( !m_mapChunks.contains( chunkPosition ) )
 		{
 			m_mapChunks.emplace( chunkPosition, middleChunk );
-			m_pendingChunks.emplace_back( chunkPosition );
+			pMiddleChunk = &m_mapChunks[ chunkPosition ]; // take the pointer from m_mapChunks map not from the local chunk
 		}
+		GenerateNewChunk( *pMiddleChunk, true );
+		pMiddleChunk->setRenderableChunk( );
 	}
 
 	void ChunkManager::Update( const ivec3 &currentPosition )
 	{
-		// LoadPendingChunks( currentPosition );
-
-		for( const auto &pchunk : m_pendingChunks )
+		for( const auto &chunk : m_pendingChunks )
 		{
-			if( !m_mapChunks[ pchunk ].hasMesh( ) )
-			{
-				std::cout << pchunk.x << ' ' << pchunk.y << ' ';
-				// m_pTaskSystem->Async( [ & ]
-				//{ GenerateNewChunk( m_mapChunks[ pchunk ] ); } );
-				GenerateNewChunk( m_mapChunks[ pchunk ] );
-			}
+			chunk( );
 		}
 		m_pendingChunks.clear( );
 
@@ -136,17 +142,17 @@ namespace Nocturn::rendering
 	{
 		for( const auto &[ first, second ] : m_mapChunks )
 		{
-			if( m_mapChunks[ first ].hasMesh( ) )
+			if( m_mapChunks[ first ].shouldToRender( ) )
 			{
-				chunkRender.add( second.getRenderInfo( ) );
+				auto renderInfo = second.getRenderInfo( );
+				chunkRender.add( renderInfo );
 			}
 		}
 		chunkRender.render( camera );
 	}
 
-	void ChunkManager::GenerateNewChunk( ChunkSection &chunk ) const noexcept
+	void ChunkManager::GenerateNewChunk( ChunkSection &chunk, const bool shouldToCreateMesh ) const noexcept
 	{
-		// WARNING ! : Multi-threading section
 		const Noise noise( m_noiseParams, 2432 );
 
 		const auto pchunk = chunk.getLocation( );
@@ -168,8 +174,9 @@ namespace Nocturn::rendering
 			}
 		}
 
-		chunk.createChunk( );
-
-		std::cout << "\nExit";
+		if( shouldToCreateMesh )
+		{
+			chunk.createChunk( );
+		}
 	}
 } // namespace Nocturn::rendering

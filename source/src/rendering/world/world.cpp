@@ -6,7 +6,7 @@ namespace Nocturn
 {
 	void World::Init( )
 	{
-		m_taskSystem   = std::make_unique< TaskSystem >( 7 );
+		m_taskSystem   = std::make_unique< TaskSystem >( 1 );
 		m_skyboxRender = std::make_unique< SkyboxRendering >( );
 		m_camera	   = std::make_unique< Camera >( );
 		m_chunk		   = std::make_unique< ChunkManager >( *m_taskSystem );

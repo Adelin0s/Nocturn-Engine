@@ -95,7 +95,7 @@ target_link_libraries(NocturnProject
 	stb_static
 )
 
-set_property(TARGET NocturnProject PROPERTY CXX_STANDARD 17)
+set_property(TARGET NocturnProject PROPERTY CXX_STANDARD 20)
 
 source_group("/" FILES ${_root_files})
 

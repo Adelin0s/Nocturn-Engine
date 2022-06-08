@@ -62,8 +62,8 @@ namespace Nocturn::rendering
 	{
 		Left = 0,
 		Right,
-		Top,
-		Bottom
+		Front,
+		Back
 	};
 
 	struct Neighbor
@@ -72,36 +72,29 @@ namespace Nocturn::rendering
 		ChunkSection *right	 = nullptr;
 		ChunkSection *top	 = nullptr;
 		ChunkSection *bottom = nullptr;
+	};
 
-		ChunkSection *operator[]( NeighborType type ) const noexcept
-		{
-		}
+	struct AdjacentChunk
+	{
+		AdjacentChunk( const int32 x, const int32 z ) noexcept;
+		AdjacentChunk( const ivec2 &vec ) noexcept;
 
-		void Increase( ) noexcept
-		{
-			if( counts < 4 )
-				counts++;
-		}
-
-		NODISCARD bool IsAllSet( ) const noexcept
-		{
-			return counts == 4;
-		}
-
-		void Reset( ) noexcept
-		{
-			counts = 0;
-		}
-
-	private:
-		uint8 counts = 0;
+		ivec2 front;
+		ivec2 back;
+		ivec2 left;
+		ivec2 right;
 	};
 
 	class ChunkSection
 	{
 	public:
-		ChunkSection( ) noexcept = default;
+		ChunkSection( ) noexcept
+		{
+			std::cout << "ChunkSection: default-ctor\n";
+		}
+
 		explicit ChunkSection( const ivec2 &location );
+		// TODO: Investigate the behavior of the default constructor
 		ChunkSection( const ChunkSection &chunk ) = default;
 		ChunkSection( ChunkSection &&chunk )	  = delete;
 
@@ -113,6 +106,7 @@ namespace Nocturn::rendering
 		void setBlock( const BlockId id, const ivec3 &position );
 		void setBlock( const BlockId id, const int32 x, const int32 y, const int32 z );
 		void setNeighbor( const NeighborType type, ChunkSection &chunk ) noexcept;
+		void setRenderableChunk( ) noexcept;
 
 		NODISCARD ivec2				   getLocation( ) const;
 		NODISCARD const RenderInfo	   &getRenderInfo( ) const;
@@ -120,9 +114,12 @@ namespace Nocturn::rendering
 		NODISCARD ChunkLayer		   getLayer( const int y ) const;
 		NODISCARD Block				   getBlock( const int32_t x, const int32_t y, const int32_t z ) const noexcept;
 		NODISCARD Block				   getBlock( const ivec3 &coords ) const noexcept;
-		NODISCARD ChunkSection const	 *tryGetNeighbor( NeighborType type ) const noexcept;
+		NODISCARD Block				   getAdjacentBlock( const ivec3 &coords ) const noexcept;
+		NODISCARD ChunkSection		   *tryGetNeighbor( const NeighborType type ) const noexcept;
 		NODISCARD bool				   hasMesh( ) const noexcept;
 		NODISCARD bool				   hasLoaded( ) const noexcept;
+		NODISCARD bool				   shouldToRender( ) const noexcept;
+		NODISCARD bool				   isRenderable( ) const noexcept;
 
 		void createChunk( );
 		void loadBufferData( );
@@ -135,12 +132,14 @@ namespace Nocturn::rendering
 
 		~ChunkSection( ) noexcept = default;
 
+		ChunkBlockMap m_chunk;
+
 	private:
-		ChunkBlockMap					  m_chunk;
 		ChunkMesh						  m_mesh;
 		Neighbor						  m_neighbor;
 		std::array< ChunkLayer, CHUNK_Y > m_layers;
 		ivec2							  m_location; /* chunk position */
+		bool							  m_renderableChunk = false;
 
 		static bool outOfBound( const int32_t x, const int32_t y, const int32_t z ) noexcept;
 	};

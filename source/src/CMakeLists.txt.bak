@@ -36,7 +36,7 @@ file(GLOB _rendering_renderer_files					LIST_DIRECTORIES false "${_src_root_path
 file(GLOB _rendering_world_files					LIST_DIRECTORIES false "${_src_root_path}/rendering/world/*.h" "${_src_root_path}/rendering/world/*.hpp" "${_src_root_path}/rendering/world/*.cpp")
 file(GLOB _rendering_world_block_files				LIST_DIRECTORIES false "${_src_root_path}/rendering/world/block/*.h" "${_src_root_path}/rendering/world/block/*.hpp" "${_src_root_path}/rendering/world/block/*.cpp")
 file(GLOB _rendering_world_chunk_files				LIST_DIRECTORIES false "${_src_root_path}/rendering/world/chunk/*.h" "${_src_root_path}/rendering/world/chunk/*.hpp" "${_src_root_path}/rendering/world/chunk/*.cpp")
-file(GLOB _rendering_world_generation_files			LIST_DIRECTORIES false "${_src_root_path}/rendering/world/generation/*.h" "${_src_root_path}/rendering/world/generation/*.cpp")
+file(GLOB _rendering_world_generation_files			LIST_DIRECTORIES false "${_src_root_path}/rendering/world/generation/*.h" "${_src_root_path}/rendering/world/generation/*.hpp" "${_src_root_path}/rendering/world/generation/*.cpp")
 
 add_executable(NocturnProject
 	${_root_files}

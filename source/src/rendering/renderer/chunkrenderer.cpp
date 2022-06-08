@@ -22,8 +22,6 @@ namespace Nocturn::rendering
 		if( m_chunks.empty( ) )
 			return;
 
-		BlockDatabase::getInstance( ).textureAtlas.bind( );
-		BlockDatabase::getInstance( ).textureAtlas.load( );
 		m_shader.activate( );
 		m_shader.setProjectionMatrix( camera );
 		m_shader.setViewMatrix( camera );
