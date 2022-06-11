@@ -11,42 +11,45 @@
 
 #include <glm/glm.hpp>
 
-namespace Nocturn::core
+#include "core/platform/platform.h"
+#include "core/types/typedef.hpp"
+
+namespace Nocturn
 {
-    class Rigidbody
-    {
-    public:
-        Rigidbody() noexcept;
-        Rigidbody(float mass, const glm::vec3 &position, const glm::vec3 &velocity, const glm::vec3 &acceleration);
-        Rigidbody(const Rigidbody &rigidbody) = default; /* default behaviour  */
-        Rigidbody(Rigidbody &&) = delete;
+	class Rigidbody
+	{
+	public:
+		Rigidbody( ) noexcept;
+		Rigidbody( float mass, const glm::vec3 &position, const glm::vec3 &velocity, const glm::vec3 &acceleration );
+		Rigidbody( const Rigidbody &rigidbody ) = default; /* default behaviour  */
+		Rigidbody( Rigidbody && )				= delete;
 
-        Rigidbody &operator=(const Rigidbody &) = delete;
-        Rigidbody &operator=(Rigidbody &&) = delete;
+		Rigidbody &operator=( const Rigidbody & ) = delete;
+		Rigidbody &operator=( Rigidbody && ) = delete;
 
-        /* void setPosition(const glm::vec3 &position); */
-        /* void setVelocity(const glm::vec3 &velocity); */
-        /* void setAcceleration(const glm::vec3 &acceleration); */
+		/* void setPosition(const glm::vec3 &position); */
+		/* void setVelocity(const glm::vec3 &velocity); */
+		/* void setAcceleration(const glm::vec3 &acceleration); */
 
-        const glm::vec3 &getPosition() const;
+		NODISCARD const glm::vec3 &GetPosition( ) const noexcept;
 
-        void update(float dt);
-        void applyForce(const glm::vec3 &force);
-        void applyForce(const glm::vec3 &direction, const float magnitude);
-        void applyAcceleration(const glm::vec3 &acceleration);
-        void applyAcceleration(const glm::vec3 &direction, const float magnitude);
-        void applyImpulse(const glm::vec3 &force, float dt);
-        void applyImpulse(const glm::vec3 &direction, const float magnitude, const float dt);
-        void transferEnergy(float joule, glm::vec3 direction);
+		void Update( const double dt );
+		void ApplyForce( const glm::vec3 &force );
+		void ApplyForce( const glm::vec3 &direction, const float magnitude );
+		void ApplyAcceleration( const glm::vec3 &acceleration );
+		void ApplyAcceleration( const glm::vec3 &direction, const float magnitude );
+		void ApplyImpulse( const glm::vec3 &force, double dt );
+		void ApplyImpulse( const glm::vec3 &direction, const float magnitude, const double dt );
+		void TransferEnergy( const float joules, const glm::vec3 direction );
 
-        ~Rigidbody() = default;
+		~Rigidbody( ) noexcept = default;
 
-    private:
-        float m_mass;
+	private:
+		vec3 m_position;
+		vec3 m_velocity;
+		vec3 m_acceleration;
 
-        glm::vec3 m_position;
-        glm::vec3 m_velocity;
-        glm::vec3 m_acceleration;
-    };
-}
+		float m_mass;
+	};
+} // namespace Nocturn
 #endif

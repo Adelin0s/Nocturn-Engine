@@ -44,7 +44,7 @@ namespace Nocturn
 		Camera &operator=( const Camera & ) = delete;
 		Camera &operator=( Camera && ) = delete;
 
-		void processInput( const double dt );
+		void Update( const double dt );
 
 		void updateCameraPosition( const CameraDirection movement, const double deltaTime ) noexcept;
 		void updateCameraPosition( const glm::vec3 &cameraPosition ) noexcept;
@@ -58,15 +58,17 @@ namespace Nocturn
 		~Camera( ) noexcept = default;
 
 	private:
-		float  m_pitch;
-		float  m_yaw;
+		double m_pitch;
+		double m_yaw;
 		double m_speed;
-		float  m_sensitivity;
+		double m_sensitivity;
 
 		glm::vec3 m_cameraPosition;
 		glm::vec3 m_cameraFront;
 		glm::vec3 m_cameraUp;
 		glm::vec3 m_cameraRight;
+
+		void CheckForKeyInput( const double dt ) noexcept;
 	};
 } // namespace Nocturn
 #endif

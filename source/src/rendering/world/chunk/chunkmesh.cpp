@@ -120,6 +120,20 @@ namespace Nocturn::rendering
 		return m_hasLoaded;
 	}
 
+	void ChunkMesh::DeleteMesh( ) noexcept
+	{
+		if( m_hasMesh )
+		{
+			m_index		= 0;
+			m_faces		= 0;
+			m_hasLoaded = false;
+			m_hasMesh	= false;
+
+			m_mesh.clear( );
+			m_model.deleteData( );
+		}
+	}
+
 	void ChunkMesh::makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const ivec3 &adjBlock )
 	{
 		if( shouldMakeFace( blockPosition, adjBlock ) )

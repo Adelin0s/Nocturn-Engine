@@ -5,33 +5,29 @@
 
 namespace Nocturn
 {
-	Camera::Camera( ) noexcept
-		:
-		m_cameraPosition( glm::vec3( 0.0f, 260.0f, 2.0f ) ), m_cameraFront( glm::vec3( 0.0f, 0.0f, -1.0f ) ), m_cameraUp( glm::vec3( 0.0f, 1.0f, 0.0f ) ), m_yaw( 30.0f ), m_pitch( -20.0f ), m_sensitivity( 0.1f ), m_speed( 10.0f )
+	Camera::Camera( ) noexcept :
+		m_pitch( -20.0 ),
+		m_yaw( 30.0 ),
+		m_speed( 10.0 ),
+		m_sensitivity( 0.1 ),
+		m_cameraPosition( glm::vec3( 0.0f, 60.0f, 2.0f ) ),
+		m_cameraFront( glm::vec3( 0.0f, 0.0f, -1.0f ) ),
+		m_cameraUp( glm::vec3( 0.0f, 1.0f, 0.0f ) ),
+		m_cameraRight( glm::vec3( 0.0f, 0.0f, 0.0f ) )
 	{
 		updateCameraVectors( );
 	}
 
-	void Camera::processInput( const double dt )
+	void Camera::Update( const double dt )
 	{
-		double dx = Mouse::getDx( );
-		double dy = Mouse::getDy( );
+		const double dx = Mouse::getDx( );
+		const double dy = Mouse::getDy( );
 		if( dx || dy )
 		{
 			updateCameraDirection( dx, dy );
 		}
-		if( Keyboard::key( GLFW_KEY_W ) )
-			updateCameraPosition( CameraDirection::Forward, dt );
-		if( Keyboard::key( GLFW_KEY_S ) )
-			updateCameraPosition( CameraDirection::Backward, dt );
-		if( Keyboard::key( GLFW_KEY_A ) )
-			updateCameraPosition( CameraDirection::Left, dt );
-		if( Keyboard::key( GLFW_KEY_D ) )
-			updateCameraPosition( CameraDirection::Right, dt );
-		if( Keyboard::key( GLFW_KEY_E ) )
-			updateCameraPosition( CameraDirection::Up, dt );
-		if( Keyboard::key( GLFW_KEY_Q ) )
-			updateCameraPosition( CameraDirection::Down, dt );
+
+		CheckForKeyInput( dt );
 	}
 
 	void Camera::updateCameraDirection( double dx, double dy ) noexcept
@@ -42,10 +38,10 @@ namespace Nocturn
 		m_yaw += dx;
 		m_pitch += dy;
 
-		if( m_pitch > 89.0f )
-			m_pitch = 89.0f;
-		if( m_pitch < -89.0f )
-			m_pitch = -89.0f;
+		if( m_pitch > 89.0 )
+			m_pitch = 89.0;
+		if( m_pitch < -89.0 )
+			m_pitch = -89.0;
 
 		updateCameraVectors( );
 	}
@@ -113,5 +109,21 @@ namespace Nocturn
 	glm::vec3 Camera::getCameraPosition( ) const noexcept
 	{
 		return m_cameraPosition;
+	}
+
+	void Camera::CheckForKeyInput( const double dt ) noexcept
+	{
+		if( Keyboard::key( GLFW_KEY_W ) )
+			updateCameraPosition( CameraDirection::Forward, dt );
+		if( Keyboard::key( GLFW_KEY_S ) )
+			updateCameraPosition( CameraDirection::Backward, dt );
+		if( Keyboard::key( GLFW_KEY_A ) )
+			updateCameraPosition( CameraDirection::Left, dt );
+		if( Keyboard::key( GLFW_KEY_D ) )
+			updateCameraPosition( CameraDirection::Right, dt );
+		if( Keyboard::key( GLFW_KEY_E ) )
+			updateCameraPosition( CameraDirection::Up, dt );
+		if( Keyboard::key( GLFW_KEY_Q ) )
+			updateCameraPosition( CameraDirection::Down, dt );
 	}
 } // namespace Nocturn

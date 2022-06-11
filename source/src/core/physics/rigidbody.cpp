@@ -1,74 +1,75 @@
 #include "rigidbody.h"
 
 #include <cmath>
+#include <iostream>
 
-namespace Nocturn::core
+namespace Nocturn
 {
-    Rigidbody::Rigidbody() noexcept
-    :   m_mass                               	(1.0f)
-    ,   m_position								(0.0f)
-    ,   m_velocity                            	(0.0f)
-    ,   m_acceleration                        	(0.0f)
-    { }
+	Rigidbody::Rigidbody( ) noexcept :
+		m_position( 0.0f ),
+		m_velocity( 0 ),
+		m_acceleration( 0 ),
+		m_mass( 1.0f )
+	{}
 
-    Rigidbody::Rigidbody(float mass, const glm::vec3 &position, const glm::vec3 &velocity, const glm::vec3 &acceleration)
-    :   m_mass									(mass)
-    ,   m_position                              (position)
-    ,   m_velocity                              (velocity)
-    ,   m_acceleration                          (acceleration) 
-    { }
+	Rigidbody::Rigidbody( float mass, const glm::vec3 &position, const glm::vec3 &velocity, const glm::vec3 &acceleration ) :
+		m_mass( mass ), m_position( position ), m_velocity( velocity ), m_acceleration( acceleration )
+	{}
 
-    const glm::vec3 &Rigidbody::getPosition() const
-    {
-        return m_position;
-    }
+	const glm::vec3 &Rigidbody::GetPosition( ) const noexcept
+	{
+		return m_position;
+	}
 
-    void Rigidbody::update(float dt)
-    {
-        m_position += m_velocity * dt + 0.5f * m_acceleration * (dt * dt);
-        m_velocity += m_acceleration * dt;
-    }
+	void Rigidbody::Update( const double dt )
+	{
+		// TODO: Update vec3(float) to vec3(double)
+		const auto fdt = static_cast< float >( dt );
 
-    void Rigidbody::applyForce(const glm::vec3 &force)
-    {
-        m_acceleration += force / m_mass;
-    }
+		m_position += m_velocity * fdt + 0.5f * m_acceleration * ( fdt * fdt );
+		m_velocity += m_acceleration * fdt;
+	}
 
-    void Rigidbody::applyForce(const glm::vec3 &direction, const float magnitude)
-    {
-        applyForce(direction * magnitude);
-    }
+	void Rigidbody::ApplyForce( const glm::vec3 &force )
+	{
+		m_acceleration += force / m_mass;
+	}
 
-    void Rigidbody::applyAcceleration(const glm::vec3 &acceleration)
-    {
-        m_acceleration += acceleration;
-    }
+	void Rigidbody::ApplyForce( const glm::vec3 &direction, const float magnitude )
+	{
+		ApplyForce( direction * magnitude );
+	}
 
-    void Rigidbody::applyAcceleration(const glm::vec3 &direction, const float magnitude)
-    {
-        applyForce(direction * magnitude);
-    }
+	void Rigidbody::ApplyAcceleration( const glm::vec3 &acceleration )
+	{
+		m_acceleration += acceleration;
+	}
 
-    void Rigidbody::applyImpulse(const glm::vec3 &force, const float dt)
-    {
-        m_velocity += force / m_mass * dt;
-    }
+	void Rigidbody::ApplyAcceleration( const glm::vec3 &direction, const float magnitude )
+	{
+		ApplyForce( direction * magnitude );
+	}
 
-    void Rigidbody::applyImpulse(const glm::vec3 &direction, const float magnitude, const float dt)
-    {
-        applyImpulse(direction * magnitude, dt);
-    }
+	void Rigidbody::ApplyImpulse( const glm::vec3 &force, const double dt )
+	{
+		m_velocity += force / m_mass * static_cast< float >( dt );
+	}
 
-    void Rigidbody::transferEnergy(float joules, glm::vec3 direction)
-    {
-        if (joules == 0)
-        {
-            return;
-        }
+	void Rigidbody::ApplyImpulse( const glm::vec3 &direction, const float magnitude, const double dt )
+	{
+		ApplyImpulse( direction * magnitude, dt );
+	}
 
-        // comes from formula: KE = 1/2 * m * v^2
-        glm::vec3 deltaV = direction * (float)sqrt(2 * std::abs(joules) / m_mass);
+	void Rigidbody::TransferEnergy( const float joules, const glm::vec3 direction )
+	{
+		if( joules == 0.f )
+		{
+			return;
+		}
 
-        m_velocity += joules > 0 ? deltaV : -deltaV;
-    }
-}
+		// comes from formula: KE = 1/2 * m * v^2
+		const glm::vec3 deltaV = direction * sqrt( 2 * std::abs( joules ) / m_mass );
+
+		m_velocity += joules > 0 ? deltaV : -deltaV;
+	}
+} // namespace Nocturn

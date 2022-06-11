@@ -26,9 +26,8 @@ namespace Nocturn::rendering
 		ChunkRendering &operator=( const ChunkRendering & ) = delete;
 		ChunkRendering &operator=( ChunkRendering && ) = delete;
 
-		void init( );
-		void add( const RenderInfo &renderInfo );
-		// void			 add( const RenderInfo &renderInfo );
+		void			 init( );
+		void			 add( const RenderInfo &renderInfo );
 		NODISCARD size_t size( ) const noexcept;
 		void			 render( const Camera &camera );
 

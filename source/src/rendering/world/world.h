@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "application/config/config.hpp"
+#include "application/player/player.h"
 
 #include "core/async/task.h"
 
@@ -36,9 +37,9 @@ namespace Nocturn
 		~World( ) noexcept = default;
 
 	private:
+		Player							   m_player;
 		ChunkRendering					   m_chunkRender;
 		std::unique_ptr< SkyboxRendering > m_skyboxRender;
-		std::unique_ptr< Camera >		   m_camera;
 		std::unique_ptr< ChunkManager >	   m_chunk;
 		std::unique_ptr< TaskSystem >	   m_taskSystem;
 	};

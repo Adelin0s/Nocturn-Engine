@@ -10,15 +10,38 @@
 #define PLAYER_H
 
 #include "core/physics/rigidbody.h"
+#include "rendering/data/camera.h"
 
 namespace Nocturn
 {
-    class Player
-    {
-        void update(const float dt);
+	struct Entity
+	{
+	};
 
-        core::Rigidbody m_rigidbody;
-    };
-}
+	class Player: public Entity
+	{
+	public:
+		Player( ) noexcept;
 
-#endif 
+		Player( const Player &player ) = delete;
+		Player( Player &&player )	   = delete;
+
+		Player &operator=( const Player &player ) = delete;
+		Player &operator=( Player &&player ) = delete;
+
+		NODISCARD vec3			GetPlayerPosition( ) const noexcept;
+		NODISCARD const Camera &GetCamera( ) const noexcept;
+
+		void Init( ) noexcept;
+		void Update( const double dt );
+
+		~Player( ) noexcept = default;
+
+	private:
+		vec3					  m_position;
+		std::unique_ptr< Camera > m_camera;
+		// Rigidbody				  m_rigidbody; inactive
+	};
+} // namespace Nocturn
+
+#endif

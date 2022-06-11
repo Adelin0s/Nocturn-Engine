@@ -62,6 +62,7 @@ namespace Nocturn::rendering
 		void				   loadBufferData( );
 		NODISCARD bool		   hasMesh( ) const noexcept;
 		NODISCARD bool		   hasLoaded( ) const noexcept;
+		void				   DeleteMesh( ) noexcept;
 
 		~ChunkMesh( ) noexcept = default;
 

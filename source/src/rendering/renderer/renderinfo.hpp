@@ -13,16 +13,16 @@
 
 namespace Nocturn::rendering
 {
-    struct RenderInfo
-    {
-        uint32_t indicesCount = 0;
-        uint32_t vao = 0;
+	struct RenderInfo
+	{
+		uint32_t indicesCount = 0;
+		uint32_t vao		  = 0;
 
-        inline void reset()
-        {
-            vao = 0;
-        }
-    };
-}
+		void reset( )
+		{
+			vao = 0;
+		}
+	};
+} // namespace Nocturn::rendering
 
-#endif 
+#endif

@@ -8,24 +8,25 @@ namespace Nocturn
 	{
 		m_taskSystem   = std::make_unique< TaskSystem >( 1 );
 		m_skyboxRender = std::make_unique< SkyboxRendering >( );
-		m_camera	   = std::make_unique< Camera >( );
 		m_chunk		   = std::make_unique< ChunkManager >( *m_taskSystem );
 
 		m_skyboxRender->init( );
 		m_chunkRender.init( );
+		m_player.Init( );
 	}
 
 	void World::Update( const double dt )
 	{
-		m_camera->processInput( dt );
+		m_player.Update( dt );
+		auto pos = m_player.GetPlayerPosition( );
 
-		const auto currentPosition = static_cast< ivec3 >( m_camera->getCameraPosition( ) );
+		const auto currentPosition = static_cast< ivec3 >( m_player.GetPlayerPosition( ) );
 
 		m_chunk->Update( currentPosition );
 
-		m_skyboxRender->render( *m_camera );
+		m_skyboxRender->render( m_player.GetCamera( ) );
 
-		m_chunk->Render( *m_camera, m_chunkRender );
+		m_chunk->Render( m_player.GetCamera( ), m_chunkRender );
 	}
 
 	void World::Free( )

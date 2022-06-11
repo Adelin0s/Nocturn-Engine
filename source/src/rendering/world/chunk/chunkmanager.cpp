@@ -30,8 +30,8 @@ namespace Nocturn::rendering
 		m_noiseParams.offset	 = 10;
 		m_noiseParams.roughness	 = 0.51;
 
-		for( int x = 0; x < 50; x++ )
-			for( int z = 0; z < 50; z++ )
+		for( int x = 0; x < 2; x++ )
+			for( int z = 0; z < 2; z++ )
 			{
 				m_pendingChunks.emplace_back( [ =, this ]( )
 											  { this->GenerateChunkMesh( { x, z } ); } );
@@ -121,6 +121,9 @@ namespace Nocturn::rendering
 		pMiddleChunk->setRenderableChunk( );
 	}
 
+	int x = 1;
+	int y = 35;
+
 	void ChunkManager::Update( const ivec3 &currentPosition )
 	{
 		for( const auto &chunk : m_pendingChunks )
@@ -128,6 +131,22 @@ namespace Nocturn::rendering
 			chunk( );
 		}
 		m_pendingChunks.clear( );
+
+		if( Keyboard::keyWentDown( GLFW_KEY_B ) )
+		{
+			auto &chunk = m_mapChunks[ { 0, 0 } ];
+			chunk.DeleteMesh( );
+			chunk.setBlock( BlockId::Air, 3, y--, 1 );
+			chunk.createChunk( );
+		}
+
+		if( Keyboard::keyWentDown( GLFW_KEY_SPACE ) )
+		{
+			auto &chunk = m_mapChunks[ { 0, 0 } ];
+			chunk.DeleteMesh( );
+			chunk.setBlock( BlockId::OakBark, x++, 35, 1 );
+			chunk.createChunk( );
+		}
 
 		for( const auto &[ first, second ] : m_mapChunks )
 		{

@@ -1,10 +1,12 @@
 #include "core/GL/GLFunctions.h"
 
+#include <iostream>
+
 namespace Nocturn::GL
 {
 	void drawElements( const uint32_t indicesCount ) noexcept
 	{
-		glDrawElements( GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr );
+		glDrawElements( GL_LINES, indicesCount, GL_UNSIGNED_INT, nullptr );
 	}
 
 	void drawArraysInstanced( const uint32_t instance_count ) noexcept

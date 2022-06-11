@@ -22,7 +22,7 @@ namespace Nocturn::rendering
 		glBindVertexArray( m_renderInfo.vao );
 	}
 
-	void Model::addData( Mesh &mesh )
+	void Model::addData( const Mesh &mesh )
 	{
 		generateVAO( );
 
@@ -31,7 +31,7 @@ namespace Nocturn::rendering
 		addEBO( mesh.indices );
 	}
 
-	void Model::addVBO( const int size, std::vector< float > &data )
+	void Model::addVBO( const int size, const std::vector< float > &data )
 	{
 		uint32_t vbo;
 		glGenBuffers( 1, &vbo );
@@ -46,7 +46,7 @@ namespace Nocturn::rendering
 		m_buffers.push_back( vbo );
 	}
 
-	void Model::addEBO( std::vector< uint32_t > &indices )
+	void Model::addEBO( const std::vector< uint32_t > &indices )
 	{
 		m_renderInfo.indicesCount = indices.size( );
 		uint32_t ebo;
@@ -69,7 +69,7 @@ namespace Nocturn::rendering
 	{
 		if( m_renderInfo.vao )
 			glDeleteVertexArrays( 1, &m_renderInfo.vao );
-		if( m_buffers.size( ) > 0 )
+		if( !m_buffers.empty( ) )
 			glDeleteBuffers( static_cast< GLsizei >( m_buffers.size( ) ), m_buffers.data( ) );
 
 		m_buffers.clear( );
@@ -78,7 +78,7 @@ namespace Nocturn::rendering
 		m_renderInfo.reset( );
 	}
 
-	Model::~Model( )
+	Model::~Model( ) noexcept
 	{
 		deleteData( );
 	}

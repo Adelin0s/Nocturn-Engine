@@ -9,34 +9,30 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
-#include <vector>
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace Nocturn::rendering
 {
-    using Vec3_t = glm::vec3;
-    using Coords_t = float;
-    using Indices_t = uint32_t;
+	struct Mesh
+	{
+		std::vector< float >	vertices;
+		std::vector< float >	textures;
+		std::vector< uint32_t > indices;
 
-    struct Mesh
-    {
-        std::vector<Coords_t> vertices;
-        std::vector<Coords_t> textures;
-        std::vector<Indices_t> indices;
+		void clear( )
+		{
+			vertices.clear( );
+			textures.clear( );
+			indices.clear( );
+		}
 
-        inline void clear()
-        {
-            vertices.clear();
-            textures.clear();
-            indices.clear();
-        }
-
-        inline void shrink()
-        {
-            vertices.shrink_to_fit();
-            textures.shrink_to_fit();
-            indices.shrink_to_fit();
-        }
-    };
-}
+		void shrink( )
+		{
+			vertices.shrink_to_fit( );
+			textures.shrink_to_fit( );
+			indices.shrink_to_fit( );
+		}
+	};
+} // namespace Nocturn::rendering
 #endif

@@ -20,7 +20,8 @@ namespace Nocturn::rendering
 	{
 		if( !outOfBound( x, y, z ) )
 		{
-			const auto block = m_chunk[ getSizeFromIndex( x, y, z ) ];
+			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;
+			/*const auto block = m_chunk[ getSizeFromIndex( x, y, z ) ];
 
 			if( BlockId::Air == block && id != BlockId::Air )
 			{
@@ -30,7 +31,7 @@ namespace Nocturn::rendering
 			if( BlockId::Air != block && BlockId::Air == id )
 				m_layers[ y ].Decrease( );
 
-			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;
+			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;*/
 		}
 	}
 
@@ -97,7 +98,7 @@ namespace Nocturn::rendering
 		return m_location;
 	}
 
-	const ChunkBlockMap &ChunkSection::getChunk( ) const
+	const std::vector< Block > &ChunkSection::getChunk( ) const
 	{
 		return m_chunk;
 	}
@@ -229,6 +230,11 @@ namespace Nocturn::rendering
 	void ChunkSection::loadBufferData( )
 	{
 		m_mesh.loadBufferData( );
+	}
+
+	void ChunkSection::DeleteMesh( ) noexcept
+	{
+		m_mesh.DeleteMesh( );
 	}
 
 	void ChunkSection::render( ) const

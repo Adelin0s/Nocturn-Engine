@@ -9,8 +9,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 
 #include "core/platform/platform.h"
 #include "rendering/data/mesh.hpp"
@@ -19,33 +19,33 @@
 
 namespace Nocturn::rendering
 {
-    class Model
-    {
-    public:
-        Model() noexcept = default;
-        Model(const Model &model) = default;
-        Model(Model &&model) = delete;
+	class Model
+	{
+	public:
+		Model( ) noexcept			= default;
+		Model( const Model &model ) = default;
+		Model( Model &&model )		= delete;
 
-        Model &operator=(const Model &model) = delete;
-        Model &operator=(Model &&model) = delete;
+		Model &operator=( const Model &model ) = delete;
+		Model &operator=( Model &&model ) = delete;
 
-        void generateVAO();
-        void bindVAO() const noexcept;
-        void addData(Mesh &mesh);
-        void addVBO(const int size, std::vector<float> &data);
-        void addEBO(std::vector<uint32_t> &data);
+		void generateVAO( );
+		void bindVAO( ) const noexcept;
+		void addData( const Mesh &mesh );
+		void addVBO( const int size, const std::vector< float > &data );
+		void addEBO( const std::vector< uint32_t > &indices );
 
-        NODISCARD uint32_t getIndicesCount() const noexcept;
-        const RenderInfo &getRenderInfo() const;
+		NODISCARD uint32_t			getIndicesCount( ) const noexcept;
+		NODISCARD const RenderInfo &getRenderInfo( ) const;
 
-        void deleteData();
+		void deleteData( );
 
-        ~Model() noexcept;
+		~Model( ) noexcept;
 
-    private:
-        RenderInfo m_renderInfo;
-        uint32_t m_vboIndex = 0;
-        std::vector<uint32_t> m_buffers;
-    };
-}
+	private:
+		RenderInfo				m_renderInfo;
+		uint32_t				m_vboIndex = 0;
+		std::vector< uint32_t > m_buffers;
+	};
+} // namespace Nocturn::rendering
 #endif
