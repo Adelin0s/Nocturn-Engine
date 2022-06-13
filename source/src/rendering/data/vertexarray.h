@@ -17,28 +17,31 @@
 
 namespace Nocturn::rendering
 {
-    class VertexArray
-    {
-    public:
-        VertexArray() noexcept = default;
+	class VertexArray
+	{
+	public:
+		VertexArray( ) noexcept = default;
 
-        ~VertexArray() noexcept = default;
+		~VertexArray( ) noexcept = default;
 
-        void generate() noexcept;
-        static void bind() noexcept;
-        void cleanup() noexcept;
-        void draw(const GLenum mode, const int32_t first, const uint32_t count, const uint32_t instance_count = 1);
+		void		generate( ) noexcept;
+		static void bind( ) noexcept;
+		void		cleanup( ) noexcept;
+		void		draw( const GLenum mode, const int32_t first, const uint32_t count, const uint32_t instance_count = 1 );
 
-        Buffer &operator[](const char *key) noexcept;
+		Buffer &operator[]( const char *key ) noexcept;
 
-        void print_id() { std::cout << m_id << '\n'; }
+		void print_id( )
+		{
+			std::cout << m_id << '\n';
+		}
 
-        static void clear();
+		static void clear( );
 
-    private:
-        std::map<const char *, Buffer> m_buffers;
-        static uint32_t m_id;
-    };
-}
+	private:
+		std::map< const char *, Buffer > m_buffers;
+		static uint32_t					 m_id;
+	};
+} // namespace Nocturn::rendering
 
 #endif // VERTEX_ARRAY_H

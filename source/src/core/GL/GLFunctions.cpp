@@ -2,11 +2,19 @@
 
 #include <iostream>
 
+#include "application/input/keyboard.h"
+
 namespace Nocturn::GL
 {
 	void drawElements( const uint32_t indicesCount ) noexcept
 	{
-		glDrawElements( GL_LINES, indicesCount, GL_UNSIGNED_INT, nullptr );
+		if( Keyboard::keyWentDown( GLFW_KEY_P ) )
+			bDrawMode = !bDrawMode;
+
+		if( bDrawMode )
+			glDrawElements( GL_LINES, indicesCount, GL_UNSIGNED_INT, nullptr );
+		else
+			glDrawElements( GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr );
 	}
 
 	void drawArraysInstanced( const uint32_t instance_count ) noexcept

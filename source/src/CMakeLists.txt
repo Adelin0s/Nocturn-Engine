@@ -72,30 +72,20 @@ add_executable(NocturnProject
 
 include_directories(NocturnProject
 	"/"
-	"../libs/glad/include"
 	"../libs/stb/include"
 )
 
-add_library (glad_static STATIC
-	"../libs/glad/src/glad.c"
-	"../libs/glad/include/glad/glad.h" 
-	"../libs/glad/include/KHR/khrplatform.h"
-)
+target_link_libraries(NocturnProject PUBLIC glfw)
+target_link_libraries(NocturnProject PUBLIC glm)
+target_link_libraries(NocturnProject PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(NocturnProject PUBLIC glad)
+target_link_libraries(NocturnProject PUBLIC stb)
 
-add_library (stb_static STATIC
-	"../libs/stb/include/stb_image.h"
-	"../libs/stb/src/stb_image.cpp"
-)
-
-target_link_libraries(NocturnProject
-	glfw
-	glm::glm
-	nlohmann_json::nlohmann_json
-	glad_static
-	stb_static
-)
+set_target_properties(NocturnProject PROPERTIES FOLDER Nocturn)
 
 set_property(TARGET NocturnProject PROPERTY CXX_STANDARD 20)
+
+add_definitions(-DGLFW_INCLUDE_NONE)
 
 source_group("/" FILES ${_root_files})
 

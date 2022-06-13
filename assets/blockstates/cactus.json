@@ -1,5 +1,5 @@
 {
-    "name" : "cactus",
-    "id" : 8,
-    "texture_all" : [0, 0]
+  "name": "cactus",
+  "id": 8,
+  "texture_all": [ 9, 0 ]
 }

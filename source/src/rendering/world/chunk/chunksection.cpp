@@ -20,8 +20,7 @@ namespace Nocturn::rendering
 	{
 		if( !outOfBound( x, y, z ) )
 		{
-			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;
-			/*const auto block = m_chunk[ getSizeFromIndex( x, y, z ) ];
+			const auto block = m_chunk[ getSizeFromIndex( x, y, z ) ];
 
 			if( BlockId::Air == block && id != BlockId::Air )
 			{
@@ -31,7 +30,7 @@ namespace Nocturn::rendering
 			if( BlockId::Air != block && BlockId::Air == id )
 				m_layers[ y ].Decrease( );
 
-			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;*/
+			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;
 		}
 	}
 

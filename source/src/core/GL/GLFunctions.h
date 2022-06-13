@@ -9,14 +9,16 @@
 #ifndef GL_FUNCTIONS
 #define GL_FUNCTIONS
 
-#include <glad/glad.h>
 #include <cstdint>
+#include <glad/glad.h>
 
 namespace Nocturn::GL
 {
-	void drawElements(const uint32_t indicesCount) noexcept;
-	void drawArraysInstanced(const uint32_t instance_count = 1) noexcept;
-	void bindVAO(const uint32_t vao) noexcept;
-}
+	inline bool bDrawMode = false;
+
+	void drawElements( const uint32_t indicesCount ) noexcept;
+	void drawArraysInstanced( const uint32_t instance_count = 1 ) noexcept;
+	void bindVAO( const uint32_t vao ) noexcept;
+} // namespace Nocturn::GL
 
 #endif

@@ -25,7 +25,6 @@ namespace Nocturn::rendering
 		Model( ) noexcept			= default;
 		Model( const Model &model ) = default;
 		Model( Model &&model )		= delete;
-
 		Model &operator=( const Model &model ) = delete;
 		Model &operator=( Model &&model ) = delete;
 
