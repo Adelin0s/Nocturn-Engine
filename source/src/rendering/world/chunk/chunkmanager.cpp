@@ -163,8 +163,8 @@ namespace Nocturn::rendering
 		{
 			if( m_mapChunks[ first ].shouldToRender( ) )
 			{
-				auto renderInfo = second.getRenderInfo( );
-				chunkRender.add( renderInfo );
+				// auto renderInfo = second.getRenderInfo( );
+				chunkRender.add( second.getRenderInfo( ) );
 			}
 		}
 		chunkRender.render( camera );
