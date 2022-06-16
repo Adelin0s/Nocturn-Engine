@@ -11,32 +11,31 @@
 
 #include "core/GL/GLFunctions.h"
 
-#include "rendering/data/model.h"
 #include "rendering/components/shaders/skyboxshader.h"
 #include "rendering/components/textures/texturecube.h"
+#include "rendering/data/model.h"
 
 namespace Nocturn::rendering
 {
 	class SkyboxRendering
 	{
 	public:
-		SkyboxRendering();
-		SkyboxRendering(const SkyboxRendering&) = delete;
-		SkyboxRendering(SkyboxRendering&&) = delete;
+		SkyboxRendering( );
+		SkyboxRendering( const SkyboxRendering & ) = delete;
+		SkyboxRendering( SkyboxRendering && )	   = delete;
 
-		SkyboxRendering& operator=(const SkyboxRendering&) = delete;
-		SkyboxRendering& operator=(SkyboxRendering&&) = delete;
+		SkyboxRendering &operator=( const SkyboxRendering & ) = delete;
+		SkyboxRendering &operator=( SkyboxRendering && ) = delete;
 
-		void init();
-		void render(const Camera& camera);
+		void render( const Camera &camera );
 
-		~SkyboxRendering() noexcept = default;
+		~SkyboxRendering( ) noexcept = default;
 
 	private:
-		Model m_model;
+		Model		 m_model;
 		SkyboxShader m_skyboxShader;
-		TextureCube m_textureCube;
+		TextureCube	 m_textureCube;
 	};
-}
+} // namespace Nocturn::rendering
 
 #endif

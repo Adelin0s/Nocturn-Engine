@@ -1,6 +1,6 @@
 #include "rendering/world/world.h"
 
-#include "core/async/threadpool.h"
+#include "rendering/world/block/blocksection.h"
 
 namespace Nocturn
 {
@@ -8,25 +8,24 @@ namespace Nocturn
 	{
 		m_taskSystem   = std::make_unique< TaskSystem >( 1 );
 		m_skyboxRender = std::make_unique< SkyboxRendering >( );
-		m_chunk		   = std::make_unique< ChunkManager >( *m_taskSystem );
+		m_chunkManager = std::make_unique< ChunkManager >( *m_taskSystem );
+		m_camera	   = std::make_unique< Camera >( );
+		m_block		   = std::make_unique< BlockSection >( );
 
-		m_skyboxRender->init( );
 		m_chunkRender.init( );
-		m_player.Init( );
 	}
 
 	void World::Update( const double dt )
 	{
-		m_player.Update( dt );
-		auto pos = m_player.GetPlayerPosition( );
+		m_camera->Update( dt );
 
-		const auto currentPosition = static_cast< ivec3 >( m_player.GetPlayerPosition( ) );
+		m_block->Render( *m_camera );
 
-		m_chunk->Update( currentPosition );
+		const auto currentPosition = static_cast< ivec3 >( m_camera->getCameraPosition( ) );
 
-		m_skyboxRender->render( m_player.GetCamera( ) );
-
-		m_chunk->Render( m_player.GetCamera( ), m_chunkRender );
+		m_chunkManager->Update( currentPosition );
+		m_chunkManager->Render( *m_camera, m_chunkRender );
+		// m_skyboxRender->render( *m_camera );
 	}
 
 	void World::Free( )

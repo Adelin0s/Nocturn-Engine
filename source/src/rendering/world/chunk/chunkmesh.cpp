@@ -3,36 +3,8 @@
 #include "rendering/world/block/block.h"
 
 #include "rendering/world/block/blockdatabase.h"
-#include "rendering/world/block/blockdataholder.hpp"
 #include "rendering/world/chunk/chunksection.h"
 #include "rendering/world/worldconstants.h"
-
-namespace // block faces coords
-{
-	const std::array< float, 12 > frontFace{
-		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1
-	};
-
-	const std::array< float, 12 > backFace{
-		1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0
-	};
-
-	const std::array< float, 12 > leftFace{
-		0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0
-	};
-
-	const std::array< float, 12 > rightFace{
-		1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1
-	};
-
-	const std::array< float, 12 > topFace{
-		0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0
-	};
-
-	const std::array< float, 12 > bottomFace{
-		0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1
-	};
-} // namespace
 
 namespace Nocturn::rendering
 {

@@ -103,7 +103,7 @@ namespace Nocturn
 
 	glm::mat4 Camera::getProjectionMatrix( ) const noexcept
 	{
-		return glm::perspective( glm::radians( Config::fov ), Application::getWindow( ).getAspectRatio( ), Config::near, Config::far );
+		return glm::perspective( glm::radians( Config::CFov ), Application::getWindow( ).getAspectRatio( ), Config::CNear, Config::CFar );
 	}
 
 	glm::vec3 Camera::getCameraPosition( ) const noexcept

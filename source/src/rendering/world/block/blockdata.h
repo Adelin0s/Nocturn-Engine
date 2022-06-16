@@ -15,10 +15,20 @@
 
 #include "core/platform/platform.h"
 #include "rendering/components/textures/texturecube.h"
-#include "rendering/world/block/blockdataholder.hpp"
 
 namespace Nocturn::rendering
 {
+	enum class BlockId : uint8_t;
+
+	struct BlockDataHolder
+	{
+		BlockId m_id;
+
+		glm::vec2 m_textureTop;
+		glm::vec2 m_textureSide;
+		glm::vec2 m_textureBottom;
+	};
+
 	class BlockData
 	{
 	public:

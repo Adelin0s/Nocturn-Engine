@@ -2,8 +2,10 @@
 #define BLOCK_SECTION_H
 
 #include "core/types/typedef.hpp"
+#include "rendering/components/shaders/chunkshader.h"
+#include "rendering/components/shaders/skyboxshader.h"
+#include "rendering/components/textures/texturecube.h"
 
-#include "rendering/data/mesh.hpp"
 #include "rendering/data/model.h"
 
 namespace Nocturn::rendering
@@ -14,12 +16,19 @@ namespace Nocturn::rendering
 		Triangle
 	};
 
+	// Note that: In order to work thread-safe, the opengl data must be loaded on a single thread
+	// See ChunkSection -> LoadBufferData()
+	struct position
+	{
+		int32 x, y, z;
+	};
+
 	class BlockSection
 	{
 	public:
-		BlockSection( ) noexcept = default;
+		BlockSection( ) noexcept;
 
-		BlockSection( ivec3 &position );
+		explicit BlockSection( const ivec3 &position );
 		BlockSection( const int32 px, const int32 py, const int32 pz );
 
 		// cant copy
@@ -30,21 +39,25 @@ namespace Nocturn::rendering
 		BlockSection( BlockSection && ) noexcept = delete;
 		BlockSection &operator=( BlockSection && ) noexcept = delete;
 
-		void Update( );
-		void Render( );
-		void LoadBufferData( );
+		void Init( );
+		void Render( const Camera &camera );
 
 		~BlockSection( ) noexcept = default;
 
 	private:
-		Mesh  m_mesh;
 		Model m_model;
+		Mesh  m_mesh;
 
-		union u
+		std::unique_ptr< BlockShader > m_chunkShader;
+		TextureCube					   m_textureCube;
+
+		union
 		{
-			int32 px, py, pz;
-			ivec3 m_pos;
+			position p;
+			ivec3	 pvec3;
 		};
+
+		void MakeMesh( );
 	};
 } // namespace Nocturn::rendering
 #endif

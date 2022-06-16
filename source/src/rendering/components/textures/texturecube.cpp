@@ -22,7 +22,7 @@ namespace Nocturn::rendering
 		generate( );
 		bind( );
 
-		const std::string path = Config::DIR_TEXTURES + textureType + '/';
+		const std::string path = Config::CDirTextures + textureType + '/';
 
 		int width, height, nrChannels;
 		for( uint32_t i = 0; i < 6; ++i )

@@ -1,5 +1,5 @@
-#ifndef CHUNK_SHADER
-#define CHUNK_SHADER
+#ifndef BLOCK_SHADER
+#define BLOCK_SHADER
 
 #include "application/config/config.hpp"
 
@@ -10,18 +10,23 @@
 
 namespace Nocturn
 {
-	class ChunkShader: public Shader
+	class BlockShader final: public Shader
 	{
 	public:
-		ChunkShader( ) noexcept;
-		ChunkShader( const ChunkShader & ) = delete;
-		ChunkShader( ChunkShader && )	   = delete;
+		BlockShader( const char *const pathVertexShader, const char *const pathFragmentShader ) noexcept;
 
-		ChunkShader operator=( const ChunkShader & ) = delete;
-		ChunkShader operator=( ChunkShader && ) = delete;
+		// cant copy
+		BlockShader operator=( const BlockShader & ) = delete;
+		BlockShader( const BlockShader & )			 = delete;
+
+		// cant move
+		BlockShader( BlockShader && ) = delete;
+		BlockShader operator=( BlockShader && ) = delete;
 
 		void setViewMatrix( const Camera &camera ) const override;
 		void setProjectionMatrix( const Camera &camera ) const override;
+
+		~BlockShader( ) noexcept override = default;
 	};
 } // namespace Nocturn
 

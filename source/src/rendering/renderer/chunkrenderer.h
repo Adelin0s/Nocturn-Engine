@@ -35,7 +35,7 @@ namespace Nocturn::rendering
 
 	private:
 		std::vector< RenderInfo > m_chunks;
-		ChunkShader				  m_shader;
+		std::unique_ptr< Shader > m_shader;
 	};
 } // namespace Nocturn::rendering
 #endif

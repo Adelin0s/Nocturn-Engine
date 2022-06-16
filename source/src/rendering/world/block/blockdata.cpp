@@ -4,7 +4,7 @@ namespace Nocturn::rendering
 {
 	BlockData::BlockData( const std::string &block_name )
 	{
-		const std::string path = Config::DIR_BLOCKSTATES + block_name + ".json";
+		const std::string path = Config::CDirBlockStates + block_name + ".json";
 		std::ifstream	  file( path );
 
 		if( !file.is_open( ) )

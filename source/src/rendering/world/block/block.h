@@ -8,20 +8,45 @@ namespace Nocturn::rendering
 {
 	struct BlockDataHolder; /* forward decalartion */
 
+	const static std::array< float, 12 > frontFace{
+		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1
+	};
+
+	const static std::array< float, 12 > backFace{
+		1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0
+	};
+
+	const static std::array< float, 12 > leftFace{
+		0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0
+	};
+
+	const static std::array< float, 12 > rightFace{
+		1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1
+	};
+
+	const static std::array< float, 12 > topFace{
+		0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0
+	};
+
+	const static std::array< float, 12 > bottomFace{
+		0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1
+	};
+
 	enum class BlockId : uint8
 	{
-		Air		  = 0,
-		Grass	  = 1,
-		Dirt	  = 2,
-		Stone	  = 3,
-		OakBark	  = 4,
-		OakLeaf	  = 5,
-		Sand	  = 6,
-		Water	  = 7,
-		Cactus	  = 8,
-		Rose	  = 9,
-		TallGrass = 10,
-		DeadShrub = 11,
+		Air = 0,
+		Grass,
+		Dirt,
+		Stone,
+		OakBark,
+		OakLeaf,
+		Sand,
+		Water,
+		Cactus,
+		Rose,
+		TallGrass,
+		DeadShrub,
+
 		END
 	};
 

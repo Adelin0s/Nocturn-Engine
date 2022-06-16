@@ -23,6 +23,5 @@ namespace Nocturn
 
 	void Player::Update( const double dt )
 	{
-		m_camera->Update( dt );
 	}
 } // namespace Nocturn

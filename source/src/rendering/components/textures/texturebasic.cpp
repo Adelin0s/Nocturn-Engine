@@ -17,7 +17,7 @@ namespace Nocturn::rendering
 
 		int width, height, nrChannels;
 
-		const std::string path = Config::DIR_TEXTURES_BLOCK + m_path;
+		const std::string path = Config::CDirTexturesBlock + m_path;
 
 		unsigned char *data = stbi_load( path.c_str( ), &width, &height, &nrChannels, 0 );
 

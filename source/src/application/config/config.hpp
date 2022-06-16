@@ -14,22 +14,25 @@
 namespace Nocturn::Config
 {
 	/* Directory Constants */
-	const std::string			ROOT_DIR			 = "../../";
-	const std::string			DIR_MODELS			 = ROOT_DIR + "assets/models/";
-	const std::string			DIR_SHADERS			 = ROOT_DIR + "assets/shaders/";
-	const std::string			DIR_TEXTURES		 = ROOT_DIR + "assets/textures/";
-	const std::string			DIR_BLOCKSTATES		 = ROOT_DIR + "assets/blockstates/";
-	const std::string			DIR_TEXTURES_SKYBOX	 = DIR_TEXTURES + "skybox/";
-	const std::string			DIR_TEXTURES_BLOCK	 = DIR_TEXTURES + "block/";
-	constexpr const char *const skyboxVertexShader	 = "../../assets/shaders/skybox_vertex.glsl";
-	constexpr const char *const skyboxFragmentShader = "../../assets/shaders/skybox_fragment.glsl";
-	constexpr const char *const chunkVertexShader	 = "../../assets/shaders/block_vertex.glsl";
-	constexpr const char *const chunkFragmentShader	 = "../../assets/shaders/block_fragment.glsl";
+	const std::string CRootDir			 = "../../";
+	const std::string CDirModels		 = CRootDir + "assets/models/";
+	const std::string CDirShaders		 = CRootDir + "assets/shaders/";
+	const std::string CDirTextures		 = CRootDir + "assets/textures/";
+	const std::string CDirBlockStates	 = CRootDir + "assets/blockstates/";
+	const std::string CDirTexturesSkybox = CDirTextures + "skybox/";
+	const std::string CDirTexturesBlock	 = CDirTextures + "block/";
+
+	constexpr const char *const CSkyboxVertexShader	  = "../../assets/shaders/skybox_vertex.glsl";
+	constexpr const char *const CSkyboxFragmentShader = "../../assets/shaders/skybox_fragment.glsl";
+	constexpr const char *const CChunkVertexShader	  = "../../assets/shaders/block_vertex.glsl";
+	constexpr const char *const CChunkFragmentShader  = "../../assets/shaders/block_fragment.glsl";
+	constexpr const char *const CRayVertexShader	  = "../../assets/shaders/ray_vertex.glsl";
+	constexpr const char *const CRayFragmentShader	  = "../../assets/shaders/ray_fragment.glsl";
 
 	/* Entity Constants */
-	constexpr float fov	 = 45.0f;
-	constexpr float near = 0.1f;
-	constexpr float far	 = 500.0f;
+	constexpr float CFov  = 45.0f;
+	constexpr float CNear = 0.1f;
+	constexpr float CFar  = 500.0f;
 
 	/* World Constants */
 	constexpr uint32_t loadDistance = 10;

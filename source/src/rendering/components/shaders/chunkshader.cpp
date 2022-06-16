@@ -2,17 +2,18 @@
 
 namespace Nocturn
 {
-    ChunkShader::ChunkShader() noexcept
-    :   Shader              (Config::chunkVertexShader, Config::chunkFragmentShader)
-    { }
+	BlockShader::BlockShader( const char *const pathVertexShader, const char *const pathFragmentShader ) noexcept
+		:
+		Shader( pathVertexShader, pathFragmentShader )
+	{}
 
-    void ChunkShader::setViewMatrix(const Camera &camera) const
-    {
-        set4Matrix("projection", camera.getProjectionMatrix());
-    }
+	void BlockShader::setViewMatrix( const Camera &camera ) const
+	{
+		set4Matrix( "projection", camera.getProjectionMatrix( ) );
+	}
 
-    void ChunkShader::setProjectionMatrix(const Camera &camera) const
-    {
-        set4Matrix("view", camera.getViewMatrix());
-    }
-}
+	void BlockShader::setProjectionMatrix( const Camera &camera ) const
+	{
+		set4Matrix( "view", camera.getViewMatrix( ) );
+	}
+} // namespace Nocturn
