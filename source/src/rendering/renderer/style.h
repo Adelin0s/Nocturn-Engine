@@ -7,7 +7,8 @@ namespace Nocturn::rendering
 {
 	struct Style
 	{
-		vec4 color;
+		vec4  color;
+		float strokeWidth;
 	};
 
 	namespace Colors

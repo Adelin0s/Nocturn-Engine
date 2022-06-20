@@ -56,13 +56,13 @@ namespace Nocturn::rendering
 		ChunkMesh &operator=( const ChunkMesh &mesh ) = delete;
 		ChunkMesh &operator=( ChunkMesh &&mesh ) = delete;
 
-		NODISCARD const Model &getModel( ) const;
-		NODISCARD uint32	   getIndicesSize( ) const noexcept;
-		void				   makeMesh( ChunkSection &pchunk );
-		void				   loadBufferData( );
-		NODISCARD bool		   hasMesh( ) const noexcept;
-		NODISCARD bool		   hasLoaded( ) const noexcept;
-		void				   DeleteMesh( ) noexcept;
+		NODISCARD const ChunkModel &getModel( ) const;
+		NODISCARD uint32		    getIndicesSize( ) const noexcept;
+		void						makeMesh( ChunkSection &pchunk );
+		void						loadBufferData( );
+		NODISCARD bool				hasMesh( ) const noexcept;
+		NODISCARD bool				hasLoaded( ) const noexcept;
+		void						DeleteMesh( ) noexcept;
 
 		~ChunkMesh( ) noexcept = default;
 
@@ -72,7 +72,7 @@ namespace Nocturn::rendering
 		bool		  m_hasMesh	  = false;
 		bool		  m_hasLoaded = false;
 		Mesh		  m_mesh;
-		Model		  m_model;
+		ChunkModel	  m_model;
 		ChunkSection *m_pChunk = nullptr; /* pointer to the current chunk */
 
 		void		   makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const ivec3 &adjBlock );

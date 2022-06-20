@@ -21,7 +21,6 @@
 
 #include "application/input/keyboard.h"
 #include "application/input/mouse.h"
-#include "application/scene/scene.h"
 #include "core/platform/platform.h"
 
 namespace Nocturn

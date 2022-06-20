@@ -10,8 +10,8 @@
 #define CHUNK_RENDERER_H
 
 #include "core/GL/GLFunctions.h"
+#include "rendering/components/shaders/shader.h"
 
-#include "rendering/components/shaders/chunkshader.h"
 #include "rendering/world/block/blockdatabase.h"
 #include "rendering/world/chunk/chunksection.h"
 

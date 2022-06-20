@@ -4,12 +4,11 @@
 #include <memory>
 
 #include "application/config/config.hpp"
-#include "application/player/player.h"
-#include "block/blocksection.h"
+#include "rendering/components/entity/player.h"
 
 #include "core/async/task.h"
 
-#include "rendering/data/camera.h"
+#include "rendering/components/entity/camera.h"
 #include "rendering/renderer/chunkrenderer.h"
 #include "rendering/renderer/skyboxrenderer.h"
 
@@ -23,7 +22,7 @@ namespace Nocturn
 	class World
 	{
 	public:
-		World( ) noexcept = default;
+		World( const Transform &transformRef, const Camera &cameraRef ) noexcept;
 
 		World( const World & ) = delete;
 		World( World && )	   = delete;
@@ -31,8 +30,7 @@ namespace Nocturn
 		World &operator=( const World & ) = delete;
 		World &operator=( World && ) = delete;
 
-		void Init( );
-		void Update( const double dt );
+		void Update( double dt );
 		void Free( );
 
 		~World( ) noexcept = default;
@@ -40,10 +38,8 @@ namespace Nocturn
 	private:
 		ChunkRendering					   m_chunkRender;
 		std::unique_ptr< SkyboxRendering > m_skyboxRender;
-		std::unique_ptr< BlockSection >	   m_block;
 		std::unique_ptr< ChunkManager >	   m_chunkManager;
 		std::unique_ptr< TaskSystem >	   m_taskSystem;
-		std::unique_ptr< Camera >		   m_camera;
 	};
 } // namespace Nocturn
 

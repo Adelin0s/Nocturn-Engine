@@ -11,11 +11,11 @@
 
 #include <iostream>
 
+#include <glad/glad.h>
+
 #include <stb_image.h>
-
+#include <vector>
 #include "application/config/config.hpp"
-
-#include "rendering/data/vertexarray.h"
 
 namespace Nocturn::rendering
 {

@@ -5,7 +5,7 @@
 
 #include "core/math/glm.hpp"
 
-#include "rendering/data/camera.h"
+#include "rendering/components/entity/camera.h"
 #include "rendering/components/shaders/shader.h"
 
 namespace Nocturn

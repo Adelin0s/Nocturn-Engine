@@ -12,12 +12,11 @@ file(GLOB _root_files								LIST_DIRECTORIES false "${_src_root_path}/*.h" "${_
 file(GLOB _application_files						LIST_DIRECTORIES false "${_src_root_path}/application/*.h" "${_src_root_path}/application/*.hpp" "${_src_root_path}/application/*.cpp")
 file(GLOB _application_config_files					LIST_DIRECTORIES false "${_src_root_path}/application/config/*.h" "${_src_root_path}/application/config/*.hpp" "${_src_root_path}/application/config/*.hpp" "${_src_root_path}/application/config/*.cpp")
 file(GLOB _application_input_files					LIST_DIRECTORIES false "${_src_root_path}/application/input/*.h" "${_src_root_path}/application/input/*.hpp" "${_src_root_path}/application/input/*.cpp")
-file(GLOB _application_player_files					LIST_DIRECTORIES false "${_src_root_path}/application/player/*.h" "${_src_root_path}/application/player/*.hpp" "${_src_root_path}/application/player/*.cpp")
-
-file(GLOB _application_scene_files					LIST_DIRECTORIES false "${_src_root_path}/application/scene/*.h" "${_src_root_path}/application/scene/*.hpp" "${_src_root_path}/application/scene/*.cpp")
 file(GLOB _application_window_files					LIST_DIRECTORIES false "${_src_root_path}/application/window/*.h" "${_src_root_path}/application/window/*.hpp" "${_src_root_path}/application/window/*.cpp")
 
+file(GLOB _core_files								LIST_DIRECTORIES false "${_src_root_path}/core/*.h" "${_src_root_path}/core/*.hpp" "${_src_root_path}/core/*.cpp")
 file(GLOB _core_algorithms_files					LIST_DIRECTORIES false "${_src_root_path}/core/algorithms/*.h" "${_src_root_path}/core/algorithms/*.hpp" "${_src_root_path}/core/algorithms/*.cpp")
+file(GLOB _core_components_files					LIST_DIRECTORIES false "${_src_root_path}/core/components/*.h" "${_src_root_path}/core/components/*.hpp" "${_src_root_path}/core/components/*.cpp")
 file(GLOB _core_error_files							LIST_DIRECTORIES false "${_src_root_path}/core/error/*.h" "${_src_root_path}/core/error/*.hpp" "${_src_root_path}/core/error/*.cpp")
 file(GLOB _core_GL_files							LIST_DIRECTORIES false "${_src_root_path}/core/GL/*.h" "${_src_root_path}/core/GL/*.hpp" "${_src_root_path}/core/GL/*.cpp")
 file(GLOB _core_logging_files						LIST_DIRECTORIES false "${_src_root_path}/core/logging/*.h" "${_src_root_path}/core/logging/*.hpp" "${_src_root_path}/core/logging/*.cpp")
@@ -29,6 +28,7 @@ file(GLOB _core_types_files							LIST_DIRECTORIES false "${_src_root_path}/core
 file(GLOB _core_util_files							LIST_DIRECTORIES false "${_src_root_path}/core/util/*.h" "${_src_root_path}/core/util/*.hpp" "${_src_root_path}/core/util/*.cpp")
 
 file(GLOB _rendering_components_files				LIST_DIRECTORIES false "${_src_root_path}/rendering/components/*.h" "${_src_root_path}/rendering/components/*.hpp" "${_src_root_path}/rendering/components/*.cpp")
+file(GLOB _rendering_components_entity_files		LIST_DIRECTORIES false "${_src_root_path}/rendering/components/entity/*.h" "${_src_root_path}/rendering/components/entity/*.hpp" "${_src_root_path}/rendering/components/entity/*.cpp")
 file(GLOB _rendering_components_shaders_files		LIST_DIRECTORIES false "${_src_root_path}/rendering/components/shaders/*.h" "${_src_root_path}/rendering/components/shaders/*.hpp" "${_src_root_path}/rendering/components/shaders/*.cpp")
 file(GLOB _rendering_components_textures_files		LIST_DIRECTORIES false "${_src_root_path}/rendering/components/textures/*.h" "${_src_root_path}/rendering/components/textures/*.hpp" "${_src_root_path}/rendering/components/textures/*.cpp")
 file(GLOB _rendering_data_files						LIST_DIRECTORIES false "${_src_root_path}/rendering/data/*.h" "${_src_root_path}/rendering/data/*.hpp" "${_src_root_path}/rendering/data/*.cpp")
@@ -44,11 +44,11 @@ add_executable(NocturnProject
 	${_application_files}
 	${_application_config_files}
 	${_application_input_files}
-	${_application_player_files}
-	${_application_scene_files}
 	${_application_window_files}
 	
+	${_core_files}
 	${_core_algorithms_files}
+	${_core_components_files}
 	${_core_error_files}
 	${_core_GL_files}
 	${_core_logging_files}
@@ -60,6 +60,7 @@ add_executable(NocturnProject
 	${_core_util_files}
 	
 	${_rendering_components_files}
+	${_rendering_components_entity_files}
 	${_rendering_components_shaders_files}
 	${_rendering_components_textures_files}
 	${_rendering_data_files}
@@ -92,12 +93,12 @@ source_group("/" FILES ${_root_files})
 source_group("application"  FILES ${_application_files})
 source_group("application/config"  FILES ${_application_config_files})
 source_group("application/input"  FILES ${_application_input_files})
-source_group("application/player"  FILES ${_application_player_files})
 source_group("application/scene"  FILES ${_application_scene_files})
 source_group("application/window"  FILES ${_application_window_files})
 
 source_group("core"  FILES ${_core_files})
 source_group("core/algorithms"  FILES ${_core_algorithms_files})
+source_group("core/components"  FILES ${_core_components_files})
 source_group("core/error"  FILES ${_core_error_files})
 source_group("core/GL"  FILES ${_core_GL_files})
 source_group("core/logging"  FILES ${_core_logging_files})
@@ -110,6 +111,7 @@ source_group("core/util"  FILES ${_core_util_files})
 
 source_group("rendering"  FILES ${_rendering_files})
 source_group("rendering/components"  FILES ${_rendering_components_files})
+source_group("rendering/components/entity"  FILES ${_rendering_components_entity_files})
 source_group("rendering/components/shaders"  FILES ${_rendering_components_shaders_files})
 source_group("rendering/components/textures"  FILES ${_rendering_components_textures_files})
 source_group("rendering/data"  FILES ${_rendering_data_files})

@@ -1,8 +1,0 @@
-add_subdirectory ("algorithms")
-add_subdirectory ("error")
-add_subdirectory ("GL")
-add_subdirectory ("physics")
-add_subdirectory ("platform")
-add_subdirectory ("threads")
-add_subdirectory ("types")
-add_subdirectory ("util")

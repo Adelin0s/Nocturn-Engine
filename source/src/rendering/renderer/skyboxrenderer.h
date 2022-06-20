@@ -32,7 +32,7 @@ namespace Nocturn::rendering
 		~SkyboxRendering( ) noexcept = default;
 
 	private:
-		Model		 m_model;
+		ChunkModel   m_model;
 		SkyboxShader m_skyboxShader;
 		TextureCube	 m_textureCube;
 	};

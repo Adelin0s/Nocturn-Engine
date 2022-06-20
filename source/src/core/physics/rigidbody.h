@@ -16,40 +16,20 @@
 
 namespace Nocturn
 {
-	class Rigidbody
+	struct RigidBody
 	{
-	public:
-		Rigidbody( ) noexcept;
-		Rigidbody( float mass, const glm::vec3 &position, const glm::vec3 &velocity, const glm::vec3 &acceleration );
-		Rigidbody( const Rigidbody &rigidbody ) = default; /* default behaviour  */
-		Rigidbody( Rigidbody && )				= delete;
+		explicit RigidBody(const vec3& velocityRef)
+		:	velocity( velocityRef )
+		{ }
 
-		Rigidbody &operator=( const Rigidbody & ) = delete;
-		Rigidbody &operator=( Rigidbody && ) = delete;
+		void SetZeroForces( ) noexcept
+		{
+			velocity = vec3( 0.0f );
+		}
 
-		/* void setPosition(const glm::vec3 &position); */
-		/* void setVelocity(const glm::vec3 &velocity); */
-		/* void setAcceleration(const glm::vec3 &acceleration); */
-
-		NODISCARD const glm::vec3 &GetPosition( ) const noexcept;
-
-		void Update( const double dt );
-		void ApplyForce( const glm::vec3 &force );
-		void ApplyForce( const glm::vec3 &direction, const float magnitude );
-		void ApplyAcceleration( const glm::vec3 &acceleration );
-		void ApplyAcceleration( const glm::vec3 &direction, const float magnitude );
-		void ApplyImpulse( const glm::vec3 &force, double dt );
-		void ApplyImpulse( const glm::vec3 &direction, const float magnitude, const double dt );
-		void TransferEnergy( const float joules, const glm::vec3 direction );
-
-		~Rigidbody( ) noexcept = default;
-
-	private:
-		vec3 m_position;
-		vec3 m_velocity;
-		vec3 m_acceleration;
-
-		float m_mass;
+		vec3 velocity {0.0f, 0.025f, 0.0f};
 	};
 } // namespace Nocturn
+
+
 #endif

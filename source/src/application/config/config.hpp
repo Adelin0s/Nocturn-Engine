@@ -26,8 +26,8 @@ namespace Nocturn::Config
 	constexpr const char *const CSkyboxFragmentShader = "../../assets/shaders/skybox_fragment.glsl";
 	constexpr const char *const CChunkVertexShader	  = "../../assets/shaders/block_vertex.glsl";
 	constexpr const char *const CChunkFragmentShader  = "../../assets/shaders/block_fragment.glsl";
-	constexpr const char *const CRayVertexShader	  = "../../assets/shaders/ray_vertex.glsl";
-	constexpr const char *const CRayFragmentShader	  = "../../assets/shaders/ray_fragment.glsl";
+	constexpr const char *const CLineVertexShader	  = "../../assets/shaders/line_vertex.glsl";
+	constexpr const char *const CLineFragmentShader	  = "../../assets/shaders/line_fragment.glsl";
 
 	/* Entity Constants */
 	constexpr float CFov  = 45.0f;

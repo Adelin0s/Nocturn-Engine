@@ -9,11 +9,11 @@ namespace Nocturn
 
 	void SkyboxShader::setViewMatrix( const Camera &camera ) const
 	{
-		set4Matrix( "projection", camera.getProjectionMatrix( ) );
+		setMatrix4( "projection", camera.getProjectionMatrix( ) );
 	}
 
 	void SkyboxShader::setProjectionMatrix( const Camera &camera ) const
 	{
-		set4Matrix( "view", glm::mat4( glm::mat3( camera.getViewMatrix( ) ) ) );
+		setMatrix4( "view", glm::mat4( glm::mat3( camera.getViewMatrix( ) ) ) );
 	}
 } // namespace Nocturn

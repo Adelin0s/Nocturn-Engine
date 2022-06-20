@@ -33,4 +33,6 @@ namespace Nocturn
 	using ivec2 = glm::ivec2;
 	using ivec3 = glm::ivec3;
 	using vec4	= glm::vec4;
+
+	using mat4	= glm::mat4;
 } // namespace Nocturn

@@ -11,22 +11,55 @@
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+#include <iostream>
 
 #include "core/platform/platform.h"
+#include "core/types/typedef.hpp"
 #include "rendering/data/mesh.hpp"
-
-#include "rendering/renderer/renderinfo.hpp"
 
 namespace Nocturn::rendering
 {
-	class Model
+	struct RenderInfo
+	{
+		uint32_t indicesCount = 0;
+		uint32_t vao		  = 0;
+	};
+
+	struct RenderVertexLine
+	{
+		glm::vec3 start;
+		glm::vec3 end;
+		float	  isStart;
+		float	  direction;
+		float	  strokeWidth;
+		glm::vec4 color;
+	};
+
+	enum class AttributeType : uint8
+	{
+		 Float
+		,Int
+		,Uint
+	};
+
+	struct AttributeVertex
+	{
+		int			  attributeSlot;
+		int			  numElements;
+		AttributeType type;
+		uint32		  offset;
+	};
+
+	constexpr uint32 CMaxLineModelSize = 501;
+
+	class ChunkModel
 	{
 	public:
-		Model( ) noexcept			= default;
-		Model( const Model &model ) = default;
-		Model( Model &&model )		= delete;
-		Model &operator=( const Model &model ) = delete;
-		Model &operator=( Model &&model ) = delete;
+		ChunkModel( ) noexcept			= default;
+		ChunkModel( const ChunkModel &model ) = default;
+		ChunkModel( ChunkModel &&model )		= delete;
+		ChunkModel &operator=( const ChunkModel &model ) = delete;
+		ChunkModel &operator=( ChunkModel &&model ) = delete;
 
 		void generateVAO( );
 		void bindVAO( ) const noexcept;
@@ -39,12 +72,40 @@ namespace Nocturn::rendering
 
 		void deleteData( );
 
-		~Model( ) noexcept;
+		~ChunkModel( ) noexcept;
 
 	private:
+		std::vector< uint32_t > m_buffers;
 		RenderInfo				m_renderInfo;
 		uint32_t				m_vboIndex = 0;
-		std::vector< uint32_t > m_buffers;
+	};
+
+	class LineModel
+	{
+	public:
+		void Init( std::initializer_list< AttributeVertex > vertexAttributes );
+		void AddVertex( const RenderVertexLine &vertex );
+		void Flush( );
+
+		FORCE_INLINE int32 GetNumVertices( ) const noexcept
+		{
+			return m_numVertices;
+		}
+		FORCE_INLINE void  SetNumVertices( const int32 numVertices ) noexcept
+		{
+			m_numVertices = numVertices;
+		}
+
+		NODISCARD GLenum AttributeTypeToGl( AttributeType type ) const;
+
+	private:
+		std::vector< RenderVertexLine > m_data;
+
+		uint32							m_vao = 0;
+		uint32							m_vbo = 0;
+		int32							m_numVertices = 0;
+		int32							m_zIndex = 0;
+		uint32							m_dataSize = 0;
 	};
 } // namespace Nocturn::rendering
 #endif

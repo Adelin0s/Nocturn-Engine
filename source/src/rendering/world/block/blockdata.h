@@ -14,6 +14,7 @@
 #include <nlohmann/json.hpp>
 
 #include "core/platform/platform.h"
+#include "core/types/typedef.hpp"
 #include "rendering/components/textures/texturecube.h"
 
 namespace Nocturn::rendering
@@ -24,9 +25,9 @@ namespace Nocturn::rendering
 	{
 		BlockId m_id;
 
-		glm::vec2 m_textureTop;
-		glm::vec2 m_textureSide;
-		glm::vec2 m_textureBottom;
+		vec2 m_textureTop;
+		vec2 m_textureSide;
+		vec2 m_textureBottom;
 	};
 
 	class BlockData

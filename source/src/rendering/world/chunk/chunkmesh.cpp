@@ -22,7 +22,7 @@ namespace Nocturn::rendering
 		m_pChunk( &chunk )
 	{}
 
-	NODISCARD const Model &ChunkMesh::getModel( ) const
+	NODISCARD const ChunkModel &ChunkMesh::getModel( ) const
 	{
 		return m_model;
 	}
@@ -41,7 +41,6 @@ namespace Nocturn::rendering
 
 		auto chunk = m_pChunk->getChunk( );
 
-		uint32 cnt = 0;
 		for( int32 z = 0; z < CHUNK_Z; z++ )
 			for( int32 y = 0; y < CHUNK_Y; y++ )
 			{

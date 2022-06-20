@@ -6,41 +6,32 @@
  * @ Description:                                                                       *
  ****************************************************************************************/
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#ifndef ENTITY_H
+#define ENTITY_H
 
-#include "core/physics/rigidbody.h"
-#include "rendering/data/camera.h"
+#include "core/physics/AABB.h"
 
 namespace Nocturn
 {
 	struct Entity
 	{
-	};
+		Entity( ) noexcept;
 
-	class Player: public Entity
-	{
-	public:
-		Player( ) noexcept;
+		Entity( const glm::vec3 &pos, const glm::vec3 &rot );
+		Entity( const glm::vec3 &pos, const glm::vec3 &rot, const glm::vec3 &box );
 
-		Player( const Player &player ) = delete;
-		Player( Player &&player )	   = delete;
+		// TODO : View entity virtual functions
+		//virtual void Collide( ) NOCTURN_PURE;
+		//virtual void Update( ) NOCTURN_PURE;
+		//virtual void GetBox( ) NOCTURN_PURE;
 
-		Player &operator=( const Player &player ) = delete;
-		Player &operator=( Player &&player ) = delete;
+		virtual ~Entity( ) noexcept NOCTURN_PURE;
 
-		NODISCARD vec3			GetPlayerPosition( ) const noexcept;
-		NODISCARD const Camera &GetCamera( ) const noexcept;
+		glm::vec3 position;
+		glm::vec3 rotation;
+		glm::vec3 velocity;
 
-		void Init( ) noexcept;
-		void Update( const double dt );
-
-		~Player( ) noexcept = default;
-
-	private:
-		vec3					  m_position;
-		std::unique_ptr< Camera > m_camera;
-		// Rigidbody				  m_rigidbody; inactive
+		AABB box;
 	};
 } // namespace Nocturn
 

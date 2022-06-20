@@ -1,5 +1,6 @@
 #include "rendering/world/chunk/chunkmanager.h"
 
+#include "application/input/keyboard.h"
 #include "core/math/math.hpp"
 
 namespace Nocturn::rendering

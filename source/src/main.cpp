@@ -10,9 +10,9 @@
 
 int main( )
 {
-	Nocturn::Application::init( );
-	Nocturn::Application::run( );
-	Nocturn::Application::free( );
+	Nocturn::Application::Init( );
+	Nocturn::Application::Run( );
+	Nocturn::Application::Free( );
 
 	return 0;
 }

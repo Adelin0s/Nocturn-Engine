@@ -21,8 +21,6 @@
 //#include "core/async/queuesafe.h"
 #include "core/types/typedef.hpp"
 
-#include "rendering/data/camera.h"
-
 namespace Nocturn
 {
 	using TaskFunction = std::function< void( ) >;

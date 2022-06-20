@@ -18,10 +18,9 @@
 
 #include "core/async/task.h"
 #include "core/math/noise.h"
-#include "core/types/constants.h"
 #include "core/types/typedef.hpp"
 
-#include "rendering/data/camera.h"
+#include "rendering/components/entity/camera.h"
 #include "rendering/renderer/chunkrenderer.h"
 #include "rendering/world/chunk/chunksection.h"
 

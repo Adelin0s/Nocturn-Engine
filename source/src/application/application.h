@@ -13,9 +13,9 @@
 
 namespace Nocturn::Application
 {
-	void	init( );
-	void	run( );
-	void	free( );
+	void	Init( );
+	void	Run( );
+	void	Free( );
 	Window &getWindow( );
 } // namespace Nocturn::Application
 

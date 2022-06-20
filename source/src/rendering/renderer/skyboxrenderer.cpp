@@ -121,12 +121,11 @@ namespace Nocturn::rendering
 		glDepthFunc( GL_LEQUAL );
 		m_model.bindVAO( );
 		m_textureCube.bind( );
-		m_skyboxShader.activate( );
+		m_skyboxShader.bind( );
 		m_skyboxShader.setProjectionMatrix( camera );
 		m_skyboxShader.setViewMatrix( camera );
 		GL::drawArraysInstanced( );
 		m_textureCube.unbind( );
-		VertexArray::clear( );
 		glDepthFunc( GL_LESS );
 	}
 } // namespace Nocturn::rendering

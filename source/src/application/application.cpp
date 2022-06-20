@@ -1,7 +1,7 @@
 #include "application/application.h"
-
-#include "application/scene/scene.h"
 #include "application/window/window.h"
+
+#include "core/scene.h"
 
 #include "rendering/renderer/skyboxrenderer.h"
 #include "rendering/world/chunk/chunkmanager.h"
@@ -12,30 +12,26 @@
 namespace Nocturn::Application
 {
 	std::unique_ptr< Window > window;
-	std::unique_ptr< World >  world;
-	// std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-	void init( )
+	void Init( )
 	{
-		// begin = std::chrono::steady_clock::now();
 		window = std::make_unique< Window >( );
-		world  = std::make_unique< World >( );
 		window->init( );
 	}
 
-	void run( )
+	void Run( )
 	{
 		window->create( );
 
-		double lastX = 640.0f;
-		double lastY = 360.0f;
+		double lastX = 640.0;
+		double lastY = 360.0;
 
-		double dt		 = 0.0f;
-		double lastFrame = 0.0f;
+		double dt		 = 0.0;
+		double lastFrame = 0.0;
 
 		glEnable( GL_DEPTH_TEST );
 
-		world->Init( );
+		Scene::Init( );
 
 		while( !window->shouldClose( ) )
 		{
@@ -49,16 +45,16 @@ namespace Nocturn::Application
 			glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-			world->Update( dt );
+			Scene::Update( dt );
 
 			window->swapBuffers( );
 			window->pollInput( );
 		}
-		world->Free( );
 	}
 
-	void free( )
+	void Free( )
 	{
+		Scene::Free( );
 		window->free( );
 	}
 

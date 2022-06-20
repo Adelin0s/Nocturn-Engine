@@ -4,7 +4,7 @@ namespace Nocturn::rendering
 {
 	void ChunkRendering::init( )
 	{
-		m_shader = std::make_unique< BlockShader >( Config::CChunkVertexShader, Config::CChunkFragmentShader );
+		m_shader = std::make_unique< Shader >( Config::CChunkVertexShader, Config::CChunkFragmentShader );
 		m_shader->init( );
 	}
 
@@ -23,7 +23,7 @@ namespace Nocturn::rendering
 		if( m_chunks.empty( ) )
 			return;
 
-		m_shader->activate( );
+		m_shader->bind( );
 		m_shader->setProjectionMatrix( camera );
 		m_shader->setViewMatrix( camera );
 
