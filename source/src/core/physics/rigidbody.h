@@ -11,25 +11,23 @@
 
 #include <glm/glm.hpp>
 
-#include "core/platform/platform.h"
+#include "core/components/transform.h"
 #include "core/types/typedef.hpp"
 
 namespace Nocturn
 {
 	struct RigidBody
 	{
-		explicit RigidBody(const vec3& velocityRef)
-		:	velocity( velocityRef )
-		{ }
-
 		void SetZeroForces( ) noexcept
 		{
 			velocity = vec3( 0.0f );
+			acceleration = vec3(0.0f);
 		}
 
-		vec3 velocity {0.0f, 0.025f, 0.0f};
+		bool useGravity = true;
+		vec3 acceleration{0.0f, -1.0f, 0.0f};
+		vec3 velocity{ 0.0f, -20.0f, 0.0f };
 	};
 } // namespace Nocturn
-
 
 #endif

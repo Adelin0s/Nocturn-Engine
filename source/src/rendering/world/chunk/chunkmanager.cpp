@@ -39,6 +39,16 @@ namespace Nocturn::rendering
 			}
 	}
 
+	const ChunkSection &ChunkManager::operator[]( const ivec2 &index ) noexcept
+	{
+		return m_mapChunks[ index ];
+	}
+
+	ChunkSection &ChunkManager::GetChunk( const ivec2 &index )
+	{
+		return m_mapChunks[ index ];
+	}
+
 	/// <summary>
 	///	TODO: Need to update!!!
 	///	This function generates the current chunk and its 4 neighbors(left, right, top, bottom).

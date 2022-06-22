@@ -1,22 +1,28 @@
 #include "rendering/components/entity/player.h"
 
+#include <iostream>
+
 #include "application/input/keyboard.h"
 #include "application/input/mouse.h"
 
 namespace Nocturn
 {
-	static constexpr double CMouseSensitivity = 0.1;
+	Player::Player( Transform &transform, const RigidBody& rigidbody ) noexcept
+		:		Entity( CPlayerBound )
+		,		m_pTransform( &transform )
+		,		m_pRigidBody( &rigidbody )
+		,		m_speed( 10 )
+	{ }
 
-	Player::Player( Transform &transform ) noexcept
-		:
-		m_pTransform( &transform ), m_speed( 10 )
-	{}
+	const AABB& Player::GetBound( ) const noexcept
+	{
+		return m_bound;
+	}
 
-	void Player::Update( const double dt ) const
+	void Player::Update( const double dt )
 	{
 		HandleMouseInput( dt );
 		HandleKeyboardInput( dt );
-		m_pTransform->position.y -= 0.1f;
 	}
 
 	void Player::HandleMouseInput( const double dt ) const
@@ -41,10 +47,10 @@ namespace Nocturn
 
 	void Player::HandleKeyboardInput( const double dt ) const
 	{
-		float speed = 2.5f;
+		float localSpeed = 2.5f;
 		if( Keyboard::key( GLFW_KEY_LEFT_SHIFT ) )
-			speed = 10.0f;
-		const float velocity = m_speed * static_cast< float >( dt ) * speed;
+			localSpeed = 10.0f;
+		const float velocity = m_speed * static_cast< float >( dt ) * localSpeed;
 
 		if( Keyboard::key( GLFW_KEY_W ) )
 		{

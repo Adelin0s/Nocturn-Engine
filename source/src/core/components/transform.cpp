@@ -16,18 +16,6 @@ namespace Nocturn
 		isInit = true;
 	}
 
-	/*
-		glm::vec3 direction;
-		direction.x = cos( glm::radians( m_yaw ) ) * cos( glm::radians( m_pitch ) );
-		direction.y = sin( glm::radians( m_pitch ) );
-		direction.z = sin( glm::radians( m_yaw ) ) * cos( glm::radians( m_pitch ) );
-
-		m_cameraFront = glm::normalize( direction );
-		m_cameraRight = glm::normalize( glm::cross( m_cameraFront, core::Environment::worldUp ) );
-		m_cameraUp	  = glm::normalize( glm::cross( m_cameraRight, m_cameraFront ) );
-	}
-	 */
-
 	void TransformSystem::Update( )
 	{
 		assert( pTransform );

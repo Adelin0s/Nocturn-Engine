@@ -97,19 +97,19 @@ namespace Nocturn::rendering
 
 		Block operator[]( const ivec3 &position ) const noexcept;
 
-		void setBlock( const BlockId id, const ivec3 &position );
-		void setBlock( const BlockId id, const int32 x, const int32 y, const int32 z );
-		void setNeighbor( const NeighborType type, ChunkSection &chunk ) noexcept;
+		void setBlock( BlockId id, const ivec3 &position );
+		void setBlock( BlockId id, int32 x, int32 y, int32 z );
+		void setNeighbor( NeighborType type, ChunkSection &chunk ) noexcept;
 		void setRenderableChunk( ) noexcept;
 
 		NODISCARD ivec2				getLocation( ) const;
 		NODISCARD const RenderInfo &getRenderInfo( ) const;
 		NODISCARD const std::vector< Block > &getChunk( ) const;
-		NODISCARD ChunkLayer				  getLayer( const int y ) const;
-		NODISCARD Block						  getBlock( const int32_t x, const int32_t y, const int32_t z ) const noexcept;
+		NODISCARD ChunkLayer				  getLayer( int y ) const;
+		NODISCARD Block						  getBlock( int32_t x, int32_t y, int32_t z ) const noexcept;
 		NODISCARD Block						  getBlock( const ivec3 &coords ) const noexcept;
 		NODISCARD Block						  getAdjacentBlock( const ivec3 &coords ) const noexcept;
-		NODISCARD ChunkSection			   *tryGetNeighbor( const NeighborType type ) const noexcept;
+		NODISCARD ChunkSection			     *tryGetNeighbor( NeighborType type ) const noexcept;
 		NODISCARD bool						  hasMesh( ) const noexcept;
 		NODISCARD bool						  hasLoaded( ) const noexcept;
 		NODISCARD bool						  shouldToRender( ) const noexcept;
@@ -121,9 +121,9 @@ namespace Nocturn::rendering
 		void render( ) const;
 
 		static NODISCARD constexpr size_t getSizeOfBlock( ) noexcept;
-		static NODISCARD uint32			  getSizeFromIndex( const uint32 x, const uint32 y, const uint32 z ) noexcept;
+		static NODISCARD uint32			  getSizeFromIndex( uint32 x, uint32 y, uint32 z ) noexcept;
 		static NODISCARD uint32			  getSizeFromIndex( const ivec3 &vec ) noexcept;
-		static NODISCARD ivec3			  getIndexFromSize( const uint32 size ) noexcept;
+		static NODISCARD ivec3			  getIndexFromSize( uint32 size ) noexcept;
 
 		~ChunkSection( ) noexcept = default;
 
@@ -135,7 +135,7 @@ namespace Nocturn::rendering
 		ivec2							  m_location; /* chunk position */
 		bool							  m_renderableChunk = false;
 
-		static bool outOfBound( const int32_t x, const int32_t y, const int32_t z ) noexcept;
+		static bool outOfBound( int32_t x, int32_t y, int32_t z ) noexcept;
 	};
 } // namespace Nocturn::rendering
 

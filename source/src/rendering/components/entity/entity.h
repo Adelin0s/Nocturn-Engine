@@ -10,28 +10,30 @@
 #define ENTITY_H
 
 #include "core/physics/AABB.h"
+#include "core/platform/platform.h"
 
 namespace Nocturn
 {
 	struct Entity
 	{
-		Entity( ) noexcept;
+		Entity() noexcept = delete;
+		explicit Entity( const AABB &bound );
 
-		Entity( const glm::vec3 &pos, const glm::vec3 &rot );
-		Entity( const glm::vec3 &pos, const glm::vec3 &rot, const glm::vec3 &box );
+		// cant copy
+		Entity( const Entity &player ) = delete;
+		Entity &operator=( const Entity &player ) = delete;
 
-		// TODO : View entity virtual functions
-		//virtual void Collide( ) NOCTURN_PURE;
-		//virtual void Update( ) NOCTURN_PURE;
-		//virtual void GetBox( ) NOCTURN_PURE;
+		// cant move
+		Entity &operator=( Entity &&player ) = delete;
+		Entity( Entity &&player ) = delete;
 
-		virtual ~Entity( ) noexcept NOCTURN_PURE;
+		NODISCARD virtual const AABB &GetBound( ) const noexcept NOCTURN_PURE;
+		virtual void Update( double dt ) NOCTURN_PURE;
 
-		glm::vec3 position;
-		glm::vec3 rotation;
-		glm::vec3 velocity;
+		virtual ~Entity( ) noexcept = default;
 
-		AABB box;
+	protected:
+		AABB m_bound;
 	};
 } // namespace Nocturn
 

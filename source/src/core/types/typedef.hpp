@@ -12,7 +12,7 @@
 
 namespace Nocturn
 {
-	class ChunkSection;
+	using namespace glm;
 
 	using int8	 = int8_t;
 	using uint8	 = uint8_t;
@@ -28,11 +28,4 @@ namespace Nocturn
 	using Vertices_t = std::array< float, 12 >;
 	using Textures_t = std::array< float, 8 >;
 
-	using vec2	= glm::vec2;
-	using vec3	= glm::vec3;
-	using ivec2 = glm::ivec2;
-	using ivec3 = glm::ivec3;
-	using vec4	= glm::vec4;
-
-	using mat4	= glm::mat4;
 } // namespace Nocturn

@@ -7,6 +7,7 @@
 #include "rendering/components/entity/player.h"
 
 #include "core/async/task.h"
+#include "core/physics/physics.h"
 
 #include "rendering/components/entity/camera.h"
 #include "rendering/renderer/chunkrenderer.h"
@@ -22,14 +23,17 @@ namespace Nocturn
 	class World
 	{
 	public:
-		World( const Transform &transformRef, const Camera &cameraRef ) noexcept;
+		World( ) noexcept = default;
 
+		// cant copy
 		World( const World & ) = delete;
-		World( World && )	   = delete;
+		World( World && ) = delete;
 
+		// cant move
 		World &operator=( const World & ) = delete;
 		World &operator=( World && ) = delete;
 
+		void Init( );
 		void Update( double dt );
 		void Free( );
 

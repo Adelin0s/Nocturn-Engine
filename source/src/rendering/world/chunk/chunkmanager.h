@@ -39,6 +39,10 @@ namespace Nocturn::rendering
 		ChunkManager operator=( const ChunkManager &chunk ) = delete;
 		ChunkManager operator=( ChunkManager &&chunk ) = delete;
 
+		const ChunkSection &operator[](const ivec2& index) noexcept;
+
+		ChunkSection &GetChunk( const ivec2& index );
+
 		void GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept;
 		void Update( const ivec3 &currentPosition );
 		void Render( const Camera &camera, ChunkRendering &chunkRender );
@@ -46,7 +50,7 @@ namespace Nocturn::rendering
 		~ChunkManager( ) noexcept = default;
 
 	private:
-		void GenerateNewChunk( ChunkSection &chunk, const bool shouldToCreateMesh = false ) const noexcept;
+		void GenerateNewChunk( ChunkSection &chunk, bool shouldToCreateMesh = false ) const noexcept;
 
 		TaskSystem							   *m_pTaskSystem;
 		NoiseParams								m_noiseParams{ };
