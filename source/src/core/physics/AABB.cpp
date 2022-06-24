@@ -2,7 +2,7 @@
 
 namespace Nocturn
 {
-	AABB::AABB( const vec3 &size )
-		: m_size( size )
+	AABB::AABB( const vec3 &sizeRef	 )
+		: size( sizeRef )
 	{ }
 }

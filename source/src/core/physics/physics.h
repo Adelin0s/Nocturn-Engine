@@ -5,11 +5,29 @@
 
 #include "core/physics/rigidbody.h"
 #include "core/types/typedef.hpp"
+#include "rendering/components/entity/player.h"
 #include "rendering/world/chunk/chunkmanager.h"
 
 namespace Nocturn
 {
 	using namespace rendering;
+
+	enum class CollisionFace : uint8
+	{
+		None = 0
+		, Top
+		, Bottom
+		, Front
+		, Back
+		, Left
+		, Right
+	};
+
+	struct CollisionResult
+	{
+		vec3 overlap;
+		CollisionFace face;
+	};
 
 	class Physics
 	{
@@ -20,7 +38,7 @@ namespace Nocturn
 
 		Physics( ) noexcept = delete;
 
-		Physics( ChunkManager& chunkManager, Transform &transform, RigidBody &rigidBody );
+		Physics( const Entity &player, ChunkManager& chunkManager, Transform &transform, RigidBody &rigidBody );
 
 		// cant copy
 		Physics( const Physics &rigidBody ) = delete;
@@ -35,11 +53,14 @@ namespace Nocturn
 		~Physics( ) noexcept = default;
 
 	private:
-		ChunkManager *m_pChunkManager{};
-		Transform *m_pTransform{};
-		RigidBody *m_pRigidBody{};
+		const Entity *m_pPlayer{ };
+		ChunkManager *m_pChunkManager{ };
+		Transform	 *m_pTransform{ };
+		RigidBody	 *m_pRigidBody{ };
 
 		void ProcessCollision( ) const noexcept;
+		static bool CheckColliding( const Transform& transform1, const AABB& box1, const Transform& transform2, const AABB &box2 ) noexcept;
+		NODISCARD CollisionResult GetCollisionFace( const Transform &transform1, const AABB &box1, const Transform &transform2, const AABB &box2 ) const noexcept;
 	};
 
 } // namespace Nocturn

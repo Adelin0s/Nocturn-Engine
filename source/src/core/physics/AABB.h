@@ -11,13 +11,12 @@ namespace Nocturn
 	struct AABB
 	{
 		AABB( ) noexcept = delete;
-		AABB( const vec3 &size );
+		AABB( const vec3 &sizeRef );
 
 		~AABB( ) noexcept = default;
 
-	private:
-		vec3 m_origin{};
-		vec3 m_size{};
+		vec3 origin{};
+		vec3 size{};
 	};
 } // namespace Nocturn::Physics
 

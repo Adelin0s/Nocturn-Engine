@@ -7,13 +7,13 @@ namespace Nocturn
 {
 	struct Transform
 	{
-		glm::vec3 position;
-		glm::vec3 scale;
-		glm::vec3 rotation;
+		vec3 position;
+		vec3 scale;
+		vec3 rotation;
 
-		glm::vec3 forward;
-		glm::vec3 up;
-		glm::vec3 right;
+		vec3 forward;
+		vec3 up;
+		vec3 right;
 	};
 
 	namespace TransformSystem

@@ -21,10 +21,10 @@ namespace Nocturn
 	{
 	public:
 		static inline constexpr double CMouseSensitivity = 0.1;
-		static inline constexpr vec3   CPlayerBound		 = { 0.55f, 2.8f, 0.55 };
+		static inline constexpr vec3   CPlayerBound		 = { 0.55f, 1.8f, 0.55 };
 
 		Player( ) noexcept = delete;
-		Player( Transform &transform, const RigidBody &rigidbody ) noexcept;
+		Player( Transform &transform, RigidBody &rigidbody ) noexcept;
 
 		// cant copy
 		Player( const Player &player ) = delete;
@@ -41,7 +41,7 @@ namespace Nocturn
 
 	private:
 		Transform		  *m_pTransform{ };
-		const RigidBody	  *m_pRigidBody{ };
+		RigidBody		  *m_pRigidBody{ };
 		float			   m_speed;
 
 		void HandleMouseInput( double dt ) const;

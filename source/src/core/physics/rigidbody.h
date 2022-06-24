@@ -25,8 +25,8 @@ namespace Nocturn
 		}
 
 		bool useGravity = true;
-		vec3 acceleration{0.0f, -1.0f, 0.0f};
-		vec3 velocity{ 0.0f, -20.0f, 0.0f };
+		vec3 acceleration{1.0f, 0.0f, 1.0f};
+		vec3 velocity{ 0.0f, -15.0f, 0.0f };
 	};
 } // namespace Nocturn
 

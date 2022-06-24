@@ -28,7 +28,7 @@ namespace Nocturn
 
 		camera	= std::make_unique< Camera >( transform );
 		player	= std::make_unique< Player >( transform, rigidbody );
-		physics = std::make_unique< Physics >( *m_chunkManager, transform, rigidbody );
+		physics = std::make_unique< Physics >( *player, *m_chunkManager, transform, rigidbody );
 
 		Renderer::Init( *camera );
 
@@ -45,8 +45,8 @@ namespace Nocturn
 
 		// update forward, right and up vectors
 		TransformSystem::Update( );
-		physics->Update( dt );
 		player->Update( dt );
+		physics->Update( dt );
 	}
 
 	void World::Free( )

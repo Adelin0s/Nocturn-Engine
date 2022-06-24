@@ -7,11 +7,11 @@
 
 namespace Nocturn
 {
-	Player::Player( Transform &transform, const RigidBody& rigidbody ) noexcept
+	Player::Player( Transform &transform, RigidBody& rigidbody ) noexcept
 		:		Entity( CPlayerBound )
 		,		m_pTransform( &transform )
 		,		m_pRigidBody( &rigidbody )
-		,		m_speed( 10 )
+		,		m_speed( 2.5f )
 	{ }
 
 	const AABB& Player::GetBound( ) const noexcept
@@ -21,6 +21,9 @@ namespace Nocturn
 
 	void Player::Update( const double dt )
 	{
+		m_pRigidBody->velocity.x = 0;
+		m_pRigidBody->velocity.z = 0;
+
 		HandleMouseInput( dt );
 		HandleKeyboardInput( dt );
 	}
@@ -47,34 +50,37 @@ namespace Nocturn
 
 	void Player::HandleKeyboardInput( const double dt ) const
 	{
-		float localSpeed = 2.5f;
+		float localSpeed = m_speed;
 		if( Keyboard::key( GLFW_KEY_LEFT_SHIFT ) )
-			localSpeed = 10.0f;
-		const float velocity = m_speed * static_cast< float >( dt ) * localSpeed;
+			localSpeed = m_speed + 5.0f;
 
 		if( Keyboard::key( GLFW_KEY_W ) )
 		{
-			m_pTransform->position += m_pTransform->forward * velocity;
+			m_pRigidBody->velocity.x += m_pTransform->forward.x * localSpeed;
+			m_pRigidBody->velocity.z += m_pTransform->forward.z * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_S ) )
 		{
-			m_pTransform->position -= m_pTransform->forward * velocity;
+			m_pRigidBody->velocity.x += -m_pTransform->forward.x * localSpeed;
+			m_pRigidBody->velocity.z += -m_pTransform->forward.z * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_A ) )
 		{
-			m_pTransform->position -= m_pTransform->right * velocity;
+			m_pRigidBody->velocity.x += -m_pTransform->right.x * localSpeed;
+			m_pRigidBody->velocity.z += -m_pTransform->right.z * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_D ) )
 		{
-			m_pTransform->position += m_pTransform->right * velocity;
+			m_pRigidBody->velocity.x += m_pTransform->right.x * localSpeed;
+			m_pRigidBody->velocity.z += m_pTransform->right.z * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_Q ) )
 		{
-			m_pTransform->position.y -= 1.0f * velocity;
+			m_pTransform->position.y -= 0.15f;
 		}
 		if( Keyboard::key( GLFW_KEY_E ) )
 		{
-			m_pTransform->position.y += 1.0f * velocity;
+			m_pTransform->position.y += 0.15f;
 		}
 	}
 } // namespace Nocturn
