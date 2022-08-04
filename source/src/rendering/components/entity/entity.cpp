@@ -2,7 +2,7 @@
 
 namespace Nocturn
 {
-	Entity::Entity( const AABB &bound )
-		:		m_bound( bound )
-	{}
+	Entity::Entity( const vec3& positionRef, const vec3& sizeRef )
+		:		m_bound( positionRef, sizeRef )
+	{ }
 } // namespace Nocturn

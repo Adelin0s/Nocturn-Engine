@@ -11,7 +11,8 @@
 
 #include "core/types/typedef.hpp"
 
-#include "rendering/world/worldconstants.h"
+#include "core/components/constants.hpp"
+#include "core/platform/platform.h"
 
 namespace Nocturn
 {
@@ -36,14 +37,14 @@ namespace Nocturn
 		Noise &operator=( const Noise & ) = delete;
 		Noise &operator=( Noise && ) = delete;
 
-		double getHeight( const int32 x, const int32 z, const int32 chunkX, const int32 chunkZ ) const noexcept;
+		NODISCARD double getHeight( const int32 x, const int32 z, const int32 chunkX, const int32 chunkZ ) const noexcept;
 
 		~Noise( ) noexcept = default;
 
 	private:
-		double getNoise( double x, double y ) const noexcept;
-		double interpolate( double a, double b, double x ) const noexcept;
-		double noise( double x, double y ) const noexcept;
+		NODISCARD double getNoise( double x, double y ) const noexcept;
+		NODISCARD double interpolate( double a, double b, double x ) const noexcept;
+		NODISCARD double noise( double x, double y ) const noexcept;
 
 		uint32		m_seed;
 		NoiseParams m_noiseParams;

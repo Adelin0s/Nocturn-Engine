@@ -2,9 +2,7 @@
 
 #include "application/config/config.hpp"
 
-#include "rendering/world/worldconstants.h"
-
-#include <iostream>
+#include "core/components/constants.hpp"
 
 namespace Nocturn::rendering
 {
@@ -94,7 +92,7 @@ namespace Nocturn::rendering
 
 		// Allocate space for vbo
 		glBindBuffer( GL_ARRAY_BUFFER, m_vbo );
-		glBufferData( GL_ARRAY_BUFFER, m_dataSize, NULL, GL_DYNAMIC_DRAW );
+		glBufferData( GL_ARRAY_BUFFER, m_dataSize, nullptr, GL_DYNAMIC_DRAW );
 
 		// Set up the screen vao2D attributes
 		// The position doubles as the texture coordinates so we can use the same floats for that
@@ -114,8 +112,6 @@ namespace Nocturn::rendering
 			}
 			glEnableVertexAttribArray( attribute.attributeSlot );
 		}
-
-		m_zIndex	  = 0;
 		m_numVertices = 0;
 	}
 
@@ -141,6 +137,7 @@ namespace Nocturn::rendering
 
 		// Clear the batch
 		m_numVertices = 0;
+		m_data.clear( );
 	}
 
 	NODISCARD GLenum LineModel::AttributeTypeToGl( const AttributeType type ) const

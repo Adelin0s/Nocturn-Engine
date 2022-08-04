@@ -6,7 +6,7 @@
 namespace Nocturn::rendering
 {
 	ChunkSection::ChunkSection( const ivec2 &location ) :
-		m_chunk( CHUNK_SIZE ),
+		m_chunk( Constants::CChunkSize ),
 		m_location( location )
 	{
 	}
@@ -133,9 +133,9 @@ namespace Nocturn::rendering
 
 			assert( neighbor != nullptr );
 
-			return neighbor->getBlock( CHUNK_X - 1, py, pz );
+			return neighbor->getBlock( Constants::CChunkX- 1, py, pz );
 		}
-		if( px == CHUNK_X )
+		if( px == Constants::CChunkX )
 		{
 			const auto &neighbor = tryGetNeighbor( NeighborType::Front );
 
@@ -149,9 +149,9 @@ namespace Nocturn::rendering
 
 			assert( neighbor != nullptr );
 
-			return neighbor->getBlock( px, py, CHUNK_Z - 1 );
+			return neighbor->getBlock( px, py, Constants::CChunkZ - 1 );
 		}
-		if( pz == CHUNK_Z )
+		if( pz == Constants::CChunkZ )
 		{
 			const auto &neighbor = tryGetNeighbor( NeighborType::Right );
 
@@ -192,8 +192,8 @@ namespace Nocturn::rendering
 
 	NODISCARD ivec3 ChunkSection::getIndexFromSize( const uint32 size ) noexcept
 	{
-		const auto pz = size % CHUNK_Y;
-		return { pz % CHUNK_X, pz / CHUNK_X, pz };
+		const auto pz = size % Constants::CChunkY;
+		return { pz % Constants::CChunkZ, pz / Constants::CChunkX, pz };
 	}
 
 	NODISCARD bool ChunkSection::hasMesh( ) const noexcept
@@ -245,7 +245,7 @@ namespace Nocturn::rendering
 
 	bool ChunkSection::outOfBound( const int32_t x, const int32_t y, const int32_t z ) noexcept
 	{
-		if( x < 0 || x >= CHUNK_X || y < 0 || y >= CHUNK_Y || z < 0 || z >= CHUNK_Z )
+		if( x < 0 || x >= Constants::CChunkX || y < 0 || y >= Constants::CChunkY || z < 0 || z >= Constants::CChunkZ )
 			return true;
 		return false;
 	}

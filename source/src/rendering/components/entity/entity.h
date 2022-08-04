@@ -17,15 +17,15 @@ namespace Nocturn
 	struct Entity
 	{
 		Entity() noexcept = delete;
-		explicit Entity( const AABB &bound );
+		Entity( const vec3& positionRef, const vec3& sizeRef );
 
 		// cant copy
-		Entity( const Entity &player ) = delete;
-		Entity &operator=( const Entity &player ) = delete;
+		Entity( const Entity &entity ) = delete;
+		Entity &operator=( const Entity &entity ) = delete;
 
 		// cant move
-		Entity &operator=( Entity &&player ) = delete;
-		Entity( Entity &&player ) = delete;
+		Entity &operator=( Entity &&entity ) = delete;
+		Entity( Entity &&entity ) = delete;
 
 		NODISCARD virtual const AABB &GetBound( ) const noexcept NOCTURN_PURE;
 		virtual void Update( double dt ) NOCTURN_PURE;

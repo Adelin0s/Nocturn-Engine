@@ -151,13 +151,13 @@ namespace Nocturn::rendering
 			chunk.createChunk( );
 		}
 
-		if( Keyboard::keyWentDown( GLFW_KEY_SPACE ) )
+		/*if( Keyboard::keyWentDown( GLFW_KEY_SPACE ) )
 		{
 			auto &chunk = m_mapChunks[ { 0, 0 } ];
 			chunk.DeleteMesh( );
 			chunk.setBlock( BlockId::OakBark, x++, 35, 1 );
 			chunk.createChunk( );
-		}
+		}*/
 
 		for( const auto &[ first, second ] : m_mapChunks )
 		{
@@ -187,9 +187,9 @@ namespace Nocturn::rendering
 
 		const auto pchunk = chunk.getLocation( );
 
-		for( int32 px = 0; px < CHUNK_X; px++ )
+		for( int32 px = 0; px < Constants::CChunkX; px++ )
 		{
-			for( int32 pz = 0; pz < CHUNK_X; pz++ )
+			for( int32 pz = 0; pz < Constants::CChunkZ; pz++ )
 			{
 				const auto max = static_cast< int32 >( noise.getHeight( px, pz, pchunk[ 0 ], pchunk[ 1 ] ) );
 				for( int32 py = 0; py < max; py++ )

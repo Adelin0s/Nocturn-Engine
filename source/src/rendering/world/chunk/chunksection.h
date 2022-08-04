@@ -20,7 +20,7 @@
 #include "rendering/world/block/block.h"
 #include "rendering/world/block/blockdatabase.h"
 #include "rendering/world/chunk/chunkmesh.h"
-#include "rendering/world/worldconstants.h"
+#include "core/components/constants.hpp"
 
 namespace Nocturn::rendering
 {
@@ -44,7 +44,7 @@ namespace Nocturn::rendering
 
 		NODISCARD bool IsAllSolid( ) const
 		{
-			return static_cast< uint32 >( m_numberOfBlocks ) == CHUNK_BASE;
+			return static_cast< uint32 >( m_numberOfBlocks ) == Constants::CChunkBase;
 		}
 
 		NODISCARD auto getNumberOfBlocks( ) const noexcept
@@ -128,12 +128,13 @@ namespace Nocturn::rendering
 		~ChunkSection( ) noexcept = default;
 
 	private:
-		std::vector< Block >			  m_chunk;
-		ChunkMesh						  m_mesh;
-		Neighbor						  m_neighbor;
-		std::array< ChunkLayer, CHUNK_Y > m_layers;
-		ivec2							  m_location; /* chunk position */
-		bool							  m_renderableChunk = false;
+		std::array< ChunkLayer, Constants::CChunkY > m_layers;
+		std::vector< Block >						 m_chunk;
+
+		ChunkMesh m_mesh;
+		Neighbor  m_neighbor;
+		ivec2	  m_location; /* chunk position */
+		bool	  m_renderableChunk = false;
 
 		static bool outOfBound( int32_t x, int32_t y, int32_t z ) noexcept;
 	};

@@ -4,30 +4,18 @@
 
 namespace Nocturn
 {
-	bool			  isInit	 = false;
-	static Transform *pTransform = nullptr;
-
-	void TransformSystem::Init( Transform &transform )
+	void TransformSystem::Update( Transform *transform )
 	{
-		if( !isInit )
-		{
-			pTransform = &transform;
-		}
-		isInit = true;
-	}
-
-	void TransformSystem::Update( )
-	{
-		assert( pTransform );
+		assert( transform );
 
 		vec3 direction;
-		direction.x = cos( glm::radians( pTransform->rotation.x ) ) * cos( glm::radians( pTransform->rotation.y ) );
-		direction.y = sin( glm::radians( pTransform->rotation.y ) );
-		direction.z = sin( glm::radians( pTransform->rotation.x ) ) * cos( glm::radians( pTransform->rotation.y ) );
+		direction.x = cos( glm::radians( transform->rotation.x ) ) * cos( glm::radians( transform->rotation.y ) );
+		direction.y = sin( glm::radians( transform->rotation.y ) );
+		direction.z = sin( glm::radians( transform->rotation.x ) ) * cos( glm::radians( transform->rotation.y ) );
 
-		pTransform->forward = glm::normalize( direction );
-		pTransform->right	= glm::normalize( glm::cross( pTransform->forward, glm::vec3( 0, 1, 0 ) ) );
-		pTransform->up		= glm::normalize( glm::cross( pTransform->right, pTransform->forward ) );
+		transform->forward = glm::normalize( direction );
+		transform->right	= glm::normalize( glm::cross( transform->forward, glm::vec3( 0, 1, 0 ) ) );
+		transform->up		= glm::normalize( glm::cross( transform->right, transform->forward ) );
 	}
 
 } // namespace Nocturn

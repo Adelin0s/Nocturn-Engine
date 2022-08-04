@@ -15,8 +15,12 @@
 #include "rendering/components/entity/camera.h"
 #include "rendering/components/entity/entity.h"
 
+#include "rendering/renderer/renderer.h"
+
 namespace Nocturn
 {
+	using namespace rendering;
+
 	class Player final: public Entity
 	{
 	public:
@@ -40,12 +44,14 @@ namespace Nocturn
 		~Player( ) noexcept override = default;
 
 	private:
-		Transform		  *m_pTransform{ };
-		RigidBody		  *m_pRigidBody{ };
-		float			   m_speed;
+		Transform *m_pTransform{ };
+		RigidBody *m_pRigidBody{ };
+		vec3	   m_position{ };
+		bool	   m_type = true;
+		float	   m_speed;
 
-		void HandleMouseInput( double dt ) const;
-		void HandleKeyboardInput( double dt ) const;
+		void HandleMouseInput( ) const noexcept;
+		void HandleKeyboardInput( ) const noexcept;
 	};
 } // namespace Nocturn
 

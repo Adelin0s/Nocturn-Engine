@@ -27,12 +27,12 @@ namespace Nocturn::rendering
 
 	struct RenderVertexLine
 	{
-		glm::vec3 start;
-		glm::vec3 end;
+		vec3 start;
+		vec3 end;
 		float	  isStart;
 		float	  direction;
 		float	  strokeWidth;
-		glm::vec4 color;
+		vec4 color;
 	};
 
 	enum class AttributeType : uint8
@@ -104,7 +104,6 @@ namespace Nocturn::rendering
 		uint32							m_vao = 0;
 		uint32							m_vbo = 0;
 		int32							m_numVertices = 0;
-		int32							m_zIndex = 0;
 		uint32							m_dataSize = 0;
 	};
 } // namespace Nocturn::rendering

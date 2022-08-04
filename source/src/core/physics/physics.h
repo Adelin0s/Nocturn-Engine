@@ -25,20 +25,19 @@ namespace Nocturn
 
 	struct CollisionResult
 	{
-		vec3 overlap;
+		vec3		  overlap;
 		CollisionFace face;
 	};
 
 	class Physics
 	{
 	public:
-		static inline vec3	gravity{ 0.0f, 20.0f, 0.0f };
-		static inline vec3	terminalVelocity = { 50.0f, 50.0f, 50.0f };
-		static inline float updateRate = 1.0f / 60.0f;
+		static constexpr inline vec3  CEndVelocity = vec3( 50.0f );
+		static constexpr inline float CPhysicsUpdateRate = 1.0f / 120;
+		static constexpr inline vec3 CGravity{ 0.0f, -20.0f, 0.0f };
 
 		Physics( ) noexcept = delete;
-
-		Physics( const Entity &player, ChunkManager& chunkManager, Transform &transform, RigidBody &rigidBody );
+		Physics( const Entity &player, ChunkManager &chunkManager, Transform &transform, RigidBody &rigidBody );
 
 		// cant copy
 		Physics( const Physics &rigidBody ) = delete;
@@ -53,14 +52,23 @@ namespace Nocturn
 		~Physics( ) noexcept = default;
 
 	private:
-		const Entity *m_pPlayer{ };
-		ChunkManager *m_pChunkManager{ };
-		Transform	 *m_pTransform{ };
-		RigidBody	 *m_pRigidBody{ };
+		const Entity  *m_pPlayer{ };
+		ChunkManager  *m_pChunkManager{ };
+		Transform	  *m_pTransform{ };
+		RigidBody	  *m_pRigidBody{ };
 
-		void ProcessCollision( ) const noexcept;
-		static bool CheckColliding( const Transform& transform1, const AABB& box1, const Transform& transform2, const AABB &box2 ) noexcept;
-		NODISCARD CollisionResult GetCollisionFace( const Transform &transform1, const AABB &box1, const Transform &transform2, const AABB &box2 ) const noexcept;
+		void		ProcessCollision( float &minTime ) const noexcept;
+		float		SweptCollision( const vec3 &velocity, float x, float y, float z ) const noexcept;
+
+		static bool AABBtoAABB( const Transform &transform1, const AABB &box1, const Transform &transform2, const AABB &box2 ) noexcept;
+		static vec3 GetMinInterval( const vec3 &position ) noexcept
+		{
+			return position - Player::CPlayerBound * 0.5f;
+		}
+		static vec3 GetMaxInterval( const vec3 &position ) noexcept
+		{
+			return position + Player::CPlayerBound * 0.5f;
+		}
 	};
 
 } // namespace Nocturn

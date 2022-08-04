@@ -11,10 +11,11 @@ namespace Nocturn::Renderer
 	using namespace rendering;
 
 	void Init( const Camera &cameraRef );
-	void Render( );
 
 	void DrawLine( const vec3 &start, const vec3 &end, const Style &style );
-	void DrawBox( const glm::vec3 &center, const glm::vec3 &size, const Style &style );
+	void DrawBox( const vec3 &center, const vec3 &size, const Style &style );
+
+	void Render( );
 
 	void Free( );
 } // namespace Nocturn::Renderer

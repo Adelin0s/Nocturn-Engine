@@ -18,8 +18,7 @@ namespace Nocturn
 
 	namespace TransformSystem
 	{
-		void Init( Transform &transform );
-		void Update( );
+		void Update( Transform *transform );
 	}
 } // namespace Nocturn
 

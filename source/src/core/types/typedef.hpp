@@ -12,7 +12,16 @@
 
 namespace Nocturn
 {
-	using namespace glm;
+	using glm::mat2;
+	using glm::mat3;
+	using glm::mat4;
+	using glm::ivec1;
+	using glm::ivec2;
+	using glm::ivec3;
+	using glm::vec1;
+	using glm::vec2;
+	using glm::vec3;
+	using glm::vec4;
 
 	using int8	 = int8_t;
 	using uint8	 = uint8_t;

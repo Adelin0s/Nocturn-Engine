@@ -4,7 +4,7 @@
 
 #include "rendering/world/block/blockdatabase.h"
 #include "rendering/world/chunk/chunksection.h"
-#include "rendering/world/worldconstants.h"
+#include "core/components/constants.hpp"
 
 namespace Nocturn::rendering
 {
@@ -41,10 +41,10 @@ namespace Nocturn::rendering
 
 		auto chunk = m_pChunk->getChunk( );
 
-		for( int32 z = 0; z < CHUNK_Z; z++ )
-			for( int32 y = 0; y < CHUNK_Y; y++ )
+		for( int32 z = 0; z < Constants::CChunkZ; z++ )
+			for( int32 y = 0; y < Constants::CChunkY; y++ )
 			{
-				for( int32 x = 0; x < CHUNK_X; x++ )
+				for( int32 x = 0; x < Constants::CChunkX; x++ )
 				{
 					if( shouldPassLayer( y ) )
 					{
@@ -134,7 +134,7 @@ namespace Nocturn::rendering
 	/// <returns>True if all blocks are set or False</returns>
 	NODISCARD bool ChunkMesh::shouldPassLayer( const int32 y ) const noexcept
 	{
-		if( y + 1 < CHUNK_Y && !m_pChunk->getLayer( y + 1 ).IsAllSolid( ) )
+		if( y + 1 < Constants::CChunkY && !m_pChunk->getLayer( y + 1 ).IsAllSolid( ) )
 		{
 			return false;
 		}
@@ -192,9 +192,9 @@ namespace Nocturn::rendering
 		/* we have 4 set of vertices with 3 coords x, y, z  */
 		for( uint32_t i = 0, index = 0; i < 4; i++ )
 		{
-			vertices.push_back( face[ index++ ] + chunkPosition[ 0 ] * CHUNK_X + blockPosition.x );
+			vertices.push_back( face[ index++ ] + chunkPosition[ 0 ] * Constants::CChunkX + blockPosition.x );
 			vertices.push_back( face[ index++ ] + blockPosition.y );
-			vertices.push_back( face[ index++ ] + chunkPosition[ 1 ] * CHUNK_Z + blockPosition.z );
+			vertices.push_back( face[ index++ ] + chunkPosition[ 1 ] * Constants::CChunkZ + blockPosition.z );
 		}
 		textures.insert( textures.end( ), texturesCoords.begin( ), texturesCoords.end( ) );
 	}

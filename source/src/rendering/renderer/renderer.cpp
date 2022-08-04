@@ -9,12 +9,18 @@
 
 namespace Nocturn::Renderer
 {
-	static const Camera *camera;
-	static LineModel	 batchLines;
-	static Shader		 lineShader( Config::CLineVertexShader, Config::CLineFragmentShader );
+	static const Camera     *camera;
+	static       LineModel	 batchLines;
+	static       Shader		 lineShader( Config::CLineVertexShader, Config::CLineFragmentShader );
 
 	void Init( const Camera &cameraRef )
 	{
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		batchLines.SetNumVertices( 0 );
 		camera = nullptr;
 
@@ -28,27 +34,6 @@ namespace Nocturn::Renderer
 		lineShader.init( );
 
 		camera = &cameraRef;
-	}
-
-	void Render( )
-	{
-		if( batchLines.GetNumVertices( ) <= 0 )
-		{
-			return;
-		}
-
-		glDisable( GL_CULL_FACE );
-
-		assert( camera != nullptr );
-
-		lineShader.bind( );
-		lineShader.setMatrix4( "uProjection", camera->getProjectionMatrix( ) );
-		lineShader.setMatrix4( "uView", camera->getViewMatrix( ) );
-		lineShader.setFloat( "uAspectRatio", Application::getWindow( ).getAspectRatio( ) );
-
-		batchLines.Flush( );
-
-		glEnable( GL_CULL_FACE );
 	}
 
 	void DrawLine( const vec3 &start, const vec3 &end, const Style &style )
@@ -131,6 +116,27 @@ namespace Nocturn::Renderer
 		DrawLine( v1, v5, style );
 		DrawLine( v2, v6, style );
 		DrawLine( v3, v7, style );
+	}
+
+	void Render( )
+	{
+		if( batchLines.GetNumVertices( ) <= 0 )
+		{
+			return;
+		}
+
+		glDisable( GL_CULL_FACE );
+
+		assert( camera != nullptr );
+
+		lineShader.bind( );
+		lineShader.setMatrix4( "uProjection", camera->getProjectionMatrix( ) );
+		lineShader.setMatrix4( "uView", camera->getViewMatrix( ) );
+		lineShader.setFloat( "uAspectRatio", Application::getWindow( ).getAspectRatio( ) );
+
+		batchLines.Flush( );
+
+		glEnable( GL_CULL_FACE );
 	}
 
 	void Free( )
