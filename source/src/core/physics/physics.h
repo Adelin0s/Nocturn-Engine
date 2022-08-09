@@ -14,13 +14,13 @@ namespace Nocturn
 
 	enum class CollisionFace : uint8
 	{
-		None = 0
-		, Top
-		, Bottom
-		, Front
-		, Back
-		, Left
-		, Right
+		None = 0,
+		Top,
+		Bottom,
+		Front,
+		Back,
+		Left,
+		Right
 	};
 
 	struct CollisionResult
@@ -32,9 +32,9 @@ namespace Nocturn
 	class Physics
 	{
 	public:
-		static constexpr inline vec3  CEndVelocity = vec3( 50.0f );
-		static constexpr inline float CPhysicsUpdateRate = 1.0f / 120;
-		static constexpr inline vec3 CGravity{ 0.0f, -20.0f, 0.0f };
+		static constexpr inline vec3  CEndVelocity		 = vec3( 50.0f );
+		static constexpr inline float CPhysicsUpdateRate = 1.0f / 60;
+		static constexpr inline vec3  CGravity{ 0.0f, -20.0f, 0.0f };
 
 		Physics( ) noexcept = delete;
 		Physics( const Entity &player, ChunkManager &chunkManager, Transform &transform, RigidBody &rigidBody );
@@ -45,20 +45,20 @@ namespace Nocturn
 
 		// cant move
 		Physics &operator=( Physics &&rigidBody ) = delete;
-		Physics( Physics &&rigidBody ) = delete;
+		Physics( Physics &&rigidBody )			  = delete;
 
 		void Update( double dt );
 
 		~Physics( ) noexcept = default;
 
 	private:
-		const Entity  *m_pPlayer{ };
-		ChunkManager  *m_pChunkManager{ };
+		const Entity *m_pPlayer{ };
+		ChunkManager *m_pChunkManager{ };
 		Transform	  *m_pTransform{ };
 		RigidBody	  *m_pRigidBody{ };
 
-		void		ProcessCollision( float &minTime ) const noexcept;
-		float		SweptCollision( const vec3 &velocity, float x, float y, float z ) const noexcept;
+		void  ProcessCollision( float &minTime ) const noexcept;
+		float SweptCollision( const vec3 &velocity, float x, float y, float z ) const noexcept;
 
 		static bool AABBtoAABB( const Transform &transform1, const AABB &box1, const Transform &transform2, const AABB &box2 ) noexcept;
 		static vec3 GetMinInterval( const vec3 &position ) noexcept

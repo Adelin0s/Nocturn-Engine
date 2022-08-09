@@ -7,40 +7,40 @@
 namespace Nocturn
 {
 	// will be change later
-	static vec3 normal = vec3(0,0,0);
+	static vec3 normal = vec3( 0, 0, 0 );
 
 	template< typename... Args >
-	static void print(Args... args)
+	static void print( Args... args )
 	{
-		((std::cout << args << ' '), ...) << '\n';
+		( ( std::cout << args << ' ' ), ... ) << '\n';
 	}
 
-	static void printVec(const vec3& vec)
+	static void printVec( const vec3 &vec )
 	{
 		std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << '\n';
 	}
 
 	Physics::Physics( const Entity &player, ChunkManager &chunkManager, Transform &transform, RigidBody &rigidBody )
-		:		m_pPlayer (&player)
+		:		m_pPlayer( &player )
 		,		m_pChunkManager( &chunkManager )
 		,		m_pTransform( &transform )
 		,		m_pRigidBody( &rigidBody )
-	{ }
+	{}
 
 	void Physics::Update( const double dt )
 	{
-		const auto dtf = static_cast< float >( dt );
+		const auto	 dtf				  = static_cast< float >( dt );
 		static float accumulatedDeltaTime = 0.0f;
 		accumulatedDeltaTime += dtf;
 
 		while( accumulatedDeltaTime >= CPhysicsUpdateRate )
 		{
 			accumulatedDeltaTime -= CPhysicsUpdateRate;
-			normal = vec3(0.f);
+			normal = vec3( 0.f );
 
 			auto &velocity	   = m_pRigidBody->velocity;
 			auto &acceleration = m_pRigidBody->acceleration;
-			auto &position = m_pTransform->position;
+			auto &position	   = m_pTransform->position;
 
 			float minTime = 1.0f;
 
@@ -52,7 +52,7 @@ namespace Nocturn
 			position += velocity * CPhysicsUpdateRate;
 			velocity += acceleration * CPhysicsUpdateRate;
 			velocity += CGravity * CPhysicsUpdateRate;
-			velocity = glm::clamp(velocity, -CEndVelocity, CEndVelocity);
+			velocity = glm::clamp( velocity, -CEndVelocity, CEndVelocity );
 
 			ProcessCollision( minTime );
 		}
@@ -60,41 +60,37 @@ namespace Nocturn
 
 	void Physics::ProcessCollision( float &minTime ) const noexcept
 	{
-		auto &velocity = m_pRigidBody->velocity;
+		auto &velocity	   = m_pRigidBody->velocity;
 		auto &acceleration = m_pRigidBody->acceleration;
-		auto &position = m_pTransform->position;
+		auto &position	   = m_pTransform->position;
 
-		vec3 real = position;
-        const auto minI = GetMinInterval( real );
-        const auto maxI = GetMaxInterval( real );
+		const vec3 real = position;
+		const auto minI = GetMinInterval( real );
+		const auto maxI = GetMaxInterval( real );
+		
+		const vec3 min = real * velocity - Player::CPlayerBound * 0.5f;
+		const vec3 max = real * velocity + Player::CPlayerBound * 0.5f;
 
-		real += velocity * normal;
-
-		const vec3 min = real - Player::CPlayerBound * 0.5f;
-        const vec3 max = real + Player::CPlayerBound * 0.5f;
-
-        const auto minX = static_cast< int32 >( glm::floor( glm::min( min.x, minI.x ) ) ) % Constants::CChunkX;
-		const auto minY = static_cast< int32 >( glm::floor( glm::min( min.y, minI.y ) ) ) % Constants::CChunkY;
-		const auto minZ = static_cast< int32 >( glm::floor( glm::min( min.z, minI.z ) ) ) % Constants::CChunkZ;
+		const auto minX = static_cast< int32 >( glm::floor( glm::min( min.x, minI.x ) ) ) % Constants::CChunkX;
 		const auto maxX = static_cast< int32 >( glm::floor( glm::max( max.x, maxI.x ) ) ) % Constants::CChunkX;
+		const auto minY = static_cast< int32 >( glm::floor( glm::min( min.y, minI.y ) ) ) % Constants::CChunkY;
 		const auto maxY = static_cast< int32 >( glm::floor( glm::max( max.y, maxI.y ) ) ) % Constants::CChunkY;
+		const auto minZ = static_cast< int32 >( glm::floor( glm::min( min.z, minI.z ) ) ) % Constants::CChunkZ;
 		const auto maxZ = static_cast< int32 >( glm::floor( glm::max( max.z, maxI.z ) ) ) % Constants::CChunkZ;
 
-        minTime = 1.0f;
-		const auto &chunk = m_pChunkManager->GetChunk( {
-				position.x / Constants::CChunkX,
-				position.z / Constants::CChunkZ
-		} );
+		minTime			  = 1.0f;
+		const auto &chunk = m_pChunkManager->GetChunk( { position.z / Constants::CChunkX,
+														 position.x / Constants::CChunkZ } );
 
 		for( int32 x = minX; x <= maxX; x++ )
-        for( int32 y = minY; y <= maxY; y++ )
+		for( int32 y = minY; y <= maxY; y++ )
 		for( int32 z = minZ; z <= maxZ; z++ )
 		{
-			printVec(position);
 			if( y >= 0 && y < Constants::CChunkY && chunk.getBlock( x, y, z ) != BlockId::Air )
 			{
 				if( const float collisionTime = SweptCollision( velocity, x, y, z ); collisionTime < minTime )
 				{
+					printVec( position );
 					minTime = collisionTime;
 					if( minTime < 1.0f )
 					{
@@ -126,7 +122,7 @@ namespace Nocturn
 		vec3 entry, exit;
 
 		const auto minI = GetMinInterval( m_pTransform->position );
-        const auto maxI = GetMaxInterval( m_pTransform->position );
+		const auto maxI = GetMaxInterval( m_pTransform->position );
 
 		if( velocity.x > 0.0f )
 		{
@@ -195,7 +191,7 @@ namespace Nocturn
 		}
 
 		// TODO: Inspect why entryTime is negative
-		const float entryTime = std::max(std::max(entry.x,entry.z),entry.y) * -1;
+		const float entryTime = std::max( std::max( entry.x, entry.z ), entry.y ) * -1;
 
 		// If there was no collision
 		if( entryTime >= 1.0f || entryTime < 0 )
@@ -209,12 +205,12 @@ namespace Nocturn
 			return 1.0f;
 		}
 
-		if( entry.x > 1.0f || entry.y > 1.0f || entry.z > 1.0f)
+		if( entry.x > 1.0f || entry.y > 1.0f || entry.z > 1.0f )
 		{
 			return 1.0f;
 		}
 
-        if( entry.x > entry.z )
+		if( entry.x > entry.z )
 		{
 			if( entry.x > entry.y )
 			{
@@ -244,10 +240,10 @@ namespace Nocturn
 				normal.z = 0.0f;
 			}
 		}
-        return entryTime;
+		return entryTime;
 	}
 
-	bool Physics::AABBtoAABB( const Transform& transform1, const AABB& box1, const Transform& transform2, const AABB &box2 ) noexcept
+	bool Physics::AABBtoAABB( const Transform &transform1, const AABB &box1, const Transform &transform2, const AABB &box2 ) noexcept
 	{
 		const vec3 min1 = transform1.position - ( box1.size * 0.5f );
 		const vec3 max1 = transform1.position + ( box1.size * 0.5f );

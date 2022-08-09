@@ -31,8 +31,8 @@ namespace Nocturn::rendering
 		m_noiseParams.offset	 = 10;
 		m_noiseParams.roughness	 = 0.51;
 
-		for( int x = 0; x < 2; x++ )
-			for( int z = 0; z < 2; z++ )
+		for( int x = 0; x < 50; x++ )
+			for( int z = 0; z < 50; z++ )
 			{
 				m_pendingChunks.emplace_back( [ =, this ]( )
 											  { this->GenerateChunkMesh( { x, z } ); } );
@@ -50,7 +50,7 @@ namespace Nocturn::rendering
 	}
 
 	/// <summary>
-	///	TODO: Need to update!!!
+	///	TODO: Need to update!!! Really? :))
 	///	This function generates the current chunk and its 4 neighbors(left, right, top, bottom).
 	///	The main idea was to generate the current chunk and its neighbors and then render only the current chunk.
 	///	Whether the current chunk was generated or not(it already exists) it is marked as a renderable chunk.

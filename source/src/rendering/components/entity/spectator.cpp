@@ -9,7 +9,7 @@ namespace Nocturn
 	Spectator::Spectator( Transform &transform ) noexcept
 		:		Entity( transform.position, vec3(0.5, 0.5, 0.5) )
 		,		m_pTransform( &transform )
-		,		m_speed( 0.5f )
+		,		m_speed( 0.05f )
 	{ }
 
 	const AABB &Spectator::GetBound( ) const noexcept
