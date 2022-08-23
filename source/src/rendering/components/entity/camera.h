@@ -37,8 +37,8 @@ namespace Nocturn
 		Camera( Camera && ) = delete;
 		Camera &operator=( Camera && ) = delete;
 
-		NODISCARD mat4 getViewMatrix( ) const noexcept;
-		NODISCARD mat4 getProjectionMatrix( ) const noexcept;
+		NODISCARD mat4 GetViewMatrix( ) const noexcept;
+		NODISCARD mat4 GetProjectionMatrix( ) const noexcept;
 
 		~Camera( ) noexcept = default;
 

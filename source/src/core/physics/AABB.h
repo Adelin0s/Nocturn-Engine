@@ -11,17 +11,24 @@ namespace Nocturn
 	struct AABB
 	{
 		AABB( ) noexcept = delete;
-		AABB( const vec3 &positionRef, const vec3 &sizeRef );
+		AABB( const vec3& position, const vec3& size) noexcept;
 
-		~AABB( ) noexcept = default;
+		// cant copy
+		AABB( const AABB & ) = delete;
+		AABB &operator=( const AABB & ) = delete;
 
-		void Update( const vec3& positionRef ) noexcept;
+		// cant move
+		AABB( AABB &&) = delete;
+		AABB &operator=( AABB && ) = delete;
 
-		NODISCARD vec3 GetMin( ) const noexcept;
-		NODISCARD vec3 GetMax( ) const noexcept;
+		void Update( ) noexcept;
 
-		vec3 position{};
-		vec3 size{};
+		~AABB() noexcept = default;
+
+		const vec3 &position{ };
+		const vec3 &size{ };
+		vec3		min{ };
+		vec3		max{ };
 	};
 } // namespace Nocturn::Physics
 

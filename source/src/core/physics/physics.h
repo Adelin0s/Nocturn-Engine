@@ -12,30 +12,9 @@ namespace Nocturn
 {
 	using namespace rendering;
 
-	enum class CollisionFace : uint8
-	{
-		None = 0,
-		Top,
-		Bottom,
-		Front,
-		Back,
-		Left,
-		Right
-	};
-
-	struct CollisionResult
-	{
-		vec3		  overlap;
-		CollisionFace face;
-	};
-
 	class Physics
 	{
 	public:
-		static constexpr inline vec3  CEndVelocity		 = vec3( 50.0f );
-		static constexpr inline float CPhysicsUpdateRate = 1.0f / 60;
-		static constexpr inline vec3  CGravity{ 0.0f, -20.0f, 0.0f };
-
 		Physics( ) noexcept = delete;
 		Physics( const Entity &player, ChunkManager &chunkManager, Transform &transform, RigidBody &rigidBody );
 
@@ -52,23 +31,20 @@ namespace Nocturn
 		~Physics( ) noexcept = default;
 
 	private:
-		const Entity *m_pPlayer{ };
-		ChunkManager *m_pChunkManager{ };
+		const Entity  *m_pPlayer{ };
+		ChunkManager  *m_pChunkManager{ };
 		Transform	  *m_pTransform{ };
 		RigidBody	  *m_pRigidBody{ };
+		vec3		   normal{ 0.0f };
 
-		void  ProcessCollision( float &minTime ) const noexcept;
-		float SweptCollision( const vec3 &velocity, float x, float y, float z ) const noexcept;
+		static constexpr inline vec3 CMaxVelocity{ 5.0f };
+		static constexpr inline vec3 CGravity{ 0.0f, -6.8f, 0.0f };
+		static constexpr inline float CPhysicsUpdateRate = 1.0f / 120;
+		static constexpr inline float CHorizontalDrag = 8.0f;
+		static constexpr inline float CVerticalDrag = 1.0f;
 
-		static bool AABBtoAABB( const Transform &transform1, const AABB &box1, const Transform &transform2, const AABB &box2 ) noexcept;
-		static vec3 GetMinInterval( const vec3 &position ) noexcept
-		{
-			return position - Player::CPlayerBound * 0.5f;
-		}
-		static vec3 GetMaxInterval( const vec3 &position ) noexcept
-		{
-			return position + Player::CPlayerBound * 0.5f;
-		}
+		void  ProcessCollision( float &minTime, const vec3& velocity ) noexcept;
+		NODISCARD float SweptCollision( const vec3 &velocity, const vec3 &min, const vec3 &max, const vec3 &minI, const vec3 &maxI, float minTime, float x, float y, float z ) noexcept;
 	};
 
 } // namespace Nocturn

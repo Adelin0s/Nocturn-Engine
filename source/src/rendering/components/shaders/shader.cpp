@@ -132,14 +132,14 @@ namespace Nocturn
 	{
 		assert( m_bIsInit );
 
-		setMatrix4( "projection", camera.getProjectionMatrix( ) );
+		setMatrix4( "projection", camera.GetProjectionMatrix( ) );
 	}
 
 	void Shader::setProjectionMatrix( const Camera &camera ) const
 	{
 		assert( m_bIsInit );
 
-		setMatrix4( "view", camera.getViewMatrix( ) );
+		setMatrix4( "view", camera.GetViewMatrix( ) );
 	}
 
 	void Shader::checkCompileErrors( uint32_t shader, const std::string &type )

@@ -169,22 +169,22 @@ namespace Nocturn::rendering
 	}
 
 	/// <summary>
-	/// Return a size from a x, y and z for chunk position
+	/// Return size from (x, y, z) to chunk position (uint32)
 	/// </summary>
 	/// <param name="x">column</param>
 	/// <param name="y">height</param>
 	/// <param name="z">row</param>
-	/// <returns>Vector size</returns>
+	/// <returns>uint32 size</returns>
 	NODISCARD uint32 ChunkSection::getSizeFromIndex( const uint32 x, const uint32 y, const uint32 z ) noexcept
 	{
 		return z * 16 + y * 256 + x;
 	}
 
 	/// <summary>
-	/// Return a size from a ivec3 for chunk position
+	/// Return a size from (ivec3) to chunk position
 	/// </summary>
-	/// <param name="vec">A vec3 with chunk position(column/height/row)</param>
-	/// <returns>uint32 that represent size of current chunk</returns>
+	/// <param name="vec">vec3 stands for chunk position</param>
+	/// <returns>uint32 stands for size of current chunk</returns>
 	NODISCARD uint32 ChunkSection::getSizeFromIndex( const ivec3 &vec ) noexcept
 	{
 		return vec.z * 16 + vec.y * 256 + vec.x;

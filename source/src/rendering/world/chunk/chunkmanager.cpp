@@ -25,17 +25,23 @@ namespace Nocturn::rendering
 		m_pTaskSystem( &taskSystem ),
 		m_renderDistance( 2 )
 	{
-		m_noiseParams.octaves	 = 9;
+		/*m_noiseParams.octaves	 = 9;
 		m_noiseParams.amplitude	 = 80;
 		m_noiseParams.smoothness = 500;
 		m_noiseParams.offset	 = 10;
+		m_noiseParams.roughness	 = 0.51;*/
+
+		m_noiseParams.octaves	 = 20;
+		m_noiseParams.amplitude	 = 80;
+		m_noiseParams.smoothness = 400;
+		m_noiseParams.offset	 = 10;
 		m_noiseParams.roughness	 = 0.51;
 
-		for( int x = 0; x < 50; x++ )
-			for( int z = 0; z < 50; z++ )
+		for( int x = 0; x < 1; x++ )
+			for( int z = 0; z < 1; z++ )
 			{
-				m_pendingChunks.emplace_back( [ =, this ]( )
-											  { this->GenerateChunkMesh( { x, z } ); } );
+				m_pendingChunks.emplace_back( [ =, Self = this ]( )
+											  { Self->GenerateChunkMesh( { x, z } ); } );
 			}
 	}
 
@@ -51,7 +57,7 @@ namespace Nocturn::rendering
 
 	/// <summary>
 	///	TODO: Need to update!!! Really? :))
-	///	This function generates the current chunk and its 4 neighbors(left, right, top, bottom).
+	///	This function generates the current chunk and its 4 neighbors(left, right, top and bottom).
 	///	The main idea was to generate the current chunk and its neighbors and then render only the current chunk.
 	///	Whether the current chunk was generated or not(it already exists) it is marked as a renderable chunk.
 	/// </summary>
@@ -60,7 +66,7 @@ namespace Nocturn::rendering
 	{
 		AdjacentChunk adjacentChunk{ chunkPosition };
 		ChunkSection  middleChunk{ chunkPosition };
-		auto		 *pMiddleChunk = &middleChunk;
+		auto *pMiddleChunk = &middleChunk;
 
 		if( m_mapChunks.contains( chunkPosition ) )
 		{
@@ -146,18 +152,18 @@ namespace Nocturn::rendering
 		if( Keyboard::keyWentDown( GLFW_KEY_B ) )
 		{
 			auto &chunk = m_mapChunks[ { 0, 0 } ];
-			chunk.DeleteMesh( );
+			chunk.DeleteMesh( ); 
 			chunk.setBlock( BlockId::Air, 3, y--, 1 );
 			chunk.createChunk( );
 		}
 
-		/*if( Keyboard::keyWentDown( GLFW_KEY_SPACE ) )
+		if( Keyboard::keyWentDown( GLFW_KEY_LEFT_CONTROL) )
 		{
 			auto &chunk = m_mapChunks[ { 0, 0 } ];
 			chunk.DeleteMesh( );
 			chunk.setBlock( BlockId::OakBark, x++, 35, 1 );
 			chunk.createChunk( );
-		}*/
+		}
 
 		for( const auto &[ first, second ] : m_mapChunks )
 		{
@@ -168,25 +174,24 @@ namespace Nocturn::rendering
 		}
 	}
 
-	void ChunkManager::Render( const Camera &camera, ChunkRendering &chunkRender )
+	// TODO: Should to seperate Render function?
+	void ChunkManager::Render( const Camera &camera, Frustum &frustum, ChunkRendering &chunkRender )
 	{
 		for( const auto &[ first, second ] : m_mapChunks )
 		{
 			if( m_mapChunks[ first ].shouldToRender( ) )
 			{
 				// auto renderInfo = second.getRenderInfo( );
-				chunkRender.add( second.getRenderInfo( ) );
+				chunkRender.Add( second.getRenderInfo( ) );
 			}
 		}
-		chunkRender.render( camera );
+		chunkRender.Render( camera );
 	}
 
 	void ChunkManager::GenerateNewChunk( ChunkSection &chunk, const bool shouldToCreateMesh ) const noexcept
 	{
 		const Noise noise( m_noiseParams, 2432 );
-
 		const auto pchunk = chunk.getLocation( );
-
 		for( int32 px = 0; px < Constants::CChunkX; px++ )
 		{
 			for( int32 pz = 0; pz < Constants::CChunkZ; pz++ )

@@ -10,9 +10,10 @@ namespace Nocturn
 	static Transform spectatorTransform;
 	static RigidBody rigidbody;
 
-	static std::unique_ptr< Camera >  camera;
-	static std::unique_ptr< Entity >  player;
-	static std::unique_ptr< Physics > physics;
+	static std::unique_ptr< Camera >	camera;
+	static std::unique_ptr< Frustum >	cameraFrustum;
+	static std::unique_ptr< Entity >	player;
+	static std::unique_ptr< Physics >	physics;
 	static std::unique_ptr< Spectator > spectator;
 
 	const Style style1 = { Colors::deepBlue, 0.25f };
@@ -30,14 +31,15 @@ namespace Nocturn
 		spectatorTransform.position = vec3( 3.0f, 40.0f, 12.0f );
 		spectatorTransform.rotation = vec3( 0.0f );
 
-		camera	  = std::make_unique< Camera >( spectatorTransform );
-		player	  = std::make_unique< Player >( playerTransform, rigidbody );
-		spectator = std::make_unique< Spectator >( spectatorTransform );
-		physics	  = std::make_unique< Physics >( *player, *m_chunkManager, playerTransform, rigidbody );
+		camera		  = std::make_unique< Camera >( spectatorTransform );
+		cameraFrustum = std::make_unique< Frustum >( );
+		player		  = std::make_unique< Player >( playerTransform, rigidbody );
+		spectator	  = std::make_unique< Spectator >( spectatorTransform );
+		physics		  = std::make_unique< Physics >( *player, *m_chunkManager, playerTransform, rigidbody );
 
 		Renderer::Init( *camera );
 
-		m_chunkRender.init( );
+		m_chunkRender.Init( );
 	}
 
 	void World::Update( const double dt )
@@ -45,18 +47,22 @@ namespace Nocturn
 		const auto currentPosition = static_cast< ivec3 >( spectatorTransform.position );
 
 		m_chunkManager->Update( currentPosition );
-		m_chunkManager->Render( *camera, m_chunkRender );
 		m_skyboxRender->render( *camera );
 
 		// update forward, right and up vectors
 		TransformSystem::Update( &playerTransform );
 		TransformSystem::Update( &spectatorTransform );
 
+		const auto projectionMatrix = camera->GetProjectionMatrix( );
+		const auto viewMatrix = camera->GetViewMatrix( );
+
+		cameraFrustum->Update( projectionMatrix * viewMatrix );
 		physics->Update( dt );
 		player->Update( dt );
 		spectator->Update( dt );
 
 		Renderer::Render( );
+		m_chunkManager->Render( *camera, m_chunkRender );
 	}
 
 	void World::Free( )

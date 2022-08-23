@@ -1,3 +1,11 @@
+// =====================================================================
+//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
+//   @ Create Time: 05-06-2022 6:34 PM                                                                                                                                                
+//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
+//   @ Modified time: 23-08-2022 10:34 PM                                                                                                                                    
+//   @ Description:                                                                                                                                                                                
+// =====================================================================
+
 #ifndef WORLD_H
 #define WORLD_H
 
@@ -27,11 +35,11 @@ namespace Nocturn
 
 		// cant copy
 		World( const World & ) = delete;
-		World( World && ) = delete;
+		World( World && )      = delete;
 
 		// cant move
 		World &operator=( const World & ) = delete;
-		World &operator=( World && ) = delete;
+		World &operator=( World && )      = delete;
 
 		void Init( );
 		void Update( double dt );
@@ -40,10 +48,10 @@ namespace Nocturn
 		~World( ) noexcept = default;
 
 	private:
-		ChunkRendering					   m_chunkRender;
+		ChunkRendering                     m_chunkRender;
 		std::unique_ptr< SkyboxRendering > m_skyboxRender;
-		std::unique_ptr< ChunkManager >	   m_chunkManager;
-		std::unique_ptr< TaskSystem >	   m_taskSystem;
+		std::unique_ptr< ChunkManager >    m_chunkManager;
+		std::unique_ptr< TaskSystem >      m_taskSystem;
 	};
 } // namespace Nocturn
 

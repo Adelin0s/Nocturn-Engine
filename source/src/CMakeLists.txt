@@ -84,6 +84,7 @@ target_link_libraries(NocturnProject PUBLIC stb)
 
 set_target_properties(NocturnProject PROPERTIES FOLDER Nocturn)
 
+target_compile_options(NocturnProject PUBLIC "/Zc:__cplusplus")
 set_property(TARGET NocturnProject PROPERTY CXX_STANDARD 20)
 
 add_definitions(-DGLFW_INCLUDE_NONE)

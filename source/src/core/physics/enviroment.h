@@ -1,10 +1,10 @@
-/****************************************************************************************
- * @ Author: Cucorianu Eusebiu Adelin                                                   *
- * @ Create Time: 30-07-2021 02:15:45                                                   *
- * @ Modified by: Cucorianu Eusebiu Adelin                                              *
- * @ Modified time: 02-12-2021 18:24:02                                                 *
- * @ Description:                                                                       *
- ****************************************************************************************/
+// =====================================================================
+//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
+//   @ Create Time: 09-03-2022 11:23 AM                                                                                                                                                
+//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
+//   @ Modified time: 22-08-2022 10:22 PM                                                                                                                                    
+//   @ Description:                                                                                                                                                                                
+// =====================================================================
 
 #ifndef ENVIROMENT_H
 #define ENVIROMENT_H
@@ -13,12 +13,10 @@
 
 namespace Nocturn::core
 {
-
-    struct Environment
-    {
-    public:
-        static const glm::vec3 worldUp;
-        static const glm::vec3 gravitationalAcceleration;
-    };
+	struct Environment
+	{
+		static const glm::vec3 worldUp;
+		static const glm::vec3 gravitationalAcceleration;
+	};
 }
 #endif

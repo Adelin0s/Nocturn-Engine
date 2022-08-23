@@ -2,23 +2,23 @@
 
 namespace Nocturn::rendering
 {
-	void ChunkRendering::init( )
+	void ChunkRendering::Init( )
 	{
 		m_shader = std::make_unique< Shader >( Config::CChunkVertexShader, Config::CChunkFragmentShader );
 		m_shader->init( );
 	}
 
-	void ChunkRendering::add( const RenderInfo &renderInfo )
+	void ChunkRendering::Add( const RenderInfo &renderInfo )
 	{
 		m_chunks.emplace_back( renderInfo );
 	}
 
-	NODISCARD size_t ChunkRendering::size( ) const noexcept
+	NODISCARD size_t ChunkRendering::Size( ) const noexcept
 	{
 		return m_chunks.size( );
 	}
 
-	void ChunkRendering::render( const Camera &camera )
+	void ChunkRendering::Render( const Camera &camera )
 	{
 		if( m_chunks.empty( ) )
 			return;

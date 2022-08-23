@@ -9,14 +9,14 @@ namespace Nocturn
 		:		m_pTransform( &transform )
 	{ }
 
-	mat4 Camera::getViewMatrix( ) const noexcept
+	mat4 Camera::GetViewMatrix( ) const noexcept
 	{
 		assert( m_pTransform );
 
 		return glm::lookAt( m_pTransform->position, m_pTransform->position + m_pTransform->forward, m_pTransform->up);
 	}
 
-	mat4 Camera::getProjectionMatrix( ) const noexcept
+	mat4 Camera::GetProjectionMatrix( ) const noexcept
 	{
 		assert( m_pTransform );
 

@@ -45,7 +45,7 @@ namespace Nocturn::rendering
 
 		void GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept;
 		void Update( const ivec3 &currentPosition );
-		void Render( const Camera &camera, ChunkRendering &chunkRender );
+		void Render( const Camera &camera, Frustum &frustum, ChunkRendering &chunkRender );
 
 		~ChunkManager( ) noexcept = default;
 

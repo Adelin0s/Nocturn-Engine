@@ -6,11 +6,8 @@
 
 namespace Nocturn
 {
-	// will be change later
-	static vec3 normal = vec3( 0, 0, 0 );
-
-	template< typename... Args >
-	static void print( Args... args )
+	template< typename... TArgs >
+	static void print( TArgs... args )
 	{
 		( ( std::cout << args << ' ' ), ... ) << '\n';
 	}
@@ -25,104 +22,97 @@ namespace Nocturn
 		,		m_pChunkManager( &chunkManager )
 		,		m_pTransform( &transform )
 		,		m_pRigidBody( &rigidBody )
-	{}
+	{ }
 
 	void Physics::Update( const double dt )
 	{
-		const auto	 dtf				  = static_cast< float >( dt );
-		static float accumulatedDeltaTime = 0.0f;
-		accumulatedDeltaTime += dtf;
-
-		while( accumulatedDeltaTime >= CPhysicsUpdateRate )
-		{
-			accumulatedDeltaTime -= CPhysicsUpdateRate;
-			normal = vec3( 0.f );
-
-			auto &velocity	   = m_pRigidBody->velocity;
-			auto &acceleration = m_pRigidBody->acceleration;
-			auto &position	   = m_pTransform->position;
-
-			float minTime = 1.0f;
-
-			if( Keyboard::keyWentDown( GLFW_KEY_SPACE ) )
-			{
-				m_pRigidBody->velocity.y += 8.0f;
-			}
-
-			position += velocity * CPhysicsUpdateRate;
-			velocity += acceleration * CPhysicsUpdateRate;
-			velocity += CGravity * CPhysicsUpdateRate;
-			velocity = glm::clamp( velocity, -CEndVelocity, CEndVelocity );
-
-			ProcessCollision( minTime );
-		}
-	}
-
-	void Physics::ProcessCollision( float &minTime ) const noexcept
-	{
 		auto &velocity	   = m_pRigidBody->velocity;
-		auto &acceleration = m_pRigidBody->acceleration;
 		auto &position	   = m_pTransform->position;
 
-		const vec3 real = position;
-		const auto minI = GetMinInterval( real );
-		const auto maxI = GetMaxInterval( real );
-		
-		const vec3 min = real * velocity - Player::CPlayerBound * 0.5f;
-		const vec3 max = real * velocity + Player::CPlayerBound * 0.5f;
+		if (Keyboard::keyWentDown( GLFW_KEY_SPACE ))
+		{
+			velocity.y += 8.0f;
+			m_pRigidBody->onGround = false;
+		}
 
-		const auto minX = static_cast< int32 >( glm::floor( glm::min( min.x, minI.x ) ) ) % Constants::CChunkX;
-		const auto maxX = static_cast< int32 >( glm::floor( glm::max( max.x, maxI.x ) ) ) % Constants::CChunkX;
-		const auto minY = static_cast< int32 >( glm::floor( glm::min( min.y, minI.y ) ) ) % Constants::CChunkY;
-		const auto maxY = static_cast< int32 >( glm::floor( glm::max( max.y, maxI.y ) ) ) % Constants::CChunkY;
-		const auto minZ = static_cast< int32 >( glm::floor( glm::min( min.z, minI.z ) ) ) % Constants::CChunkZ;
-		const auto maxZ = static_cast< int32 >( glm::floor( glm::max( max.z, maxI.z ) ) ) % Constants::CChunkZ;
+        float remainingTime = 1.0f;
+		float minTime;
 
-		minTime			  = 1.0f;
+		vec3 localVelocity = velocity * CPhysicsUpdateRate;
+
+		constexpr float hDrag = glm::max( 1.0f - CHorizontalDrag * CPhysicsUpdateRate, 0.0f );
+		constexpr float vDrag = glm::max( 1.0f - CVerticalDrag * CPhysicsUpdateRate, 0.0f );
+		velocity *= vec3( hDrag, vDrag, hDrag );
+
+		for( uint8 i = 0; i < 3; i++ )
+		{
+			localVelocity = vec3(
+				localVelocity.x * ( 1 - glm::abs( normal.x ) ) * remainingTime,
+				localVelocity.y * ( 1 - glm::abs( normal.y ) ) * remainingTime,
+				localVelocity.z * ( 1 - glm::abs( normal.z ) ) * remainingTime );
+			normal = vec3( 0.0f );
+
+            ProcessCollision( minTime, localVelocity );
+
+			position += localVelocity * minTime;
+
+            if(minTime < 1.0f)
+			{
+				std::cout << minTime << ' ';
+				printVec( normal );
+				position += normal * std::numeric_limits< float >::epsilon( );
+            }
+            remainingTime = 1.0f - minTime;
+
+            if(remainingTime <= 0) break;
+        }
+
+		if( normal.y == 1.0f )
+			velocity.y = 0;
+		else
+			velocity += CGravity * CPhysicsUpdateRate;
+	}
+
+	void Physics::ProcessCollision( float &minTime, const vec3 &velocity ) noexcept
+	{
+		const auto &position	= m_pTransform->position; 
+		const auto &bound = m_pPlayer->GetBound( );
+
+		const auto minI = bound.min;
+		const auto maxI = bound.max;
+
+		const auto min = bound.min + velocity;
+		const auto max = bound.max + velocity;
+
+		const auto minX = static_cast< int32 >( glm::floor( glm::min( min.x, minI.x ) ) );
+		const auto minY = static_cast< int32 >( glm::floor( glm::min( min.y, minI.y ) ) );
+		const auto minZ = static_cast< int32 >( glm::floor( glm::min( min.z, minI.z ) ) );
+		const auto maxX = static_cast< int32 >( glm::floor( glm::max( max.x, maxI.x ) ) );
+		const auto maxY = static_cast< int32 >( glm::floor( glm::max( max.y, maxI.y ) ) );
+		const auto maxZ = static_cast< int32 >( glm::floor( glm::max( max.z, maxI.z ) ) );
+
+		minTime	= 1.0f;
 		const auto &chunk = m_pChunkManager->GetChunk( { position.z / Constants::CChunkX,
 														 position.x / Constants::CChunkZ } );
-
 		for( int32 x = minX; x <= maxX; x++ )
 		for( int32 y = minY; y <= maxY; y++ )
 		for( int32 z = minZ; z <= maxZ; z++ )
 		{
 			if( y >= 0 && y < Constants::CChunkY && chunk.getBlock( x, y, z ) != BlockId::Air )
 			{
-				if( const float collisionTime = SweptCollision( velocity, x, y, z ); collisionTime < minTime )
+				const float collisionTime = SweptCollision( velocity, min, max, minI, maxI, minTime, x, y, z);
+				if( collisionTime < minTime )
 				{
-					printVec( position );
 					minTime = collisionTime;
-					if( minTime < 1.0f )
-					{
-						position += normal * minTime;
-						if( abs( normal.x ) == 1.0f )
-						{
-							acceleration.x = 0.0f;
-							velocity.x	   = 0.0f;
-						}
-						if( abs( normal.y ) == 1.0f )
-						{
-							acceleration.y = 0.0f;
-							velocity.y	   = 0.0f;
-						}
-						if( abs( normal.z ) == 1.0f )
-						{
-							acceleration.z = 0.0f;
-							velocity.z	   = 0.0f;
-						}
-					}
 				}
 			}
 		}
 	}
 
-	float Physics::SweptCollision( const vec3 &velocity, const float x, const float y, const float z ) const noexcept
+	float Physics::SweptCollision( const vec3 &velocity, const vec3 &min, const vec3 &max, const vec3 &minI, const vec3 &maxI, const float minTime, const float x, const float y, const float z ) noexcept
 	{
 		vec3 invEntry, invExit;
 		vec3 entry, exit;
-
-		const auto minI = GetMinInterval( m_pTransform->position );
-		const auto maxI = GetMaxInterval( m_pTransform->position );
 
 		if( velocity.x > 0.0f )
 		{
@@ -189,25 +179,31 @@ namespace Nocturn
 			entry.z	   = -std::numeric_limits< float >::infinity( );
 			exit.z	   = std::numeric_limits< float >::infinity( );
 		}
+		const float entryTime = glm::max( glm::max( entry.x, entry.z ), entry.y );
 
-		// TODO: Inspect why entryTime is negative
-		const float entryTime = std::max( std::max( entry.x, entry.z ), entry.y ) * -1;
+		if( entryTime >= minTime ) return 1.0f;
+		if( entryTime < 0 ) return 1.0f;
 
-		// If there was no collision
-		if( entryTime >= 1.0f || entryTime < 0 )
+		const float exitTime = glm::min( glm::min( exit.x, exit.z ), exit.y );
+
+		if( entryTime > exitTime ) return 1.0f;
+
+		if( entry.x > 1.0f )
 		{
-			return 1.0f;
+			if( max.x < x || min.x > x + 1.0f )
+				return 1.0f;
 		}
 
-		const float exitTime = std::min( std::min( exit.x, exit.z ), exit.y );
-		if( entryTime > exitTime )
+		if( entry.y > 1.0f )
 		{
-			return 1.0f;
+			if( max.y < y || min.y > y + 1.0f )
+				return 1.0f;
 		}
 
-		if( entry.x > 1.0f || entry.y > 1.0f || entry.z > 1.0f )
+		if( entry.z > 1.0f )
 		{
-			return 1.0f;
+			if( max.z < z || min.z > z + 1.0f )
+				return 1.0f;
 		}
 
 		if( entry.x > entry.z )
@@ -242,17 +238,4 @@ namespace Nocturn
 		}
 		return entryTime;
 	}
-
-	bool Physics::AABBtoAABB( const Transform &transform1, const AABB &box1, const Transform &transform2, const AABB &box2 ) noexcept
-	{
-		const vec3 min1 = transform1.position - ( box1.size * 0.5f );
-		const vec3 max1 = transform1.position + ( box1.size * 0.5f );
-		const vec3 min2 = transform2.position - ( box2.size * 0.5f );
-		const vec3 max2 = transform2.position + ( box2.size * 0.5f );
-
-		return ( min1.x <= max2.x && max1.x >= min2.x ) &&
-			( min1.y <= max2.y && max1.y >= min2.y ) &&
-			( min1.z <= max2.z && max1.z >= min2.z );
-	}
-
 } // namespace Nocturn

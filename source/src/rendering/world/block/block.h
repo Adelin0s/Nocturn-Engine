@@ -34,20 +34,20 @@ namespace Nocturn::rendering
 
 	enum class BlockId : uint8
 	{
-		Air = 0,
-		Grass,
-		Dirt,
-		Stone,
-		OakBark,
-		OakLeaf,
-		Sand,
-		Water,
-		Cactus,
-		Rose,
-		TallGrass,
-		DeadShrub,
+		Air = 0
+		,	Grass
+		,	Dirt
+		,	Stone
+		,	OakBark
+		,	OakLeaf
+		,	Sand
+		,	Water
+		,	Cactus
+		,	Rose
+		,	TallGrass
+		,	DeadShrub
 
-		END
+		,	END
 	};
 
 	struct Block

@@ -25,6 +25,8 @@ namespace Nocturn
 
 		Renderer::DrawBox( m_pTransform->position, CPlayerBound, playerBoxStyle );
 
+		m_bound.Update( );
+
 		//HandleMouseInput( );
 		HandleKeyboardInput( );
 	}
@@ -80,11 +82,11 @@ namespace Nocturn
 		}
 		if( Keyboard::key( GLFW_KEY_Q ) )
 		{
-			//m_pTransform->position.y -= 0.15f;
+			m_pTransform->position.y -= 0.5f;
 		}
 		if( Keyboard::key( GLFW_KEY_E ) )
 		{
-			//m_pTransform->position.y += 0.15f;
+			m_pTransform->position.y += 0.5f;
 		}
 	}
 } // namespace Nocturn

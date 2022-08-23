@@ -16,7 +16,7 @@ namespace Nocturn
 {
 	struct Entity
 	{
-		Entity() noexcept = delete;
+		Entity( ) noexcept = delete;
 		Entity( const vec3& positionRef, const vec3& sizeRef );
 
 		// cant copy
@@ -32,7 +32,6 @@ namespace Nocturn
 
 		virtual ~Entity( ) noexcept = default;
 
-	protected:
 		AABB m_bound;
 	};
 } // namespace Nocturn

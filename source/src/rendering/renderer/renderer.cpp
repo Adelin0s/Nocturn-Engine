@@ -90,17 +90,18 @@ namespace Nocturn::Renderer
 		batchLines.AddVertex( v );
 	}
 
-	void DrawBox( const glm::vec3 &center, const glm::vec3 &size, const Style &style )
+	void DrawBox( const vec3 &position, const glm::vec3 &size, const Style &style )
 	{
-		glm::vec3 v0 = center - ( size * 0.5f );
-		glm::vec3 v1 = v0 + glm::vec3( size.x, 0, 0 );
-		glm::vec3 v2 = v0 + glm::vec3( 0, 0, size.z );
-		glm::vec3 v3 = v0 + glm::vec3( size.x, 0, size.z );
+		const auto center = position - 0.5f;
+		const vec3 v0 = center - ( size * 0.5f );
+		const vec3 v1 = v0 + vec3( size.x, 0, 0 );
+		const vec3 v2 = v0 + vec3( 0, 0, size.z );
+		const vec3 v3 = v0 + vec3( size.x, 0, size.z );
 
-		glm::vec3 v4 = v0 + glm::vec3( 0, size.y, 0 );
-		glm::vec3 v5 = v1 + glm::vec3( 0, size.y, 0 );
-		glm::vec3 v6 = v2 + glm::vec3( 0, size.y, 0 );
-		glm::vec3 v7 = v3 + glm::vec3( 0, size.y, 0 );
+		const vec3 v4 = v0 + vec3( 0, size.y, 0 );
+		const vec3 v5 = v1 + vec3( 0, size.y, 0 );
+		const vec3 v6 = v2 + vec3( 0, size.y, 0 );
+		const vec3 v7 = v3 + vec3( 0, size.y, 0 );
 
 		DrawLine( v0, v1, style );
 		DrawLine( v0, v2, style );
@@ -130,8 +131,8 @@ namespace Nocturn::Renderer
 		assert( camera != nullptr );
 
 		lineShader.bind( );
-		lineShader.setMatrix4( "uProjection", camera->getProjectionMatrix( ) );
-		lineShader.setMatrix4( "uView", camera->getViewMatrix( ) );
+		lineShader.setMatrix4( "uProjection", camera->GetProjectionMatrix( ) );
+		lineShader.setMatrix4( "uView", camera->GetViewMatrix( ) );
 		lineShader.setFloat( "uAspectRatio", Application::getWindow( ).getAspectRatio( ) );
 
 		batchLines.Flush( );

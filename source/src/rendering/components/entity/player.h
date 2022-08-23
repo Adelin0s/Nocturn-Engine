@@ -25,7 +25,7 @@ namespace Nocturn
 	{
 	public:
 		static inline constexpr double CMouseSensitivity = 0.1;
-		static inline constexpr vec3   CPlayerBound		 = { 0.55f, 1.8f, 0.55 };
+		static inline constexpr vec3 CPlayerBound = { 0.55f, 1.8f, 0.55 };
 
 		Player( ) noexcept = delete;
 		Player( Transform &transform, RigidBody &rigidbody ) noexcept;

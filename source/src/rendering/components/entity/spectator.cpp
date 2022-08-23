@@ -7,7 +7,7 @@
 namespace Nocturn
 {
 	Spectator::Spectator( Transform &transform ) noexcept
-		:		Entity( transform.position, vec3(0.5, 0.5, 0.5) )
+		:		Entity( transform.position, vec3(1.0f, 1.0f, 1.0f) )
 		,		m_pTransform( &transform )
 		,		m_speed( 0.05f )
 	{ }
@@ -67,11 +67,11 @@ namespace Nocturn
 		}
 		if( Keyboard::key( GLFW_KEY_Q ) )
 		{
-			m_pTransform->position.y -= 0.15f;
+			//m_pTransform->position.y -= 0.15f;
 		}
 		if( Keyboard::key( GLFW_KEY_E ) )
 		{
-			m_pTransform->position.y += 0.15f;
+			//m_pTransform->position.y += 0.15f;
 		}
 	}
 }

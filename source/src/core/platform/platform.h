@@ -2,6 +2,7 @@
 #define PLATFORM_H
 
 #define NOCTURN_CPP17V 201703L
+#define NOCTURN_CPP20V 202002L
 
 #if __cplusplus >= NOCTURN_CPP17V
 /** @def NODISCARD
@@ -17,7 +18,11 @@
  *  @brief Force a function to be inline
  */
 #ifndef FORCE_INLINE
-#define FORCE_INLINE __forceinline
+#ifdef _WIN32
+	#define FORCE_INLINE __forceinline
+#elif __linux__
+	#define FORCE_INLINE inline __attribute__((always_inline))
+#endif
 #endif
 
 #if __cplusplus >= NOCTURN_CPP17V
@@ -27,6 +32,15 @@
 #define MAYBEUNUSED [[maybe_unused]]
 #else
 #define MAYBEUNUSED
+#endif
+
+// if compile with -std=c++20
+#if __cplusplus >= NOCTURN_CPP20V
+#define LIKELY [[likely]]
+#define UNLIKELY [[unlikely]]
+#else
+#define LIKELY
+#define UNLIKELY
 #endif
 
 #if __cplusplus >= NOCTURN_CPP17V
