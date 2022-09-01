@@ -1,10 +1,10 @@
-/****************************************************************************************
- * @ Author: Cucorianu Eusebiu Adelin                                                   *
- * @ Create Time: 11-10-2021 14:28:46                                                   *
- * @ Modified by: Cucorianu Eusebiu Adelin                                              *
- * @ Modified time: 18-02-2022 19:52:55                                                 *
- * @ Description:                                                                       *
- ****************************************************************************************/
+// =====================================================================
+//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
+//   @ Create Time: 11-10-2021 6:34 PM                                                                                                                                                
+//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
+//   @ Modified time: 24-08-2022 11:45 PM                                                                                                                                    
+//   @ Description:                                                                                                                                                                                
+// =====================================================================
 
 #ifndef CHUNK_MANAGER_H
 #define CHUNK_MANAGER_H
@@ -34,14 +34,14 @@ namespace Nocturn::rendering
 		ChunkManager( ) noexcept = delete;
 		explicit ChunkManager( TaskSystem &taskSystem ) noexcept;
 		ChunkManager( const ChunkManager &chunk ) = delete;
-		ChunkManager( ChunkManager &&chunk )	  = delete;
+		ChunkManager( ChunkManager &&chunk )      = delete;
 
 		ChunkManager operator=( const ChunkManager &chunk ) = delete;
-		ChunkManager operator=( ChunkManager &&chunk ) = delete;
+		ChunkManager operator=( ChunkManager &&chunk )      = delete;
 
-		const ChunkSection &operator[](const ivec2& index) noexcept;
+		const ChunkSection &operator[]( const ivec2 &index ) noexcept;
 
-		ChunkSection &GetChunk( const ivec2& index );
+		ChunkSection &GetChunk( const ivec2 &index );
 
 		void GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept;
 		void Update( const ivec3 &currentPosition );
@@ -52,13 +52,13 @@ namespace Nocturn::rendering
 	private:
 		void GenerateNewChunk( ChunkSection &chunk, bool shouldToCreateMesh = false ) const noexcept;
 
-		TaskSystem							   *m_pTaskSystem;
-		NoiseParams								m_noiseParams{ };
-		ivec3									m_lastPosition{ };
-		ChunkMap								m_mapChunks;
-		std::unordered_map< ivec2, bool >		m_hasLoaded;
+		TaskSystem*                             m_pTaskSystem;
+		NoiseParams                             m_noiseParams{};
+		ivec3                                   m_lastPosition{};
+		ChunkMap                                m_mapChunks;
+		std::unordered_map< ivec2, bool >       m_hasLoaded;
 		std::vector< std::function< void( ) > > m_pendingChunks;
-		const uint32							m_renderDistance;
+		const uint32                            m_renderDistance;
 	};
 } // namespace Nocturn::rendering
 #endif

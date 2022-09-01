@@ -62,7 +62,7 @@ namespace Nocturn
 		spectator->Update( dt );
 
 		Renderer::Render( );
-		m_chunkManager->Render( *camera, m_chunkRender );
+		m_chunkManager->Render( *camera, *cameraFrustum, m_chunkRender );
 	}
 
 	void World::Free( )

@@ -37,8 +37,8 @@ namespace Nocturn::rendering
 		m_noiseParams.offset	 = 10;
 		m_noiseParams.roughness	 = 0.51;
 
-		for( int x = 0; x < 1; x++ )
-			for( int z = 0; z < 1; z++ )
+		for( int x = 0; x < 20; x++ )
+			for( int z = 0; z < 20; z++ )
 			{
 				m_pendingChunks.emplace_back( [ =, Self = this ]( )
 											  { Self->GenerateChunkMesh( { x, z } ); } );
@@ -79,12 +79,12 @@ namespace Nocturn::rendering
 			m_mapChunks.emplace( adjacentChunk.front, ChunkSection{ adjacentChunk.front } );
 			auto &chunk = m_mapChunks[ adjacentChunk.front ];
 			GenerateNewChunk( chunk );
-			pMiddleChunk->setNeighbor( NeighborType::Front, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Front, chunk );
 		}
 		else
 		{
 			auto &chunk = m_mapChunks[ adjacentChunk.front ];
-			pMiddleChunk->setNeighbor( NeighborType::Front, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Front, chunk );
 		}
 
 		// Bottom Chunk
@@ -93,12 +93,12 @@ namespace Nocturn::rendering
 			m_mapChunks.emplace( adjacentChunk.back, ChunkSection{ adjacentChunk.back } );
 			auto &chunk = m_mapChunks[ adjacentChunk.back ];
 			GenerateNewChunk( chunk );
-			pMiddleChunk->setNeighbor( NeighborType::Back, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Back, chunk );
 		}
 		else
 		{
 			auto &chunk = m_mapChunks[ adjacentChunk.back ];
-			pMiddleChunk->setNeighbor( NeighborType::Back, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Back, chunk );
 		}
 
 		// Left Chunk
@@ -107,12 +107,12 @@ namespace Nocturn::rendering
 			m_mapChunks.emplace( adjacentChunk.left, ChunkSection{ adjacentChunk.left } );
 			auto &chunk = m_mapChunks[ adjacentChunk.left ];
 			GenerateNewChunk( chunk );
-			pMiddleChunk->setNeighbor( NeighborType::Left, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Left, chunk );
 		}
 		else
 		{
 			auto &chunk = m_mapChunks[ adjacentChunk.left ];
-			pMiddleChunk->setNeighbor( NeighborType::Left, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Left, chunk );
 		}
 
 		// Right Chunk
@@ -121,12 +121,12 @@ namespace Nocturn::rendering
 			m_mapChunks.emplace( adjacentChunk.right, ChunkSection{ adjacentChunk.right } );
 			auto &chunk = m_mapChunks[ adjacentChunk.right ];
 			GenerateNewChunk( chunk );
-			pMiddleChunk->setNeighbor( NeighborType::Right, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Right, chunk );
 		}
 		else
 		{
 			auto &chunk = m_mapChunks[ adjacentChunk.right ];
-			pMiddleChunk->setNeighbor( NeighborType::Right, chunk );
+			pMiddleChunk->SetNeighbor( NeighborType::Right, chunk );
 		}
 
 		if( !m_mapChunks.contains( chunkPosition ) )
@@ -135,7 +135,7 @@ namespace Nocturn::rendering
 			pMiddleChunk = &m_mapChunks[ chunkPosition ]; // take the pointer from m_mapChunks map not from the local chunk
 		}
 		GenerateNewChunk( *pMiddleChunk, true );
-		pMiddleChunk->setRenderableChunk( );
+		pMiddleChunk->SetRenderableChunk( );
 	}
 
 	int x = 1;
@@ -153,7 +153,7 @@ namespace Nocturn::rendering
 		{
 			auto &chunk = m_mapChunks[ { 0, 0 } ];
 			chunk.DeleteMesh( ); 
-			chunk.setBlock( BlockId::Air, 3, y--, 1 );
+			chunk.SetBlock( BlockId::Air, 3, y--, 1 );
 			chunk.createChunk( );
 		}
 
@@ -161,7 +161,7 @@ namespace Nocturn::rendering
 		{
 			auto &chunk = m_mapChunks[ { 0, 0 } ];
 			chunk.DeleteMesh( );
-			chunk.setBlock( BlockId::OakBark, x++, 35, 1 );
+			chunk.SetBlock( BlockId::OakBark, x++, 35, 1 );
 			chunk.createChunk( );
 		}
 
@@ -177,14 +177,20 @@ namespace Nocturn::rendering
 	// TODO: Should to seperate Render function?
 	void ChunkManager::Render( const Camera &camera, Frustum &frustum, ChunkRendering &chunkRender )
 	{
-		for( const auto &[ first, second ] : m_mapChunks )
+		for( const auto &[ position, chunk ] : m_mapChunks )
 		{
-			if( m_mapChunks[ first ].shouldToRender( ) )
+			if( m_mapChunks[ position ].shouldToRender( ) )
 			{
-				// auto renderInfo = second.getRenderInfo( );
-				chunkRender.Add( second.getRenderInfo( ) );
+				const auto maxy = chunk.GetChunkMaxY( );
+				const auto minView = vec3(position[0] * Constants::CChunkX, maxy, position[1] * Constants::CChunkZ);
+				if( frustum.IsBoxVisible( minView, minView + vec3( 16.0f ) ) )
+				{
+					 //auto renderInfo = second.getRenderInfo( );
+					chunkRender.Add( chunk.getRenderInfo( ) );
+				}
 			}
 		}
+		std::cout << "Size-rendered:" << chunkRender.Size( ) << '\n';
 		chunkRender.Render( camera );
 	}
 
@@ -192,23 +198,27 @@ namespace Nocturn::rendering
 	{
 		const Noise noise( m_noiseParams, 2432 );
 		const auto pchunk = chunk.getLocation( );
+		uint8 max = 0;
+		uint8 ymax = 0;
 		for( int32 px = 0; px < Constants::CChunkX; px++ )
 		{
 			for( int32 pz = 0; pz < Constants::CChunkZ; pz++ )
 			{
-				const auto max = static_cast< int32 >( noise.getHeight( px, pz, pchunk[ 0 ], pchunk[ 1 ] ) );
+				max = static_cast< uint8 >( noise.getHeight( px, pz, pchunk[ 0 ], pchunk[ 1 ] ) );
 				for( int32 py = 0; py < max; py++ )
 				{
 					if( py == max - 1 )
-						chunk.setBlock( BlockId::Grass, px, py, pz );
+						chunk.SetBlock( BlockId::Grass, px, py, pz );
 					else if( py < max / 4 )
-						chunk.setBlock( BlockId::Stone, px, py, pz );
+						chunk.SetBlock( BlockId::Stone, px, py, pz );
 					else
-						chunk.setBlock( BlockId::Dirt, px, py, pz );
+						chunk.SetBlock( BlockId::Dirt, px, py, pz );
 				}
+				if( max > ymax )
+					ymax = max;
 			}
 		}
-
+		chunk.SetChunkMaxY( max );
 		if( shouldToCreateMesh )
 		{
 			chunk.createChunk( );

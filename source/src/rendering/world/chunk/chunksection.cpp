@@ -16,7 +16,7 @@ namespace Nocturn::rendering
 		return m_chunk[ getSizeFromIndex( position ) ];
 	}
 
-	void ChunkSection::setBlock( const BlockId id, const int32 x, const int32 y, const int32 z )
+	void ChunkSection::SetBlock( const BlockId id, const int32 x, const int32 y, const int32 z )
 	{
 		if( !outOfBound( x, y, z ) )
 		{
@@ -34,7 +34,7 @@ namespace Nocturn::rendering
 		}
 	}
 
-	void ChunkSection::setBlock( const BlockId id, const ivec3 &position )
+	void ChunkSection::SetBlock( const BlockId id, const ivec3 &position )
 	{
 		if( !outOfBound( position.x, position.y, position.z ) )
 		{
@@ -50,7 +50,7 @@ namespace Nocturn::rendering
 		}
 	}
 
-	void ChunkSection::setNeighbor( const NeighborType type, ChunkSection &chunk ) noexcept
+	void ChunkSection::SetNeighbor( const NeighborType type, ChunkSection &chunk ) noexcept
 	{
 		if( NeighborType::Left == type )
 		{
@@ -70,7 +70,7 @@ namespace Nocturn::rendering
 		}
 	}
 
-	void ChunkSection::setRenderableChunk( ) noexcept
+	void ChunkSection::SetRenderableChunk( ) noexcept
 	{
 		m_renderableChunk = true;
 	}
