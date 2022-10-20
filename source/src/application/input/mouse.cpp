@@ -20,7 +20,7 @@ namespace Nocturn
     bool Mouse::m_buttons[GLFW_MOUSE_BUTTON_LAST] = {0};
     bool Mouse::m_buttonsChanged[GLFW_MOUSE_BUTTON_LAST] = {0};
 
-    void Mouse::cursorPosCallback(GLFWwindow *window, const double x, const double y)
+    void Mouse::CursorPosCallback(GLFWwindow *window, const double x, const double y)
     {
         m_x = x;
         m_y = y;
@@ -38,9 +38,9 @@ namespace Nocturn
         m_lasty = y;
     }
 
-    void Mouse::mouseButtonCallback(GLFWwindow *window, const int button, const int action, const int mods)
+    void Mouse::MouseButtonCallback( const int button, const int action )
     {
-        if (action == GLFW_RELEASE)
+        if (action == GLFW_PRESS)
         {
             if (!m_buttons[button])
             {
@@ -54,7 +54,7 @@ namespace Nocturn
         m_buttonsChanged[button] = action != GLFW_REPEAT;
     }
 
-    void Mouse::mouseWheelCallback(GLFWwindow *window, const double dx, const double dy)
+    void Mouse::MouseWheelCallback( GLFWwindow *window, const double dx, const double dy )
     {
         Mouse::m_scrollDx = 0;
         Mouse::m_scrollDy = 0;
@@ -72,14 +72,14 @@ namespace Nocturn
 
     double Mouse::getDx()
     {
-        double temp = m_dx;
+        const auto temp = m_dx;
         m_dx = 0;
         return temp;
     }
 
     double Mouse::getDy()
     {
-        double temp = m_dy;
+        const auto temp = m_dy;
         m_dy = 0;
         return temp;
     }

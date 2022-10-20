@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #include "core/types/typedef.hpp"
+#include "core/components/constants.hpp"
 
 namespace Nocturn::Math
 {
@@ -17,6 +18,54 @@ namespace Nocturn::Math
 	constexpr T GetRandom( const T min, const T max ) noexcept
 	{
 		return std::rand( ) % ( max - min + 1 ) + min;
+	}
+
+	template< typename TType > requires( std::is_same_v< TType, float > || std::is_same_v< TType, vec2 > || std::is_same_v< TType, vec3 > || std::is_same_v< TType, vec4 > )
+	static constexpr bool Compare( const TType v1, TType v2 )
+	{
+		constexpr float epsilon = std::numeric_limits< float >::epsilon( );
+		if constexpr( std::is_same_v< TType, float > )
+		{
+			return abs( v1 - v2 ) <= epsilon * std::max( 1.0f, std::max( abs( v1 ), abs( v2 ) ) );
+		}
+		if constexpr( std::is_same_v< TType, vec2 > )
+		{
+			return Compare( v1.x, v2.x ) && Compare( v1.y, v2.y );
+		}
+		if constexpr( std::is_same_v< TType, vec3 > )
+		{
+			return Compare( v1.x, v2.x ) && Compare( v1.y, v2.y ) && Compare( v1.z, v2.z );
+		}
+		if constexpr( std::is_same_v< TType, vec4 > )
+		{
+			return Compare( v1.x, v2.x ) && Compare( v1.y, v2.y ) && Compare( v1.z, v2.z ) && Compare( v1.w, v2.w );
+		}
+	}
+
+	static ivec2 ToChunkCoords( const vec3 &worldCoords )
+	{
+		ivec2 chunkCoords = {worldCoords.x, worldCoords.z};
+		chunkCoords[ 0 ]  = chunkCoords[ 0 ] / Constants::CChunkX;
+		chunkCoords[ 1 ]  = chunkCoords[ 1 ] / Constants::CChunkZ;
+
+		return chunkCoords;
+	}
+
+	// TODO: Review here
+	static ivec3 ToBlockCoords( const vec3 &worldCoords )
+	{
+		ivec3 chunkCoords = glm::round( worldCoords );
+		chunkCoords[ 0 ]  = chunkCoords[ 0 ] % Constants::CChunkX;
+		chunkCoords[ 1 ]  = chunkCoords[ 1 ] % Constants::CChunkY;
+		chunkCoords[ 2 ]  = chunkCoords[ 2 ] % Constants::CChunkZ;
+
+		return chunkCoords;
+	}
+
+	static ivec3 ToBlockCoords( const int x, const int y, const int z )
+	{
+		ivec3 chunkCoords = { x, y, z };
+		return ToBlockCoords( { x, y, z } );
 	}
 } // namespace Nocturn::Math
 #endif

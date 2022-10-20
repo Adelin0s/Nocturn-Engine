@@ -87,8 +87,8 @@ namespace Nocturn
 
 		glfwSetFramebufferSizeCallback( m_pWindow, resizeCallback );
 		glfwSetKeyCallback( m_pWindow, Keyboard::keyCallback );
-		glfwSetCursorPosCallback( m_pWindow, Mouse::cursorPosCallback );
-		glfwSetScrollCallback( m_pWindow, Mouse::mouseWheelCallback );
+		glfwSetCursorPosCallback( m_pWindow, Mouse::CursorPosCallback );
+		glfwSetScrollCallback( m_pWindow, Mouse::MouseWheelCallback );
 
 		setCursorMode( CursorMode::Locked );
 	}

@@ -11,7 +11,7 @@ namespace Nocturn
 		:		Entity( transform.position, CPlayerBound )
 		,		m_pTransform( &transform )
 		,		m_pRigidBody( &rigidbody )
-		,		m_speed( 0.5f )
+		,		m_speed( 1.5f )
 	{ }
 
 	const AABB& Player::GetBound( ) const noexcept
@@ -23,7 +23,7 @@ namespace Nocturn
 	{
 		const Style playerBoxStyle( Colors::redWine, 0.05f );
 
-		Renderer::DrawBox( m_pTransform->position, CPlayerBound, playerBoxStyle );
+		DrawBox( m_pTransform->position, CPlayerBound, playerBoxStyle );
 
 		m_bound.Update( );
 

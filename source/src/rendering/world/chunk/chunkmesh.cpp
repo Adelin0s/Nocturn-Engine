@@ -22,17 +22,18 @@ namespace Nocturn::rendering
 		m_pChunk( &chunk )
 	{}
 
-	NODISCARD const ChunkModel &ChunkMesh::getModel( ) const
+	const Model< VertexDataType::ChunkDataType > &ChunkMesh::GetModel( ) const
 	{
 		return m_model;
 	}
 
-	NODISCARD uint32 ChunkMesh::getIndicesSize( ) const noexcept
+
+	NODISCARD uint32 ChunkMesh::GetIndicesSize( ) const noexcept
 	{
 		return static_cast< uint32 >( m_mesh.indices.size( ) );
 	}
 
-	void ChunkMesh::makeMesh( ChunkSection &pchunk )
+	void ChunkMesh::MakeMesh( ChunkSection &pchunk )
 	{
 		// We don't need to generate where our chunk's neighbors have all blocks solid.
 		// Can continue because the current layer is basically hidden in real scenario.
@@ -72,21 +73,21 @@ namespace Nocturn::rendering
 		m_hasMesh = true; // flag to know if the buffer data can be loaded
 	}
 
-	void ChunkMesh::loadBufferData( )
+	void ChunkMesh::LoadBufferData( )
 	{
 		if( m_hasMesh && !m_hasLoaded )
 		{
-			m_model.addData( m_mesh );
+			m_model.AddVertexData( m_mesh );
 			m_hasLoaded = true;
 		}
 	}
 
-	NODISCARD bool ChunkMesh::hasMesh( ) const noexcept
+	NODISCARD bool ChunkMesh::HasMesh( ) const noexcept
 	{
 		return m_hasMesh;
 	}
 
-	NODISCARD bool ChunkMesh::hasLoaded( ) const noexcept
+	NODISCARD bool ChunkMesh::HasLoaded( ) const noexcept
 	{
 		return m_hasLoaded;
 	}
@@ -100,8 +101,8 @@ namespace Nocturn::rendering
 			m_hasLoaded = false;
 			m_hasMesh	= false;
 
-			m_mesh.clear( );
-			m_model.deleteData( );
+			m_mesh.Clear( );
+			m_model.DeleteData( );
 		}
 	}
 

@@ -39,7 +39,7 @@ namespace Nocturn::rendering
 		BlockDatabase( ) noexcept;
 		~BlockDatabase( ) noexcept = default;
 
-		std::array< std::unique_ptr< BlockData >, static_cast< unsigned >( BlockId::END ) > m_blocks;
+		std::array< std::unique_ptr< BlockData >, static_cast< unsigned >( BlockId::End ) > m_blocks;
 
 	public:
 		TextureAtlas textureAtlas;

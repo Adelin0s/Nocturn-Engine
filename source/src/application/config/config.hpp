@@ -14,13 +14,12 @@
 namespace Nocturn::Config
 {
 	/* Directory Constants */
-	const std::string CRootDir			 = "../../";
-	const std::string CDirModels		 = CRootDir + "assets/models/";
-	const std::string CDirShaders		 = CRootDir + "assets/shaders/";
-	const std::string CDirTextures		 = CRootDir + "assets/textures/";
-	const std::string CDirBlockStates	 = CRootDir + "assets/blockstates/";
-	const std::string CDirTexturesSkybox = CDirTextures + "skybox/";
-	const std::string CDirTexturesBlock	 = CDirTextures + "block/";
+	const std::string CDirModels		 = "../../assets/models/";
+	const std::string CDirShaders		 = "../../assets/shaders/";
+	const std::string CDirTextures		 = "../../assets/textures/";
+	const std::string CDirBlockStates	 = "../../assets/blockstates/";
+	const std::string CDirTexturesSkybox = "../../assets/textures/skybox/";
+	const std::string CDirTexturesBlock	 = "../../assets/textures/block/";
 
 	constexpr const char *const CSkyboxVertexShader	  = "../../assets/shaders/skybox_vertex.glsl";
 	constexpr const char *const CSkyboxFragmentShader = "../../assets/shaders/skybox_fragment.glsl";
@@ -28,6 +27,8 @@ namespace Nocturn::Config
 	constexpr const char *const CChunkFragmentShader  = "../../assets/shaders/block_fragment.glsl";
 	constexpr const char *const CLineVertexShader	  = "../../assets/shaders/line_vertex.glsl";
 	constexpr const char *const CLineFragmentShader	  = "../../assets/shaders/line_fragment.glsl";
+	constexpr const char *const CRayVertexShader	  = "../../assets/shaders/ray_vertex.glsl";
+	constexpr const char *const CRayFragmentShader	  = "../../assets/shaders/ray_fragment.glsl";
 
 	/* Entity Constants */
 	constexpr float CFov  = 45.0f;
@@ -35,7 +36,7 @@ namespace Nocturn::Config
 	constexpr float CFar  = 500.0f;
 
 	/* World Constants */
-	constexpr uint32_t loadDistance = 10;
+	constexpr uint32_t CLoadDistance = 10;
 } // namespace Nocturn::Config
 
 #endif

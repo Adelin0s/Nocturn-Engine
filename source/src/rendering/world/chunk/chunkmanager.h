@@ -41,16 +41,22 @@ namespace Nocturn::rendering
 
 		const ChunkSection &operator[]( const ivec2 &index ) noexcept;
 
-		ChunkSection &GetChunk( const ivec2 &index );
+		ChunkSection &GetChunk( const vec3 &worldPosition ) noexcept;
+		ChunkSection &GetChunk( const ivec2 &chunkPosition ) noexcept;
+		NODISCARD Block GetBlock( const vec3 &worldPosition ) noexcept;
+
+		void SetBlock( BlockId blockId, const vec3 &worldPosition) noexcept;
 
 		void GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept;
 		void Update( const ivec3 &currentPosition );
 		void Render( const Camera &camera, Frustum &frustum, ChunkRendering &chunkRender );
 
+		void GenerateTree( ChunkSection &chunk, int32 px, int32 pymax, int32 pz );
+
 		~ChunkManager( ) noexcept = default;
 
 	private:
-		void GenerateNewChunk( ChunkSection &chunk, bool shouldToCreateMesh = false ) const noexcept;
+		void GenerateNewChunk( ChunkSection &chunk, bool shouldToCreateMesh = false ) noexcept;
 
 		TaskSystem*                             m_pTaskSystem;
 		NoiseParams                             m_noiseParams{};

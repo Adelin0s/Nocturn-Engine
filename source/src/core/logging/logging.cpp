@@ -1,4 +1,4 @@
-namespace Nocturn::log
+namespace Nocturn
 {
     /* NOTGING YET - TODO */
 }

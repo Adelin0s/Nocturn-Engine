@@ -19,8 +19,6 @@
 
 namespace Nocturn
 {
-	using namespace rendering;
-
 	class Player final: public Entity
 	{
 	public:

@@ -29,10 +29,10 @@ namespace Nocturn::rendering
 
 		for( const auto &chunk : m_chunks )
 		{
-			GL::bindVAO( chunk.vao );
-			GL::drawElements( chunk.indicesCount );
+			GL::BindVao( chunk.vao );
+			GL::DrawElements( chunk.indicesCount );
 		}
-
+		GL::BindVao( 0 );
 		m_chunks.clear( );
 	}
 } // namespace Nocturn::rendering

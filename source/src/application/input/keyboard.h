@@ -8,11 +8,11 @@ namespace Nocturn
     struct Keyboard
     {
     public:
-        static void keyCallback(GLFWwindow *window, const int key, const int scancode, const int action, const int mods);
-        static bool key(const int key);
-        static bool keyChanged(const int key);
-        static bool keyWentUp(const int key);
-        static bool keyWentDown(const int key);
+		static void keyCallback( GLFWwindow *window, int key, int scancode, int action, int mods );
+		static bool key( int key );
+		static bool keyChanged( int key );
+		static bool keyWentUp( int key );
+		static bool keyWentDown( int key );
 
     private:
         static bool m_keys[];

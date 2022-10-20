@@ -16,9 +16,9 @@ namespace Nocturn::GL
 {
 	inline bool bDrawMode = false;
 
-	void drawElements( const uint32_t indicesCount ) noexcept;
-	void drawArraysInstanced( const uint32_t instance_count = 1 ) noexcept;
-	void bindVAO( const uint32_t vao ) noexcept;
+	void DrawElements( int32_t indicesCount ) noexcept;
+	void DrawArraysInstanced( int32_t instanceCount = 1 ) noexcept;
+	void BindVao( uint32_t vao ) noexcept;
 } // namespace Nocturn::GL
 
 #endif

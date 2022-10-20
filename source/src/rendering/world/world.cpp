@@ -1,8 +1,11 @@
 #include "rendering/world/world.h"
 
+#include "application/input/keyboard.h"
 #include "rendering/components/entity/spectator.h"
 #include "rendering/renderer/renderer.h"
 #include "rendering/renderer/style.h"
+
+#include "core/logging/logging.h"
 
 namespace Nocturn
 {
@@ -37,7 +40,7 @@ namespace Nocturn
 		spectator	  = std::make_unique< Spectator >( spectatorTransform );
 		physics		  = std::make_unique< Physics >( *player, *m_chunkManager, playerTransform, rigidbody );
 
-		Renderer::Init( *camera );
+		r::Init( *camera );
 
 		m_chunkRender.Init( );
 	}
@@ -47,6 +50,7 @@ namespace Nocturn
 		const auto currentPosition = static_cast< ivec3 >( spectatorTransform.position );
 
 		m_chunkManager->Update( currentPosition );
+
 		m_skyboxRender->render( *camera );
 
 		// update forward, right and up vectors
@@ -58,10 +62,20 @@ namespace Nocturn
 
 		cameraFrustum->Update( projectionMatrix * viewMatrix );
 		physics->Update( dt );
+
+		const auto position = vec3{ spectatorTransform.position.x - 0.5f, spectatorTransform.position.y, spectatorTransform.position.z - 0.5f };
+		const auto raycastResult = physics->RaycastStatic( position, spectatorTransform.forward /*+ vec3( 0.0f, 0.3f, 0.4f )*/, 5.0f, true );
+
+		if( Keyboard::keyWentDown( GLFW_KEY_0 ) )
+		{
+			m_chunkManager->SetBlock( BlockId::Stone, position );
+		}
+
 		player->Update( dt );
 		spectator->Update( dt );
 
-		Renderer::Render( );
+		Render( );
+
 		m_chunkManager->Render( *camera, *cameraFrustum, m_chunkRender );
 	}
 

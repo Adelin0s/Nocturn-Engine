@@ -2,6 +2,7 @@
 #include "rendering/world/block/block.h"
 
 #include "core/math/noise.h"
+#include "core/math/math.hpp"
 
 namespace Nocturn::rendering
 {
@@ -16,38 +17,38 @@ namespace Nocturn::rendering
 		return m_chunk[ getSizeFromIndex( position ) ];
 	}
 
-	void ChunkSection::SetBlock( const BlockId id, const int32 x, const int32 y, const int32 z )
+	/**
+	 * \brief Normalize from WorldPosition to BlockPosition and set the Block to BlockId
+	 * \param blockId: block id
+	 * \param worldX: world position X
+	 * \param worldY: world position Y
+	 * \param worldZ: world position Z
+	 */
+	void ChunkSection::SetBlock( const BlockId blockId, const int32 worldX, const int32 worldY, const int32 worldZ ) noexcept
 	{
-		if( !outOfBound( x, y, z ) )
-		{
-			const auto block = m_chunk[ getSizeFromIndex( x, y, z ) ];
-
-			if( BlockId::Air == block && id != BlockId::Air )
-			{
-				m_layers[ y ].Increase( );
-			}
-
-			if( BlockId::Air != block && BlockId::Air == id )
-				m_layers[ y ].Decrease( );
-
-			m_chunk[ getSizeFromIndex( x, y, z ) ] = id;
-		}
+		// Normalize to chunk coords
+		const auto &chunkPosition = Math::ToBlockCoords( worldX, worldY, worldZ );
+		SetBlock( blockId, chunkPosition );
 	}
 
-	void ChunkSection::SetBlock( const BlockId id, const ivec3 &position )
+	/**
+	 * \brief Normalize from WorldPosition to BlockPosition and set the Block to BlockId
+	 * \param blockId: block id 
+	 * \param worldPosition: world position vec3(x,y,z)
+	 */
+	void ChunkSection::SetBlock( const BlockId blockId, const ivec3 &worldPosition ) noexcept
 	{
-		if( !outOfBound( position.x, position.y, position.z ) )
-		{
-			const auto block = m_chunk[ getSizeFromIndex( position ) ];
+		// Normalize to chunk coords
+		const auto &position = Math::ToBlockCoords( worldPosition );
+		const auto block = m_chunk[ getSizeFromIndex( position ) ];
 
-			if( BlockId::Air == block && BlockId::Air != id )
-				m_layers[ position.y ].Increase( );
+		if( BlockId::Air == block && BlockId::Air != blockId )
+			m_layers[ position.y ].Increase( );
 
-			if( BlockId::Air != block && BlockId::Air == id )
-				m_layers[ position.y ].Decrease( );
+		if( BlockId::Air != block && BlockId::Air == blockId )
+			m_layers[ position.y ].Decrease( );
 
-			m_chunk[ getSizeFromIndex( position ) ] = id;
-		}
+		m_chunk[ getSizeFromIndex( position ) ] = blockId;
 	}
 
 	void ChunkSection::SetNeighbor( const NeighborType type, ChunkSection &chunk ) noexcept
@@ -198,12 +199,12 @@ namespace Nocturn::rendering
 
 	NODISCARD bool ChunkSection::hasMesh( ) const noexcept
 	{
-		return m_mesh.hasMesh( );
+		return m_mesh.HasMesh( );
 	}
 
 	bool ChunkSection::hasLoaded( ) const noexcept
 	{
-		return m_mesh.hasLoaded( );
+		return m_mesh.HasLoaded( );
 	}
 
 	bool ChunkSection::shouldToRender( ) const noexcept
@@ -216,19 +217,19 @@ namespace Nocturn::rendering
 		return m_renderableChunk;
 	}
 
-	const RenderInfo &ChunkSection::getRenderInfo( ) const
+	const RenderInfo &ChunkSection::GetRenderInfo( ) const
 	{
-		return m_mesh.getModel( ).getRenderInfo( );
+		return m_mesh.GetModel( ).GetRenderInfo( );
 	}
 
 	void ChunkSection::createChunk( )
 	{
-		m_mesh.makeMesh( *this );
+		m_mesh.MakeMesh( *this );
 	}
 
 	void ChunkSection::loadBufferData( )
 	{
-		m_mesh.loadBufferData( );
+		m_mesh.LoadBufferData( );
 	}
 
 	void ChunkSection::DeleteMesh( ) noexcept
@@ -239,8 +240,8 @@ namespace Nocturn::rendering
 	void ChunkSection::render( ) const
 	{
 		BlockDatabase::getInstance( ).textureAtlas.bind( );
-		GL::bindVAO( m_mesh.getModel( ).getRenderInfo( ).vao );
-		GL::drawElements( m_mesh.getIndicesSize( ) );
+		GL::BindVao( m_mesh.GetModel( ).GetRenderInfo( ).vao );
+		GL::DrawElements( m_mesh.GetIndicesSize( ) );
 	}
 
 	bool ChunkSection::outOfBound( const int32_t x, const int32_t y, const int32_t z ) noexcept

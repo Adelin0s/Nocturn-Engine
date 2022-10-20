@@ -14,6 +14,8 @@ namespace Nocturn
 		vec3 forward;
 		vec3 up;
 		vec3 right;
+
+		vec3 direction;
 	};
 
 	namespace TransformSystem

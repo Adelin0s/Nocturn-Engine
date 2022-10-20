@@ -1,10 +1,10 @@
-/****************************************************************************************
- * @ Author: Cucorianu Eusebiu Adelin                                                   *
- * @ Create Time: 08-07-2021 14:48:26                                                   *
- * @ Modified by: Cucorianu Eusebiu Adelin                                              *
- * @ Modified time: 17-01-2022 14:13:25                                                 *
- * @ Description:                                                                       *
- ****************************************************************************************/
+// =====================================================================
+//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
+//   @ Create Time: 08-07-2021 14:48:26  
+//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
+//   @ Modified time: 13-10-2022 5:53 PM                                                                                                                                    
+//   @ Description:                                                                                                                                                                                
+// =====================================================================
 
 #include "application/application.h"
 

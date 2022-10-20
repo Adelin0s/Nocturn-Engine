@@ -6,7 +6,7 @@
 
 namespace Nocturn::GL
 {
-	void drawElements( const uint32_t indicesCount ) noexcept
+	void DrawElements( const int32_t indicesCount ) noexcept
 	{
 		if( Keyboard::keyWentDown( GLFW_KEY_P ) )
 			bDrawMode = !bDrawMode;
@@ -17,12 +17,12 @@ namespace Nocturn::GL
 			glDrawElements( GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr );
 	}
 
-	void drawArraysInstanced( const uint32_t instance_count ) noexcept
+	void DrawArraysInstanced( const int32_t instanceCount ) noexcept
 	{
-		glDrawArraysInstanced( GL_TRIANGLES, 0, 36, instance_count );
+		glDrawArraysInstanced( GL_TRIANGLES, 0, 36, instanceCount );
 	}
 
-	void bindVAO( const uint32_t vao ) noexcept
+	void BindVao( const uint32_t vao ) noexcept
 	{
 		glBindVertexArray( vao );
 	}

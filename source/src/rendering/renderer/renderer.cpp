@@ -7,11 +7,11 @@
 
 #include <iostream>
 
-namespace Nocturn::Renderer
+namespace Nocturn
 {
-	static const Camera     *camera;
-	static       LineModel	 batchLines;
-	static       Shader		 lineShader( Config::CLineVertexShader, Config::CLineFragmentShader );
+	static const Camera *camera;
+	Model< VertexType::GenericVertex > genericModel;
+	static Shader lineShader( Config::CLineVertexShader, Config::CLineFragmentShader );
 
 	void Init( const Camera &cameraRef )
 	{
@@ -21,32 +21,21 @@ namespace Nocturn::Renderer
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		batchLines.SetNumVertices( 0 );
-		camera = nullptr;
-
-		batchLines.Init( { { 0, 3, AttributeType::Float, offsetof( RenderVertexLine, start ) },
-						   { 1, 3, AttributeType::Float, offsetof( RenderVertexLine, end ) },
-						   { 2, 1, AttributeType::Float, offsetof( RenderVertexLine, isStart ) },
-						   { 3, 1, AttributeType::Float, offsetof( RenderVertexLine, direction ) },
-						   { 4, 1, AttributeType::Float, offsetof( RenderVertexLine, strokeWidth ) },
-						   { 5, 4, AttributeType::Float, offsetof( RenderVertexLine, color ) } } );
-
 		lineShader.init( );
-
 		camera = &cameraRef;
 	}
 
 	void DrawLine( const vec3 &start, const vec3 &end, const Style &style )
 	{
 		// First triangle
-		RenderVertexLine v{ };
+		VertexType::GenericVertex v{ };
 		v.isStart	  = 1.0f;
 		v.start		  = start;
 		v.end		  = end;
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		batchLines.AddVertex( v );
+		genericModel.AddVertexData( v );
 
 		v.isStart	  = 1.0f;
 		v.start		  = start;
@@ -54,7 +43,7 @@ namespace Nocturn::Renderer
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		batchLines.AddVertex( v );
+		genericModel.AddVertexData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -62,7 +51,7 @@ namespace Nocturn::Renderer
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		batchLines.AddVertex( v );
+		genericModel.AddVertexData( v );
 
 		// Second triangle
 		v.isStart	  = 1.0f;
@@ -71,7 +60,7 @@ namespace Nocturn::Renderer
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		batchLines.AddVertex( v );
+		genericModel.AddVertexData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -79,7 +68,7 @@ namespace Nocturn::Renderer
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		batchLines.AddVertex( v );
+		genericModel.AddVertexData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -87,7 +76,7 @@ namespace Nocturn::Renderer
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		batchLines.AddVertex( v );
+		genericModel.AddVertexData( v );
 	}
 
 	void DrawBox( const vec3 &position, const glm::vec3 &size, const Style &style )
@@ -121,12 +110,16 @@ namespace Nocturn::Renderer
 
 	void Render( )
 	{
-		if( batchLines.GetNumVertices( ) <= 0 )
+		auto &vao = genericModel.m_renderInfo.vao;
+		auto &vbo = genericModel.m_renderInfo.vbo;
+		auto &indicesCount = genericModel.m_renderInfo.indicesCount;
+
+		if( indicesCount <= 0 )
 		{
 			return;
 		}
 
-		glDisable( GL_CULL_FACE );
+		glDisable( GL_CULL_FACE ); 
 
 		assert( camera != nullptr );
 
@@ -135,7 +128,16 @@ namespace Nocturn::Renderer
 		lineShader.setMatrix4( "uView", camera->GetViewMatrix( ) );
 		lineShader.setFloat( "uAspectRatio", Application::getWindow( ).getAspectRatio( ) );
 
-		batchLines.Flush( );
+		// Draw the 3D screen space stuff
+		glBindBuffer( GL_ARRAY_BUFFER, vbo );
+		glBufferData( GL_ARRAY_BUFFER, sizeof(VertexType::GenericVertex) * CMaxGenericModelSize, genericModel.m_vertexData.data( ), GL_DYNAMIC_DRAW );
+
+		glBindVertexArray( genericModel.m_renderInfo.vao );
+		glDrawArrays( GL_TRIANGLES, 0, static_cast< int32 >( indicesCount ) );
+
+		// Clear the batch
+		indicesCount = 0;
+		genericModel.m_vertexData.clear( );
 
 		glEnable( GL_CULL_FACE );
 	}

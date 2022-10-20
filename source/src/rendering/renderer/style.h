@@ -3,7 +3,7 @@
 
 #include "core/types/typedef.hpp"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	struct Style
 	{

@@ -1,6 +1,6 @@
 #include "rendering/renderer/style.h"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	namespace Colors
 	{

@@ -97,8 +97,8 @@ namespace Nocturn::rendering
 
 		Block operator[]( const ivec3 &position ) const noexcept;
 
-		void SetBlock( BlockId id, const ivec3 &position );
-		void SetBlock( BlockId id, int32 x, int32 y, int32 z );
+		void SetBlock( BlockId blockId, const ivec3 &worldPosition ) noexcept;
+		void SetBlock( BlockId blockId, int32 worldX, int32 worldY, int32 worldZ ) noexcept;
 		void SetNeighbor( NeighborType type, ChunkSection &chunk ) noexcept;
 		void SetRenderableChunk( ) noexcept;
 		void SetChunkMaxY( const uint8 maxy ) noexcept
@@ -107,7 +107,7 @@ namespace Nocturn::rendering
 		}
 
 		NODISCARD ivec2						  getLocation( ) const;
-		NODISCARD const RenderInfo&			  getRenderInfo( ) const;
+		NODISCARD const RenderInfo&			  GetRenderInfo( ) const;
 		NODISCARD const std::vector< Block >& getChunk( ) const;
 		NODISCARD ChunkLayer				  getLayer( int y ) const;
 		NODISCARD uint8						  GetChunkMaxY( ) const noexcept

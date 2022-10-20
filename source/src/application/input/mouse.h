@@ -16,9 +16,9 @@ namespace Nocturn
     struct Mouse
     {
     public:
-        static void cursorPosCallback(GLFWwindow *window, const double x, const double y);
-        static void mouseButtonCallback(GLFWwindow *window, const int button, const int action, const int mods);
-        static void mouseWheelCallback(GLFWwindow *window, const double dx, const double dy);
+		static void CursorPosCallback( GLFWwindow *window, double x, double y );
+		static void MouseButtonCallback( int button, int action );
+		static void MouseWheelCallback( GLFWwindow *window, double dx, double dy );
 
         static double getDx();
         static double getDy();

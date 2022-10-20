@@ -8,27 +8,27 @@ namespace Nocturn::rendering
 {
 	struct BlockDataHolder; /* forward decalartion */
 
-	const static std::array< float, 12 > frontFace{
+	static constexpr std::array< float, 12 > frontFace{
 		0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1
 	};
 
-	const static std::array< float, 12 > backFace{
+	static constexpr std::array< float, 12 > backFace{
 		1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0
 	};
 
-	const static std::array< float, 12 > leftFace{
+	static constexpr std::array< float, 12 > leftFace{
 		0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0
 	};
 
-	const static std::array< float, 12 > rightFace{
+	static constexpr std::array< float, 12 > rightFace{
 		1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1
 	};
 
-	const static std::array< float, 12 > topFace{
+	static constexpr std::array< float, 12 > topFace{
 		0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0
 	};
 
-	const static std::array< float, 12 > bottomFace{
+	static constexpr std::array< float, 12 > bottomFace{
 		0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1
 	};
 
@@ -47,21 +47,21 @@ namespace Nocturn::rendering
 		,	TallGrass
 		,	DeadShrub
 
-		,	END
+		,	End
 	};
 
 	struct Block
 	{
 		Block( ) noexcept = default;
-		Block( const BlockId id );
-		Block( const uint8 id );
+		Block( BlockId id );
+		Block( uint8 id );
 		Block( const Block &block ) = default;
-		Block( Block &&block )		= default;
+		Block( Block &&block ) = default;
 
 		Block &operator=( const Block &block ) = default;
 		Block &operator=( Block &&block ) = default;
-		void   operator					  =( const BlockId id );
-		bool   operator==( const BlockId id ) const;
+		void   operator=( BlockId id );
+		bool   operator==( BlockId id ) const;
 		bool   operator==( const Block &block ) const;
 		bool   operator!=( const Block &block ) const;
 

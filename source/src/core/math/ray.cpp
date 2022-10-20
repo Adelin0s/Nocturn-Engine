@@ -3,7 +3,6 @@
 namespace Nocturn
 {
 	Ray::Ray( const glm::vec3 &position, const vec3 &direction )
-
 	{}
 
 	void Ray::Step( const float scale ) noexcept

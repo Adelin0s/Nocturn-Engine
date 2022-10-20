@@ -29,7 +29,7 @@ namespace Nocturn
 
     bool Keyboard::keyChanged(const int key)
     {
-        bool ret = m_keysChanged[key];
+        const bool ret = m_keysChanged[key];
         m_keysChanged[key] = false;
         return ret;
     }

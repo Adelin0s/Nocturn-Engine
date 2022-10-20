@@ -1,10 +1,10 @@
-/****************************************************************************************
- * @ Author: Cucorianu Eusebiu Adelin                                                   *
- * @ Create Time: 03-08-2021 16:36:33                                                   *
- * @ Modified by: Cucorianu Eusebiu Adelin                                              *
- * @ Modified time: 08-12-2021 16:48:07                                                 *
- * @ Description:                                                                       *
- ****************************************************************************************/
+// =====================================================================
+//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
+//   @ Create Time: 03-08-2021 16:36:33                                                                                                                                                 
+//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
+//   @ Modified time: 07-10-2022 7:01 PM                                                                                                                                    
+//   @ Description:                                                                                                                                                                                
+// =====================================================================
 
 #ifndef MODEL_H
 #define MODEL_H
@@ -13,98 +13,216 @@
 #include <glad/glad.h>
 #include <iostream>
 
+#include "core/core.h"
 #include "core/platform/platform.h"
 #include "core/types/typedef.hpp"
 #include "rendering/data/mesh.hpp"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
+	namespace VertexType
+	{
+		struct ChunkVertex
+		{
+			std::vector< float > vertices;
+			std::vector< float > textures;
+			std::vector< uint32_t > indices;
+
+			void Clear( ) noexcept
+			{
+				vertices.clear( );
+				textures.clear( );
+				indices.clear( );
+			}
+
+			void Shrink( )
+			{
+				vertices.shrink_to_fit( );
+				textures.shrink_to_fit( );
+				indices.shrink_to_fit( );
+			}
+		};
+		
+		struct SkyboxVertex
+		{
+			std::vector< float > vertices;
+
+			void Clear() noexcept
+			{
+				vertices.clear( );
+			}
+
+			void Shrink( )
+			{
+				vertices.shrink_to_fit( );
+			}
+		};
+
+		struct GenericVertex
+		{
+			vec3 start;
+			vec3 end;
+			float isStart;
+			float direction;
+			float strokeWidth;
+			vec4 color;
+		};
+	}
+
+	namespace VertexDataType
+	{
+		using SkyboxDataType = float;
+		using ChunkDataType	 = float;
+		using GenericGataType = VertexType::GenericVertex;
+	}
+
 	struct RenderInfo
 	{
 		uint32_t indicesCount = 0;
-		uint32_t vao		  = 0;
+		uint32_t vao = 0;
+		uint32_t vbo = 0;
 	};
 
-	struct RenderVertexLine
-	{
-		vec3 start;
-		vec3 end;
-		float	  isStart;
-		float	  direction;
-		float	  strokeWidth;
-		vec4 color;
-	};
+	inline static constexpr uint16 CMaxGenericModelSize = 512;
 
-	enum class AttributeType : uint8
-	{
-		 Float
-		,Int
-		,Uint
-	};
-
-	struct AttributeVertex
-	{
-		int			  attributeSlot;
-		int			  numElements;
-		AttributeType type;
-		uint32		  offset;
-	};
-
-	constexpr uint32 CMaxLineModelSize = 501;
-
-	class ChunkModel
+	template< typename TVertexDataType >
+	class Model
 	{
 	public:
-		ChunkModel( ) noexcept			= default;
-		ChunkModel( const ChunkModel &model ) = default;
-		ChunkModel( ChunkModel &&model )		= delete;
-		ChunkModel &operator=( const ChunkModel &model ) = delete;
-		ChunkModel &operator=( ChunkModel &&model ) = delete;
+		Model( ) noexcept = default;
 
-		void generateVAO( );
-		void bindVAO( ) const noexcept;
-		void addData( const Mesh &mesh );
-		void addVBO( const int size, const std::vector< float > &data );
-		void addEBO( const std::vector< uint32_t > &indices );
+		// cant copy
+		Model( const Model &model ) = default;
+		Model &operator=( const Model &model ) = delete;
 
-		NODISCARD uint32_t			getIndicesCount( ) const noexcept;
-		NODISCARD const RenderInfo &getRenderInfo( ) const;
+		// cant move
+		Model( Model &&model ) = delete;
+		Model &operator=( Model &&model ) = delete;
 
-		void deleteData( );
-
-		~ChunkModel( ) noexcept;
-
-	private:
-		std::vector< uint32_t > m_buffers;
-		RenderInfo				m_renderInfo;
-		uint32_t				m_vboIndex = 0;
-	};
-
-	class LineModel
-	{
-	public:
-		void Init( std::initializer_list< AttributeVertex > vertexAttributes );
-		void AddVertex( const RenderVertexLine &vertex );
-		void Flush( );
-
-		FORCE_INLINE int32 GetNumVertices( ) const noexcept
+		void BindVAO( ) const noexcept
 		{
-			return m_numVertices;
-		}
-		FORCE_INLINE void  SetNumVertices( const int32 numVertices ) noexcept
-		{
-			m_numVertices = numVertices;
+			glBindVertexArray( m_renderInfo.vao );
 		}
 
-		NODISCARD GLenum AttributeTypeToGl( AttributeType type ) const;
+		template< typename TVertexType > requires( std::is_same_v< TVertexType, VertexType::ChunkVertex > || std::is_same_v< TVertexType, VertexType::SkyboxVertex > || std::is_same_v< TVertexType, VertexType::GenericVertex > )
+		void AddVertexData( const TVertexType &mesh)
+		{
+			if constexpr( std::is_same_v< TVertexType, VertexType::ChunkVertex > )
+			{
+				GenerateVAO( );
+
+				AddVBO( 3, mesh.vertices );
+				AddVBO( 2, mesh.textures );
+				AddEBO( mesh.indices );
+			}
+			else if constexpr( std::is_same_v< TVertexType, VertexType::SkyboxVertex > )
+			{
+				GenerateVAO( );
+
+				AddVBO( 3, mesh.vertices );
+			}
+			else if constexpr( std::is_same_v< TVertexType, VertexType::GenericVertex > )
+			{
+				if( !m_isInitialized )
+				{
+					InitializeGenericVertex( );
+				}
+				m_vertexData.push_back( mesh );
+				m_renderInfo.indicesCount++;
+			}
+		}
+
+		NODISCARD const RenderInfo &GetRenderInfo( ) const noexcept
+		{
+			return m_renderInfo;
+		}
+
+		void DeleteData( ) noexcept
+		{
+			if( m_renderInfo.vao )
+				glDeleteVertexArrays( 1, &m_renderInfo.vao );
+			if( !m_buffers.empty( ) )
+				glDeleteBuffers( static_cast< GLsizei >( m_buffers.size( ) ), m_buffers.data( ) );
+
+			m_buffers.clear( );
+
+			m_vboIndex		 = 0;
+			m_renderInfo.vao = 0;
+		}
+
+		friend void Render( );
+
+		~Model( ) noexcept = default;
 
 	private:
-		std::vector< RenderVertexLine > m_data;
+		std::vector< TVertexDataType > m_vertexData;
+		RenderInfo m_renderInfo{ };
+		std::vector< uint32_t >	m_buffers{ };
+		uint32_t m_vboIndex = 0;
+		static bool	m_isInitialized{ false };
 
-		uint32							m_vao = 0;
-		uint32							m_vbo = 0;
-		int32							m_numVertices = 0;
-		uint32							m_dataSize = 0;
+	private:
+		void InitializeGenericVertex( ) noexcept
+		{
+			auto &vao = m_renderInfo.vao;
+			auto &vbo = m_renderInfo.vbo;
+			auto &indicesCount = m_renderInfo.indicesCount;
+			glGenVertexArrays( 1, &vao );
+			glBindVertexArray( vao );
+
+			glGenBuffers( 1, &vbo );
+			glBindBuffer( GL_ARRAY_BUFFER, vbo );
+			glBufferData( GL_ARRAY_BUFFER, 512 * sizeof( VertexType::GenericVertex ), nullptr, GL_DYNAMIC_DRAW );
+
+			glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( VertexType::GenericVertex ), reinterpret_cast< void * >( static_cast< int64 >( offsetof( VertexType::GenericVertex, start ) ) ) );
+			glEnableVertexAttribArray( 0 );
+			glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( VertexType::GenericVertex ), reinterpret_cast< void * >( static_cast< int64 >( offsetof( VertexType::GenericVertex, end ) ) ) );
+			glEnableVertexAttribArray( 1 );
+			glVertexAttribPointer( 2, 1, GL_FLOAT, GL_FALSE, sizeof( VertexType::GenericVertex ), reinterpret_cast< void * >( static_cast< int64 >( offsetof( VertexType::GenericVertex, isStart ) ) ) );
+			glEnableVertexAttribArray( 2 );
+			glVertexAttribPointer( 3, 1, GL_FLOAT, GL_FALSE, sizeof( VertexType::GenericVertex ), reinterpret_cast< void * >( static_cast< int64 >( offsetof( VertexType::GenericVertex, direction ) ) ) );
+			glEnableVertexAttribArray( 3 );
+			glVertexAttribPointer( 4, 1, GL_FLOAT, GL_FALSE, sizeof( VertexType::GenericVertex ), reinterpret_cast< void * >( static_cast< int64 >( offsetof( VertexType::GenericVertex, strokeWidth ) ) ) );
+			glEnableVertexAttribArray( 4 );
+			glVertexAttribPointer( 5, 4, GL_FLOAT, GL_FALSE, sizeof( VertexType::GenericVertex ), reinterpret_cast< void * >( static_cast< int64 >( offsetof( VertexType::GenericVertex, color ) ) ) );
+			glEnableVertexAttribArray( 5 );
+			indicesCount = 0;
+			m_isInitialized = true;
+		}
+
+		void GenerateVAO( )
+		{
+			if( m_renderInfo.vao != 0 )
+				DeleteData( );
+
+			glGenVertexArrays( 1, &m_renderInfo.vao );
+			glBindVertexArray( m_renderInfo.vao );
+		}
+
+		void AddVBO( int size, const std::vector< float > &data )
+		{
+			uint32_t vbo;
+			glGenBuffers( 1, &vbo );
+			glBindBuffer( GL_ARRAY_BUFFER, vbo );
+			glBufferData( GL_ARRAY_BUFFER, data.size( ) * sizeof( float ), data.data( ), GL_DYNAMIC_DRAW );
+
+			glBindBuffer( GL_ARRAY_BUFFER, vbo );
+			glVertexAttribPointer( m_vboIndex, size, GL_FLOAT, GL_FALSE, size * sizeof( float ), ( void * )0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glEnableVertexAttribArray( m_vboIndex++ );
+
+			m_buffers.push_back( vbo );
+		}
+
+		void AddEBO( const std::vector< uint32_t > &indices )
+		{
+			m_renderInfo.indicesCount = indices.size( );
+			uint32_t ebo;
+			glGenBuffers( 1, &ebo );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ebo );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, indices.size( ) * sizeof( uint32_t ), indices.data( ), GL_DYNAMIC_DRAW );
+		}
 	};
 } // namespace Nocturn::rendering
 #endif

@@ -36,9 +36,7 @@ void main()
 	startScreen.x *= uAspectRatio;
 
 	// Normal of line (B - A)
-	vec2 dir = aIsStart == 1.0
-		? normalize(endScreen - currentScreen)
-		: normalize(currentScreen - startScreen);
+	vec2 dir = aIsStart == 1.0 ? normalize(endScreen - currentScreen) : normalize(currentScreen - startScreen);
 	vec2 normal = vec2(-dir.y, dir.x);
 
 	// Extrude from the center and correct aspect ratio

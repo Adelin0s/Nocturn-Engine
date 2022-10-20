@@ -25,7 +25,7 @@ namespace Nocturn::rendering
 
 	struct AdjacentBlock
 	{
-		void update( const uint32_t x, const uint32_t y, const uint32_t z );
+		void update( uint32_t x, uint32_t y, uint32_t z );
 
 		ivec3 top;
 		ivec3 bottom;
@@ -37,12 +37,12 @@ namespace Nocturn::rendering
 
 	enum class FaceType
 	{
-		Up = 0,
-		Down,
-		Left,
-		Right,
-		Back,
-		Front
+		Up = 0
+		,	Down
+		,	Left
+		,	Right
+		,	Back
+		,	Front
 	};
 
 	class ChunkMesh
@@ -56,12 +56,12 @@ namespace Nocturn::rendering
 		ChunkMesh &operator=( const ChunkMesh &mesh ) = delete;
 		ChunkMesh &operator=( ChunkMesh &&mesh ) = delete;
 
-		NODISCARD const ChunkModel &getModel( ) const;
-		NODISCARD uint32		    getIndicesSize( ) const noexcept;
-		void						makeMesh( ChunkSection &pchunk );
-		void						loadBufferData( );
-		NODISCARD bool				hasMesh( ) const noexcept;
-		NODISCARD bool				hasLoaded( ) const noexcept;
+		NODISCARD const Model< VertexDataType::ChunkDataType > &GetModel( ) const;
+		NODISCARD uint32		    GetIndicesSize( ) const noexcept;
+		void						MakeMesh( ChunkSection &pchunk );
+		void						LoadBufferData( );
+		NODISCARD bool				HasMesh( ) const noexcept;
+		NODISCARD bool				HasLoaded( ) const noexcept;
 		void						DeleteMesh( ) noexcept;
 
 		~ChunkMesh( ) noexcept = default;
@@ -71,9 +71,9 @@ namespace Nocturn::rendering
 		uint32_t	  m_index	  = 0; /* lolita lolita , cichi cichi bambita */
 		bool		  m_hasMesh	  = false;
 		bool		  m_hasLoaded = false;
-		Mesh		  m_mesh;
-		ChunkModel	  m_model;
+		Model< VertexDataType::ChunkDataType > m_model;
 		ChunkSection *m_pChunk = nullptr; /* pointer to the current chunk */
+		VertexType::ChunkVertex	  m_mesh;
 
 		void		   makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const ivec3 &adjBlock );
 		NODISCARD bool shouldMakeFace( const Block_t &blockCoords, const ivec3 &adjCoords ) const noexcept;
