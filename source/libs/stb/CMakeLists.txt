@@ -1,0 +1,18 @@
+project(stb VERSION 1.0.0)
+
+set_property(GLOBAL PROPERTY USER_FOLDERS ON)
+
+set(_src_root_path "${MAKE_CURRENT_SOURCE_DIR}")
+
+file(
+	GLOB_RECURSE _public_files
+	LIST_DIRECTORIES false
+	"${_src_root_path}/include/*.h"
+	"${_src_root_path}/src/*.cpp"
+)
+
+add_library(stb INTERFACE)
+
+source_group("public" FILES ${_public_files})
+
+target_include_directories(stb INTERFACE "${_src_root_path}/include/")

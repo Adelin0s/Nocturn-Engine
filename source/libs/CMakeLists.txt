@@ -1,0 +1,11 @@
+add_subdirectory (glad)
+add_subdirectory (glfw)
+add_subdirectory (glm)
+add_subdirectory (nlohmann_json)
+add_subdirectory (stb)
+
+set_target_properties(nlohmann_json PROPERTIES FOLDER Libraries)
+set_target_properties(glfw PROPERTIES FOLDER Libraries)
+set_target_properties(glm PROPERTIES FOLDER Libraries)
+set_target_properties(glad PROPERTIES FOLDER Libraries)
+set_target_properties(stb PROPERTIES FOLDER Libraries)

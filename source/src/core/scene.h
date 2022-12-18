@@ -8,4 +8,5 @@ namespace Nocturn::Scene
 	void Free( );
 } // namespace Nocturn::Scene
 
+
 #endif
