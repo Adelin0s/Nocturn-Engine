@@ -1,8 +1,8 @@
 #include "rendering/renderer/skyboxrenderer.h"
 
-namespace Nocturn::rendering
+namespace Nocturn::Render
 {
-	SkyboxRendering::SkyboxRendering( )
+	RStatus SkyboxRenderer::Init( )
 	{
 		VertexType::SkyboxVertex vertexData;
 		vertexData.vertices = {
@@ -61,9 +61,11 @@ namespace Nocturn::rendering
 		} );
 		m_textureCube.loadCubemap( "skybox" );
 		m_skyboxShader.init( );
+
+		return RSucces;
 	}
 
-	void SkyboxRendering::render( const Camera &camera )
+	RStatus SkyboxRenderer::Render( const Camera &camera )
 	{
 		glDepthFunc( GL_LEQUAL );
 
@@ -79,5 +81,7 @@ namespace Nocturn::rendering
 
 		m_textureCube.unbind( );
 		glDepthFunc( GL_LESS );
+
+		return RSucces;
 	}
 } // namespace Nocturn::rendering

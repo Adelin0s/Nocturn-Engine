@@ -17,7 +17,7 @@
 #include <vector>
 #include "application/config/config.hpp"
 
-namespace Nocturn::rendering
+namespace Nocturn::Render
 {
 	class TextureCube
 	{

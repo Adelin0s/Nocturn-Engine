@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-namespace Nocturn
+namespace Nocturn::Render
 {
 	static const Camera *camera;
 	Model< VertexType::GenericVertex > genericModel;

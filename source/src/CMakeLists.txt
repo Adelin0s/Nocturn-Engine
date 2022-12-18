@@ -31,8 +31,8 @@ file(GLOB _rendering_components_files				LIST_DIRECTORIES false "${_src_root_pat
 file(GLOB _rendering_components_entity_files		LIST_DIRECTORIES false "${_src_root_path}/rendering/components/entity/*.h" "${_src_root_path}/rendering/components/entity/*.hpp" "${_src_root_path}/rendering/components/entity/*.cpp")
 file(GLOB _rendering_components_shaders_files		LIST_DIRECTORIES false "${_src_root_path}/rendering/components/shaders/*.h" "${_src_root_path}/rendering/components/shaders/*.hpp" "${_src_root_path}/rendering/components/shaders/*.cpp")
 file(GLOB _rendering_components_textures_files		LIST_DIRECTORIES false "${_src_root_path}/rendering/components/textures/*.h" "${_src_root_path}/rendering/components/textures/*.hpp" "${_src_root_path}/rendering/components/textures/*.cpp")
-file(GLOB _rendering_data_files						LIST_DIRECTORIES false "${_src_root_path}/rendering/data/*.h" "${_src_root_path}/rendering/data/*.hpp" "${_src_root_path}/rendering/data/*.cpp")
 file(GLOB _rendering_renderer_files					LIST_DIRECTORIES false "${_src_root_path}/rendering/renderer/*.h" "${_src_root_path}/rendering/renderer/*.hpp" "${_src_root_path}/rendering/renderer/*.cpp")
+file(GLOB _rendering_renderer_data_files			LIST_DIRECTORIES false "${_src_root_path}/rendering/renderer/data/*.h" "${_src_root_path}/rendering/renderer/data/*.hpp" "${_src_root_path}/rendering/renderer/data/*.cpp")
 file(GLOB _rendering_world_files					LIST_DIRECTORIES false "${_src_root_path}/rendering/world/*.h" "${_src_root_path}/rendering/world/*.hpp" "${_src_root_path}/rendering/world/*.cpp")
 file(GLOB _rendering_world_block_files				LIST_DIRECTORIES false "${_src_root_path}/rendering/world/block/*.h" "${_src_root_path}/rendering/world/block/*.hpp" "${_src_root_path}/rendering/world/block/*.cpp")
 file(GLOB _rendering_world_chunk_files				LIST_DIRECTORIES false "${_src_root_path}/rendering/world/chunk/*.h" "${_src_root_path}/rendering/world/chunk/*.hpp" "${_src_root_path}/rendering/world/chunk/*.cpp")
@@ -63,8 +63,8 @@ add_executable(NocturnProject
 	${_rendering_components_entity_files}
 	${_rendering_components_shaders_files}
 	${_rendering_components_textures_files}
-	${_rendering_data_files}
 	${_rendering_renderer_files}
+	${_rendering_renderer_data_files}
 	${_rendering_world_files}
 	${_rendering_world_block_files}
 	${_rendering_world_chunk_files}
@@ -115,8 +115,8 @@ source_group("rendering/components"  FILES ${_rendering_components_files})
 source_group("rendering/components/entity"  FILES ${_rendering_components_entity_files})
 source_group("rendering/components/shaders"  FILES ${_rendering_components_shaders_files})
 source_group("rendering/components/textures"  FILES ${_rendering_components_textures_files})
-source_group("rendering/data"  FILES ${_rendering_data_files})
 source_group("rendering/renderer"  FILES ${_rendering_renderer_files})
+source_group("rendering/renderer/data"  FILES ${_rendering_renderer_data_files})
 source_group("rendering/world"  FILES ${_rendering_world_files})
 source_group("rendering/world/block"  FILES ${_rendering_world_block_files})
 source_group("rendering/world/chunk"  FILES ${_rendering_world_chunk_files})

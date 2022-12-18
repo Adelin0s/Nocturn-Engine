@@ -16,9 +16,8 @@
 #include "core/core.h"
 #include "core/platform/platform.h"
 #include "core/types/typedef.hpp"
-#include "rendering/data/mesh.hpp"
 
-namespace Nocturn
+namespace Nocturn::Render
 {
 	namespace VertexType
 	{
@@ -73,7 +72,7 @@ namespace Nocturn
 	{
 		using SkyboxDataType = float;
 		using ChunkDataType	 = float;
-		using GenericGataType = VertexType::GenericVertex;
+		using GenericDataType = VertexType::GenericVertex;
 	}
 
 	struct RenderInfo
@@ -155,11 +154,11 @@ namespace Nocturn
 		~Model( ) noexcept = default;
 
 	private:
-		std::vector< TVertexDataType > m_vertexData;
+		std::vector< TVertexDataType > m_vertexData{ };
 		RenderInfo m_renderInfo{ };
 		std::vector< uint32_t >	m_buffers{ };
 		uint32_t m_vboIndex = 0;
-		static bool	m_isInitialized{ false };
+		static inline bool m_isInitialized{ false };
 
 	private:
 		void InitializeGenericVertex( ) noexcept

@@ -4,9 +4,9 @@
 #include "core/types/typedef.hpp"
 
 #include "rendering/components/entity/camera.h"
-#include "style.h"
+#include "rendering/renderer/style.h"
 
-namespace Nocturn
+namespace Nocturn::GenericRender
 {
 	void Init( const Camera &cameraRef );
 
@@ -16,6 +16,6 @@ namespace Nocturn
 	void Render( );
 
 	void Free( );
-} // namespace Nocturn::Renderer
+}
 
 #endif

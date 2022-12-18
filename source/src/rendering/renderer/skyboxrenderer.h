@@ -10,31 +10,36 @@
 #define SKYBOX_RENDERER_H
 
 #include "core/GL/GLFunctions.h"
+#include "data/model.hpp"
 
 #include "rendering/components/shaders/skyboxshader.h"
 #include "rendering/components/textures/texturecube.h"
-#include "rendering/data/model.h"
+#include "rendering/renderer/baserenderer.h"
 
-namespace Nocturn::rendering
+namespace Nocturn::Render
 {
-	class SkyboxRendering
+	class SkyboxRenderer final : public BaseRenderer
 	{
 	public:
-		SkyboxRendering( );
-		SkyboxRendering( const SkyboxRendering & ) = delete;
-		SkyboxRendering( SkyboxRendering && )	   = delete;
+		SkyboxRenderer( ) noexcept = default;
 
-		SkyboxRendering &operator=( const SkyboxRendering & ) = delete;
-		SkyboxRendering &operator=( SkyboxRendering && ) = delete;
+		// cant copy
+		SkyboxRenderer( const SkyboxRenderer & ) = delete;
+		SkyboxRenderer( SkyboxRenderer && ) = delete;
 
-		void render( const Camera &camera );
+		// cant move
+		SkyboxRenderer &operator=( const SkyboxRenderer & ) = delete;
+		SkyboxRenderer &operator=( SkyboxRenderer && ) = delete;
 
-		~SkyboxRendering( ) noexcept = default;
+		RStatus Render( const Camera &camera ) override;
+		RStatus Init( ) override;
+
+		~SkyboxRenderer( ) noexcept override = default;
 
 	private:
 		Model< VertexDataType::SkyboxDataType > m_model;
 		SkyboxShader m_skyboxShader;
-		TextureCube	 m_textureCube;
+		TextureCube m_textureCube;
 	};
 } // namespace Nocturn::rendering
 

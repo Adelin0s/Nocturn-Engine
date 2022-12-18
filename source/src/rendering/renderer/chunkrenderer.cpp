@@ -1,6 +1,6 @@
 #include "rendering/renderer/chunkrenderer.h"
 
-namespace Nocturn::rendering
+namespace Nocturn::Render
 {
 	void ChunkRendering::Init( )
 	{

@@ -40,7 +40,7 @@ namespace Nocturn
 		spectator	  = std::make_unique< Spectator >( spectatorTransform );
 		physics		  = std::make_unique< Physics >( *player, *m_chunkManager, playerTransform, rigidbody );
 
-		r::Init( *camera );
+		//Init( *camera );
 
 		m_chunkRender.Init( );
 	}
@@ -74,7 +74,7 @@ namespace Nocturn
 		player->Update( dt );
 		spectator->Update( dt );
 
-		Render( );
+		//Render( );
 
 		m_chunkManager->Render( *camera, *cameraFrustum, m_chunkRender );
 	}

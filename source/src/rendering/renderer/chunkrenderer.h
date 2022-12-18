@@ -15,29 +15,30 @@
 #include "rendering/components/shaders/shader.h"
 #include "rendering/world/block/blockdatabase.h"
 #include "rendering/world/chunk/chunksection.h"
+#include "rendering/renderer/baserenderer.h"
 
-namespace Nocturn::rendering
+namespace Nocturn::Render
 {
-	class ChunkRendering
+	class ChunkRenderer : public BaseRenderer
 	{
 	public:
-		ChunkRendering( ) noexcept = default;
+		ChunkRenderer( ) noexcept = default;
 
 		// cant copy
-		ChunkRendering( const ChunkRendering & ) = delete;
-		ChunkRendering &operator=( const ChunkRendering & ) = delete;
+		ChunkRenderer( const ChunkRenderer & ) = delete;
+		ChunkRenderer &operator=( const ChunkRenderer & ) = delete;
 
 		// cant move
-		ChunkRendering( ChunkRendering && ) = delete;
-		ChunkRendering &operator=( ChunkRendering && ) = delete;
+		ChunkRenderer( ChunkRenderer && ) = delete;
+		ChunkRenderer &operator=( ChunkRenderer && ) = delete;
 
-		void Init( );
+		RStatus Init() override;
+		RStatus Render(const Camera &camera) override;
+
 		void Add( const RenderInfo &renderInfo );
-		void Render( const Camera &camera );
-
 		NODISCARD size_t Size( ) const noexcept;
 
-		~ChunkRendering( ) noexcept = default;
+		~ChunkRenderer( ) noexcept = default;
 
 	private:
 		std::vector< RenderInfo >  m_chunks;
