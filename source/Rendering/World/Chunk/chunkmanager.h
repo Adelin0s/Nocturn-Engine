@@ -49,7 +49,7 @@ namespace Nocturn::rendering
 
 		void GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept;
 		void Update( const ivec3 &currentPosition );
-		void Render( const NCamera &camera, Frustum &frustum, Render::ChunkRenderer &chunkRender );
+		void Render( const NCamera &camera, NFrustum &frustum, Render::ChunkRenderer &chunkRender );
 
 		void GenerateTree( ChunkSection &chunk, int32 px, int32 pymax, int32 pz );
 

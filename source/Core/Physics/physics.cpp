@@ -8,19 +8,15 @@
 
 namespace Nocturn
 {
-	static void printVec( const vec3 &vec )
-	{
-		std::cout << vec.x << ' ' << vec.y << ' ' << vec.z << '\n';
-	}
-
-	Physics::Physics( const Entity &player, ChunkManager &chunkManager, Transform &transform, RigidBody &rigidBody ) :
+	NPhysics::NPhysics( const Entity &player, ChunkManager &chunkManager, NTransform &transform, NRigidBody &rigidBody )
+	:
 		m_pPlayer( &player ), m_pChunkManager( &chunkManager ), m_pTransform( &transform ), m_pRigidBody( &rigidBody )
 	{}
 
-	void Physics::Update( const double dt )
+	void NPhysics::Update( const double DeltaTime )
 	{
 		auto &velocity = m_pRigidBody->velocity;
-		auto &position = m_pTransform->position;
+		auto &position = m_pTransform->Position;
 
 		if( Keyboard::keyWentDown( GLFW_KEY_SPACE ) )
 		{
@@ -31,7 +27,7 @@ namespace Nocturn
 		float remainingTime = 1.0f;
 		float minTime;
 
-		vec3 localVelocity = velocity * CPhysicsUpdateRate;
+		vec3 localVelocity = velocity * static_cast< float >( DeltaTime );
 
 		constexpr float hDrag = glm::max( 1.0f - CHorizontalDrag * CPhysicsUpdateRate, 0.0f );
 		constexpr float vDrag = glm::max( 1.0f - CVerticalDrag * CPhysicsUpdateRate, 0.0f );
@@ -62,12 +58,12 @@ namespace Nocturn
 		if( normal.y == 1.0f )
 			velocity.y = 0;
 		else
-			velocity += CGravity * CPhysicsUpdateRate;
+			velocity += CGravity * static_cast< float >( DeltaTime );
 	}
 
-	void Physics::ProcessCollision( float &minTime, const vec3 &velocity ) noexcept
+	void NPhysics::ProcessCollision( float &minTime, const vec3 &velocity ) noexcept
 	{
-		const auto &position = m_pTransform->position;
+		const auto &position = m_pTransform->Position;
 		const auto &bound	 = m_pPlayer->GetBound( );
 
 		const auto minI = bound.min;
@@ -84,10 +80,11 @@ namespace Nocturn
 		const auto maxZ = static_cast< int32 >( glm::floor( glm::max( max.z, maxI.z ) ) );
 
 		minTime = 1.0f;
-		const auto &chunk = m_pChunkManager->GetChunk( { position.x / Constants::CChunkX,
-														 position.z / Constants::CChunkZ } );
+		const auto &chunk = m_pChunkManager->GetChunk( { position.x / Constants::CChunkX, position.z / Constants::CChunkZ } );
 		for( int32 x = minX; x <= maxX; x++ )
+		{
 			for( int32 y = minY; y <= maxY; y++ )
+			{
 				for( int32 z = minZ; z <= maxZ; z++ )
 				{
 					if( y >= 0 && y < Constants::CChunkY && chunk.getBlock( x, y, z ) != BlockId::Air )
@@ -99,9 +96,11 @@ namespace Nocturn
 						}
 					}
 				}
+			}
+		}
 	}
 
-	float Physics::SweptCollision( const vec3 &velocity, const vec3 &min, const vec3 &max, const vec3 &minI, const vec3 &maxI, const float minTime, const float x, const float y, const float z ) noexcept
+	float NPhysics::SweptCollision( const vec3 &velocity, const vec3 &min, const vec3 &max, const vec3 &minI, const vec3 &maxI, const float minTime, const float x, const float y, const float z ) noexcept
 	{
 		vec3 invEntry, invExit;
 		vec3 entry, exit;
@@ -234,153 +233,151 @@ namespace Nocturn
 		return entryTime;
 	}
 
-	RaycastResult Physics::RaycastStatic( const vec3 &origin, const vec3 &normalDirection, const float maxDistance, const bool draw ) const noexcept
+	RaycastResult NPhysics::RaycastStatic( const vec3 &Origin, const vec3 &NormalDirection, const float MaxDistance, const bool bDraw ) const noexcept
 	{
 		RaycastResult result{};
 		const Style style = { Colors::offWhite, 0.1f };
-		auto currentOrigin = origin;
-		auto pointOnRay = origin;
-		Render::DrawBox( origin, {1.0f, 1.0f, 1.0f}, style );
-		bool hit = false;
-		for( float i = 0.0f; i < maxDistance; i += 0.1f )
-		{
-			if( glm::ceil( pointOnRay ) != currentOrigin )
-			{
-				currentOrigin = glm::ceil( pointOnRay );
-				const auto size = vec3( 1.0f, 1.0f, 1.0f );
-				Transform transform{};
-				transform.position = currentOrigin;
 
-				const auto block = m_pChunkManager->GetBlock( transform.position );
-				if( draw && block != BlockId::Air /*&& !hit*/ )
+		auto CurrentOrigin = Origin;
+		LogScreen( "Origin{} {} {}", CurrentOrigin.x, CurrentOrigin.y, CurrentOrigin.z);
+		auto PointOnRay = Origin - 1.0f;
+		//Render::DrawBox( origin, {1.0f, 1.0f, 1.0f}, style );
+		bool hit = false;
+		for( float i = 0.0f; i < MaxDistance; i += 0.1f )
+		{
+			if( glm::ceil( PointOnRay ) != CurrentOrigin )
+			{
+				CurrentOrigin = glm::ceil( PointOnRay );
+				constexpr auto Size = vec3( 1.0f, 1.0f, 1.0f );
+				NTransform transform{};
+				transform.Position = CurrentOrigin;
+
+				const auto block = m_pChunkManager->GetBlock( transform.Position );
+				if( bDraw && block != BlockId::Air && !hit )
 				{
 					hit = true;
-					Render::DrawBox( transform.position + 1.0f, size, style );
+					Render::DrawBox( transform.Position + 1.0f, Size, style );
 					Render::Render( );
 				}
 			}
-			pointOnRay += normalDirection * 0.1f;
+			PointOnRay += NormalDirection * 0.1f;
 		}
-		return result;
-		//std::cout << "here\n";
-		//RaycastResult result{ };
-		//result.hit = false;
-		//if( Math::Compare< vec3 >( normalDirection, vec3( 0, 0, 0 ) ) )
-		//{
-		//	return result;
-		//}
-		//const Style style = { Colors::algaeGreen, 0.25f };
-		//if( draw )
-		//{
-		//	Renderer::DrawLine( origin, origin + normalDirection * maxDistance, style );
-		//}
-		//// NOTE: Thank God for this paper http://www.cse.yorku.ca/~amana/research/grid.pdf which outlines what I'm doing here
-		//vec3 rayEnd = origin + normalDirection * maxDistance;
-		//// Do some fancy math to figure out which voxel is the next voxel
-		//vec3 blockCenter = glm::ceil( origin );
-		//vec3 step = glm::sign( normalDirection );
-		//// Max amount we can step in any direction of the ray, and remain in the voxel
-		//vec3 blockCenterToOriginSign = glm::sign( blockCenter - origin );
-		//vec3 goodNormalDirection = vec3(
-		//	normalDirection.x == 0.0f ? 1e-10 * blockCenterToOriginSign.x : normalDirection.x,
-		//	normalDirection.y == 0.0f ? 1e-10 * blockCenterToOriginSign.y : normalDirection.y,
-		//	normalDirection.z == 0.0f ? 1e-10 * blockCenterToOriginSign.z : normalDirection.z );
-		//vec3 tDelta = ( ( blockCenter + step ) - origin ) / goodNormalDirection;
-		//// If any number is 0, then we max the delta so we don't get a false positive
-		//if( tDelta.x == 0.0f )
-		//	tDelta.x = 1e10;
-		//if( tDelta.y == 0.0f )
-		//	tDelta.y = 1e10;
-		//if( tDelta.z == 0.0f )
-		//	tDelta.z = 1e10;
-		//vec3 tMax = tDelta;
-		//float minTValue;
-		//do
-		//{
-		//	// TODO: This shouldn't have to be calculated every step
-		//	tDelta	  = ( blockCenter - origin ) / goodNormalDirection;
-		//	tMax	  = tDelta;
-		//	minTValue = FLT_MAX;
-		//	if( tMax.x < tMax.y )
-		//	{
-		//		if( tMax.x < tMax.z )
-		//		{
-		//			blockCenter.x += step.x;
-		//			// Check if we actually hit the block
-		//			if( DoRaycast( origin, normalDirection, maxDistance, draw, blockCenter, step, &result ) )
-		//			{
-		//				return result;
-		//			}
-		//			// tMax.x += tDelta.x;
-		//			minTValue = tMax.x;
-		//		}
-		//		else
-		//		{
-		//			blockCenter.z += step.z;
-		//			if( DoRaycast( origin, normalDirection, maxDistance, draw, blockCenter, step, &result ) )
-		//			{
-		//				return result;
-		//			}
-		//			// tMax.z += tDelta.z;
-		//			minTValue = tMax.z;
-		//		}
-		//	}
-		//	else
-		//	{
-		//		if( tMax.y < tMax.z )
-		//		{
-		//			blockCenter.y += step.y;
-		//			if( DoRaycast( origin, normalDirection, maxDistance, draw, blockCenter, step, &result ) )
-		//			{
-		//				return result;
-		//			}
-		//			// tMax.y += tDelta.y;
-		//			minTValue = tMax.y;
-		//		}
-		//		else
-		//		{
-		//			blockCenter.z += step.z;
-		//			if( DoRaycast( origin, normalDirection, maxDistance, draw, blockCenter, step, &result ) )
-		//			{
-		//				return result;
-		//			}
-		//			// tMax.z += tDelta.z;
-		//			minTValue = tMax.z;
-		//		}
-		//	}
-		//} while( minTValue < maxDistance );
 
-		//return result;
+		//RaycastResult result{ };
+		result.hit = false;
+		if( Math::Compare( NormalDirection, vec3( 0, 0, 0 ) ) )
+		{
+			return result;
+		}
+
+		if( bDraw )
+		{
+			const auto StartPosition = Origin - vec3( 0.5f, 0.0f, 0.5f );
+			Render::DrawLine( StartPosition, Origin + NormalDirection * MaxDistance, style );
+		}
+		vec3 rayEnd = Origin + NormalDirection * MaxDistance;
+		vec3 blockCenter = glm::ceil( Origin );
+		vec3 step = glm::sign( NormalDirection );
+		vec3 blockCenterToOriginSign = glm::sign( blockCenter - Origin );
+		vec3 goodNormalDirection = vec3(
+			NormalDirection.x == 0.0f ? 1e-10 * blockCenterToOriginSign.x : NormalDirection.x,
+			NormalDirection.y == 0.0f ? 1e-10 * blockCenterToOriginSign.y : NormalDirection.y,
+			NormalDirection.z == 0.0f ? 1e-10 * blockCenterToOriginSign.z : NormalDirection.z );
+
+		vec3 tDelta = ( ( blockCenter + step ) - Origin ) / goodNormalDirection;
+		if( tDelta.x == 0.0f )
+			tDelta.x = 1e10;
+		if( tDelta.y == 0.0f )
+			tDelta.y = 1e10;
+		if( tDelta.z == 0.0f )
+			tDelta.z = 1e10;
+		vec3 tMax = tDelta;
+
+		float minTValue;
+		do
+		{
+			// TODO: This shouldn't have to be calculated every step
+			tDelta	  = ( blockCenter - Origin ) / goodNormalDirection;
+			tMax	  = tDelta;
+			minTValue = FLT_MAX;
+			if( tMax.x < tMax.y )
+			{
+				if( tMax.x < tMax.z )
+				{
+					blockCenter.x += step.x;
+					// Check if we actually hit the block
+					if( DoRaycast( Origin, NormalDirection, MaxDistance, bDraw, blockCenter, step, &result ) )
+					{
+						return result;
+					}
+					// tMax.x += tDelta.x;
+					minTValue = tMax.x;
+				}
+				else
+				{
+					blockCenter.z += step.z;
+					if( DoRaycast( Origin, NormalDirection, MaxDistance, bDraw, blockCenter, step, &result ) )
+					{
+						return result;
+					}
+					// tMax.z += tDelta.z;
+					minTValue = tMax.z;
+				}
+			}
+			else
+			{
+				if( tMax.y < tMax.z )
+				{
+					blockCenter.y += step.y;
+					if( DoRaycast( Origin, NormalDirection, MaxDistance, bDraw, blockCenter, step, &result ) )
+					{
+						return result;
+					}
+					// tMax.y += tDelta.y;
+					minTValue = tMax.y;
+				}
+				else
+				{
+					blockCenter.z += step.z;
+					if( DoRaycast( Origin, NormalDirection, MaxDistance, bDraw, blockCenter, step, &result ) )
+					{
+						return result;
+					}
+					// tMax.z += tDelta.z;
+					minTValue = tMax.z;
+				}
+			}
+		} while( minTValue < MaxDistance );
+
+		return result;
 	}
 
-	bool Physics::DoRaycast( const vec3 &origin, const vec3 &normalDirection, float maxDistance, bool draw, const vec3 &blockCorner, const vec3 &step, RaycastResult *out ) const noexcept
+	bool NPhysics::DoRaycast( const vec3 &origin, const vec3 &NormalDirection, float MaxDistance, bool draw, const vec3 &blockCorner, const vec3 &step, RaycastResult *out ) const noexcept
 	{
-		glm::vec3 blockCenter = blockCorner - (glm::vec3(0.5f) * step);
+		glm::vec3 blockCenter = blockCorner + (glm::vec3(0.5f) * step);
 		const Style style = { Colors::offWhite, 0.15f };
 		if( draw )
 		{
-			Render::DrawBox(blockCenter, glm::vec3(1.0f, 1.0f, 1.0f), style);
+			//Render::DrawBox(blockCenter, glm::vec3(1.0f, 1.0f, 1.0f), style);
 		}
 
-		//int blockId = ChunkManager::getBlock(blockCenter).id;
-		//BlockFormat block = BlockMap::getBlock(blockId);
 		const auto block = m_pChunkManager->GetBlock( blockCenter );
 		if ( block != BlockId::Air )
 		{
 			auto blockOffset = glm::vec3();
 			auto blockSize = glm::vec3(1.0f, 1.0f, 1.0f);
 
-			Transform currentTransform;
-			currentTransform.position = blockCenter;
+			NTransform currentTransform;
+			currentTransform.Position = blockCenter;
 
-			glm::vec3 min = currentTransform.position - (blockSize * 0.5f) + blockOffset;
-			glm::vec3 max = currentTransform.position + (blockSize * 0.5f) + blockOffset;
-			float t1 = (min.x - origin.x) / (Math::Compare(normalDirection.x, 0.0f) ? 0.00001f : normalDirection.x);
-			float t2 = (max.x - origin.x) / (Math::Compare(normalDirection.x, 0.0f) ? 0.00001f : normalDirection.x);
-			float t3 = (min.y - origin.y) / (Math::Compare(normalDirection.y, 0.0f) ? 0.00001f : normalDirection.y);
-			float t4 = (max.y - origin.y) / (Math::Compare(normalDirection.y, 0.0f) ? 0.00001f : normalDirection.y);
-			float t5 = (min.z - origin.z) / (Math::Compare(normalDirection.z, 0.0f) ? 0.00001f : normalDirection.z);
-			float t6 = (max.z - origin.z) / (Math::Compare(normalDirection.z, 0.0f) ? 0.00001f : normalDirection.z);
+			glm::vec3 min = currentTransform.Position - (blockSize * 0.5f) + blockOffset;
+			glm::vec3 max = currentTransform.Position + (blockSize * 0.5f) + blockOffset;
+			float t1 = (min.x - origin.x) / (Math::Compare(NormalDirection.x, 0.0f) ? 0.00001f : NormalDirection.x);
+			float t2 = (max.x - origin.x) / (Math::Compare(NormalDirection.x, 0.0f) ? 0.00001f : NormalDirection.x);
+			float t3 = (min.y - origin.y) / (Math::Compare(NormalDirection.y, 0.0f) ? 0.00001f : NormalDirection.y);
+			float t4 = (max.y - origin.y) / (Math::Compare(NormalDirection.y, 0.0f) ? 0.00001f : NormalDirection.y);
+			float t5 = (min.z - origin.z) / (Math::Compare(NormalDirection.z, 0.0f) ? 0.00001f : NormalDirection.z);
+			float t6 = (max.z - origin.z) / (Math::Compare(NormalDirection.z, 0.0f) ? 0.00001f : NormalDirection.z);
 
 			float tmin = glm::max(glm::max(glm::min(t1, t2), glm::min(t3, t4)), glm::min(t5, t6));
 			float tmax = glm::min(glm::min(glm::max(t1, t2), glm::max(t3, t4)), glm::max(t5, t6));
@@ -401,9 +398,9 @@ namespace Nocturn
 				depth = tmin;
 			}
 
-			out->point = origin + normalDirection * depth;
+			out->point = origin + NormalDirection * depth;
 			out->hit = true;
-			out->blockCenter = currentTransform.position + blockOffset;
+			out->blockCenter = currentTransform.Position + blockOffset;
 			out->blockSize = blockSize;
 			out->hitNormal = out->point - out->blockCenter;
 			float maxComponent = glm::max(glm::abs(out->hitNormal.x), glm::max(glm::abs(out->hitNormal.y), glm::abs(out->hitNormal.z)));

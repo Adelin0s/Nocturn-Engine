@@ -1,13 +1,12 @@
-/****************************************************************************************
- * @ Author: Cucorianu Eusebiu Adelin                                                   *
- * @ Create Time: 22-08-2021 13:41:09                                                   *
- * @ Modified by: Cucorianu Eusebiu Adelin                                              *
- * @ Modified time: 07-12-2021 20:51:44                                                 *
- * @ Description:                                                                       *
- ****************************************************************************************/
+// =====================================================================
+//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
+//   @ Create Time: 22-08-2021 13:41:09                                                                                                                                                
+//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
+//   @ Modified time: 04-03-2023 9:22 PM                                                                                                                                    
+//   @ Description:                                                                                                                                                                                
+// =====================================================================
 
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#pragma once
 
 #include <string>
 
@@ -29,5 +28,3 @@ namespace Nocturn::Config
 	/* World Constants */
 	constexpr uint32_t CLoadDistance = 10;
 } // namespace Nocturn::Config
-
-#endif

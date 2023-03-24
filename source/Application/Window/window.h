@@ -10,8 +10,6 @@
 #define WINDOW_H
 
 #include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include <cstdint>
 #include <iostream>
@@ -21,7 +19,8 @@
 
 #include "application/input/keyboard.h"
 #include "application/input/mouse.h"
-#include "core/platform/platform.h"
+
+#include "Core/core.h"
 
 namespace Nocturn
 {

@@ -60,7 +60,7 @@ namespace Nocturn::Render
 		    "front.jpg",
 		    "back.jpg"
 		} );
-		m_textureCube.LoadCubemap( "skybox" );
+		m_textureCube.LoadCubemap(ETextureType::Skybox);
 		m_skyboxShader.Init( );
 
 		return RSucces;

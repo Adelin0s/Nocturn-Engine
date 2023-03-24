@@ -214,7 +214,7 @@ namespace Nocturn::rendering
 	}
 
 	// TODO: Should to seperate Render function?
-	void ChunkManager::Render( const NCamera &camera, Frustum &frustum, Render::ChunkRenderer &chunkRender )
+	void ChunkManager::Render( const NCamera &camera, NFrustum &frustum, Render::ChunkRenderer &chunkRender )
 	{
 		for( const auto &[ position, chunk ] : m_mapChunks )
 		{

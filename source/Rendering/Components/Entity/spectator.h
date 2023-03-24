@@ -10,7 +10,7 @@ namespace Nocturn
 	{
 	public:
 		Spectator() noexcept = delete;
-		Spectator( Transform &transform ) noexcept;
+		Spectator( NTransform &transform ) noexcept;
 
 		// cant copy
 		Spectator( const Spectator & ) = delete;
@@ -21,13 +21,13 @@ namespace Nocturn
 		Spectator &operator=( Spectator && ) = delete;
 
 		NODISCARD const AABB &GetBound( ) const noexcept override;
-		void Update( double dt ) override;
+		void Update( double DeltaTime ) override;
 
 		~Spectator() noexcept override = default;
  
 	private:
-		Transform *m_pTransform{ };
-		RigidBody *m_pRigidBody{ };
+		NTransform *m_pTransform{ };
+		NRigidBody *m_pRigidBody{ };
 		float	   m_speed;
 
 		void HandleMouseInput( ) const noexcept;

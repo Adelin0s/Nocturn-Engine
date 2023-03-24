@@ -16,7 +16,7 @@
 
 namespace Nocturn
 {
-	struct RigidBody
+	struct NRigidBody
 	{
 		void SetZeroForces( ) noexcept
 		{

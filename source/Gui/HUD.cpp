@@ -67,6 +67,7 @@ namespace Nocturn
 	void NHUD::Update( )
 	{
 		glDisable( GL_DEPTH_TEST );
+		glDisable( GL_CULL_FACE );
 
 		Texture->Bind( );
 

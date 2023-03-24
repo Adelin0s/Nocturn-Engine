@@ -5,22 +5,21 @@
 
 namespace Nocturn
 {
-	struct Transform
+	struct NTransform
 	{
-		vec3 position;
-		vec3 scale;
-		vec3 rotation;
+		vec3 Position;
+		vec3 Scale;
+		vec3 Rotation;
 
-		vec3 forward;
-		vec3 up;
-		vec3 right;
-
-		vec3 direction;
+		vec3 Forward;
+		vec3 Up;
+		vec3 Right;
+		vec3 Direction;
 	};
 
 	namespace TransformSystem
 	{
-		void Update( Transform *transform );
+		void Update( NTransform *Transform );
 	}
 } // namespace Nocturn
 

@@ -14,11 +14,11 @@
 namespace Nocturn
 {
 	// I got it from here https://gist.github.com/podgorskiy/e698d18879588ada9014768e3e82a644
-	class Frustum
+	class NFrustum
 	{
 	public:
-		Frustum( ) noexcept;
-		Frustum( const mat4 &m );
+		NFrustum( ) noexcept;
+		NFrustum( const mat4 &m );
 
 		void Update( const mat4 &m ) noexcept;
 		bool IsBoxVisible( const vec3 &minp, const vec3 &maxp ) noexcept;

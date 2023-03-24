@@ -14,6 +14,10 @@ file(GLOB _application_config_files					LIST_DIRECTORIES false "${_src_root_path
 file(GLOB _application_input_files					LIST_DIRECTORIES false "${_src_root_path}/Application/input/*.h" "${_src_root_path}/Application/input/*.hpp" "${_src_root_path}/Application/input/*.cpp")
 file(GLOB _application_window_files					LIST_DIRECTORIES false "${_src_root_path}/Application/window/*.h" "${_src_root_path}/Application/window/*.hpp" "${_src_root_path}/Application/window/*.cpp")
 
+file(GLOB _context_files							LIST_DIRECTORIES false "${_src_root_path}/Context/*.h" "${_src_root_path}/Context/*.hpp" "${_src_root_path}/Context/*.cpp")
+file(GLOB _context_componenets_files				LIST_DIRECTORIES false "${_src_root_path}/Context/Components/*.h" "${_src_root_path}/Context/Components/*.hpp" "${_src_root_path}/Context/Components/*.cpp")
+file(GLOB _context_gameframework_files				LIST_DIRECTORIES false "${_src_root_path}/Context/GameFramework/*.h" "${_src_root_path}/Context/GameFramework/*.hpp" "${_src_root_path}/Context/GameFramework/*.cpp")
+
 file(GLOB _core_async_files							LIST_DIRECTORIES false "${_src_root_path}/Core/Async/*.h" "${_src_root_path}/Core/Async/*.hpp" "${_src_root_path}/Core/Async/*.cpp")
 file(GLOB _core_algorithms_files					LIST_DIRECTORIES false "${_src_root_path}/Core/Algorithms/*.h" "${_src_root_path}/Core/Algorithms/*.hpp" "${_src_root_path}/Core/Algorithms/*.cpp")
 file(GLOB _core_files								LIST_DIRECTORIES false "${_src_root_path}/Core/*.h" "${_src_root_path}/Core/*.hpp" "${_src_root_path}/Core/*.cpp")
@@ -48,6 +52,10 @@ add_executable(NocturnProject
 	${_application_config_files}
 	${_application_input_files}
 	${_application_window_files}
+
+	${_context_files}
+	${_context_componenets_files}
+	${_context_gameframework_files}
 	
 	${_core_files}
 	${_core_algorithms_files}
@@ -107,6 +115,10 @@ source_group("Application/Input" FILES ${_application_input_files})
 source_group("Application/Scene" FILES ${_application_scene_files})
 source_group("Application/Window" FILES ${_application_window_files})
 
+source_group("Context" FILES ${_context_files})
+source_group("Context/Componenets" FILES ${_context_componenets_files})
+source_group("Context/GameFramework" FILES ${_context_gameframework_files})
+
 source_group("Core" FILES ${_core_files})
 source_group("Core/Algorithms" FILES ${_core_algorithms_files})
 source_group("Core/Components" FILES ${_core_components_files})
@@ -134,3 +146,4 @@ source_group("Rendering/World" FILES ${_rendering_world_files})
 source_group("Rendering/World/Block" FILES ${_rendering_world_block_files})
 source_group("Rendering/World/Chunk" FILES ${_rendering_world_chunk_files})
 source_group("Rendering/World/Generation" FILES ${_rendering_world_generation_files})
+

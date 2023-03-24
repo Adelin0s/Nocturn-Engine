@@ -16,9 +16,15 @@
 #include <stb_image.h>
 #include <vector>
 #include "application/config/config.hpp"
+#include "Core/core.h"
 
 namespace Nocturn::Render
 {
+	enum class ETextureType : uint8
+	{
+		Skybox = 0
+	};
+
 	class NTextureCube
 	{
 	public:
@@ -26,7 +32,7 @@ namespace Nocturn::Render
 		void Bind( ) const;
 		void Unbind( ) const;
 
-		void LoadCubemap( const std::string &TextureType );
+		void LoadCubemap( ETextureType TextureType );
 
 		void SetFaces( const std::vector< std::string > &Faces ) noexcept;
 		void SetFace( const std::string &Face ) noexcept;

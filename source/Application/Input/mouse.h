@@ -15,7 +15,8 @@ namespace Nocturn
 {
     struct Mouse
     {
-    public:
+        static inline constexpr double CMouseSensitivity = 0.1;
+
 		static void CursorPosCallback( GLFWwindow *window, double x, double y );
 		static void MouseButtonCallback( int button, int action );
 		static void MouseWheelCallback( GLFWwindow *window, double dx, double dy );

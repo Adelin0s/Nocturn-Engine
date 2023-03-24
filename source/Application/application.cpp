@@ -5,11 +5,8 @@
 
 #include "GUI/HUD.h"
 
-#include "rendering/renderer/skyboxrenderer.h"
 #include "rendering/world/chunk/chunkmanager.h"
 #include "rendering/world/world.h"
-
-#include <chrono>
 
 namespace Nocturn::Application
 {

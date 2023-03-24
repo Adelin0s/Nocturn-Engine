@@ -1,5 +1,8 @@
 #include "rendering/world/world.h"
 
+#include "Context/GameFramework/Character.h"
+#include "Context/Components/CameraComponent.h"
+
 #include "application/input/keyboard.h"
 #include "rendering/components/entity/spectator.h"
 #include "rendering/renderer/renderer.h"
@@ -9,14 +12,14 @@
 
 namespace Nocturn
 {
-	static Transform playerTransform;
-	static Transform spectatorTransform;
-	static RigidBody rigidbody;
+	static NTransform PlayerTransform;
+	static NTransform SpectatorTransform;
+	static NRigidBody rigidbody;
 
-	static std::unique_ptr< NCamera >	camera;
-	static std::unique_ptr< Frustum >	cameraFrustum;
-	static std::unique_ptr< Entity >	player;
-	static std::unique_ptr< Physics >	physics;
+	static std::unique_ptr< NCamera >	Camera;
+	static std::unique_ptr< NFrustum >	CameraFrustum;
+	static std::unique_ptr< Entity >	Player;
+	static std::unique_ptr< NPhysics >	physics;
 	static std::unique_ptr< Spectator > spectator;
 
 	const Style style1 = { Colors::deepBlue, 0.25f };
@@ -24,24 +27,31 @@ namespace Nocturn
 
 	RStatus NWorld::Init( )
 	{
+		NCharacter Character;
+		Character.Initialize();
+
+		NCameraComponent CameraComponent;
+
+		Character.AddComponent(&CameraComponent);
+
 		m_taskSystem   = std::make_unique< TaskSystem >(1);
 		m_skyboxRender = std::make_unique< Render::SkyboxRenderer >( );
 		m_chunkManager = std::make_unique< ChunkManager >(*m_taskSystem); // wtf is here?
 
-		playerTransform.position = vec3(3.0f, 60.0f, 12.0f);
-		playerTransform.rotation = vec3(0.0f);
+		PlayerTransform.Position = vec3(3.0f, 60.0f, 12.0f);
+		PlayerTransform.Rotation = vec3(0.0f);
 
-		spectatorTransform.position = vec3(3.0f, 40.0f, 12.0f);
-		spectatorTransform.rotation = vec3(0.0f);
+		SpectatorTransform.Position = vec3(3.0f, 40.0f, 12.0f);
+		SpectatorTransform.Rotation = vec3(0.0f);
 
 		m_skyboxRender->Init();
-		camera		  = std::make_unique< NCamera >(spectatorTransform);
-		cameraFrustum = std::make_unique< Frustum >( );
-		player		  = std::make_unique< Player >(playerTransform, rigidbody);
-		spectator	  = std::make_unique< Spectator >(spectatorTransform);
-		physics		  = std::make_unique< Physics >(*player, *m_chunkManager, playerTransform, rigidbody);
+		Camera		  = std::make_unique< NCamera >(SpectatorTransform);
+		CameraFrustum = std::make_unique< NFrustum >( );
+		Player		  = std::make_unique< NPlayer >(PlayerTransform, rigidbody);
+		spectator	  = std::make_unique< Spectator >(SpectatorTransform);
+		physics		  = std::make_unique< NPhysics >(*Player, *m_chunkManager, PlayerTransform, rigidbody);
 
-		//Render::Init( *camera );
+		Render::Init( *Camera );
 
 		m_chunkRender.Init();
 
@@ -50,24 +60,24 @@ namespace Nocturn
 
 	void NWorld::Update(const double DeltaTime)
 	{
-		const auto currentPosition = static_cast< ivec3 >(spectatorTransform.position);
+		const auto currentPosition = static_cast< ivec3 >(SpectatorTransform.Position);
 
 		m_chunkManager->Update( currentPosition );
 
-		m_skyboxRender->Render( *camera );
+		m_skyboxRender->Render( *Camera );
 
 		// update forward, right and up vectors
-		TransformSystem::Update(&playerTransform);
-		TransformSystem::Update(&spectatorTransform);
+		TransformSystem::Update(&PlayerTransform);
+		TransformSystem::Update(&SpectatorTransform);
 
-		const auto projectionMatrix = camera->GetProjectionMatrix( );
-		const auto viewMatrix		= camera->GetViewMatrix( );
+		const auto projectionMatrix = Camera->GetProjectionMatrix( );
+		const auto viewMatrix		= Camera->GetViewMatrix( );
 
-		cameraFrustum->Update(projectionMatrix * viewMatrix);
+		CameraFrustum->Update(projectionMatrix * viewMatrix);
 		physics->Update(DeltaTime);
 
-		const auto position = vec3{ spectatorTransform.position.x - 0.5f, spectatorTransform.position.y, spectatorTransform.position.z - 0.5f };
-		//const auto raycastResult = physics->RaycastStatic( position, spectatorTransform.forward /*+ vec3( 0.0f, 0.3f, 0.4f )*/, 5.0f, true );
+		const auto position = vec3{ PlayerTransform.Position.x, PlayerTransform.Position.y, PlayerTransform.Position.z };
+		const auto raycastResult = physics->RaycastStatic( position, PlayerTransform.Forward + vec3( 0.1f, 0.1f, 0.1f ), 8.0f, true );
 
 		if( Keyboard::keyWentDown(GLFW_KEY_0) )
 		{
@@ -75,12 +85,12 @@ namespace Nocturn
 			m_chunkManager->SetBlock(BlockId::Stone, ZPosition);
 		}
 
-		player->Update(DeltaTime);
+		Player->Update(DeltaTime);
 		spectator->Update(DeltaTime);
 
-		// Render::Render();
+		Render::Render();
 
-		m_chunkManager->Render(*camera, *cameraFrustum, m_chunkRender);
+		m_chunkManager->Render(*Camera, *CameraFrustum, m_chunkRender);
 	}
 
 	void NWorld::Free( )

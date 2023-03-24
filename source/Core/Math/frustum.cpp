@@ -2,16 +2,16 @@
 
 namespace Nocturn
 {
-	Frustum::Frustum( ) noexcept
+	NFrustum::NFrustum( ) noexcept
 	{ }
 
 
-	Frustum::Frustum( const mat4 &m )
+	NFrustum::NFrustum( const mat4 &m )
 	{
 		Update( m );
 	}
 
-	void Frustum::Update( const mat4 &m ) noexcept
+	void NFrustum::Update( const mat4 &m ) noexcept
 	{
 		const mat4 transposedM = glm::transpose( m );
 		m_planes[ Left ]	  = transposedM[ 3 ] + transposedM[ 0 ];
@@ -50,7 +50,7 @@ namespace Nocturn
 	}
 
 	// http://iquilezles.org/www/articles/frustumcorrect/frustumcorrect.htm
-	bool Frustum::IsBoxVisible( const vec3 &minp, const vec3 &maxp ) noexcept
+	bool NFrustum::IsBoxVisible( const vec3 &minp, const vec3 &maxp ) noexcept
 	{
 		// check box outside/inside of frustum
 		for( int i = 0; i < Count; i++ )

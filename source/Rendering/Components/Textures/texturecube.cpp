@@ -12,17 +12,23 @@ namespace Nocturn::Render
 		glBindTexture( GL_TEXTURE_CUBE_MAP, m_id );
 	}
 
-	void NTextureCube::LoadCubemap( const std::string &TextureType )
+	void NTextureCube::LoadCubemap( const ETextureType TextureType )
 	{
 		Generate( );
 		Bind( );
 
-		const std::string path = Config::CDirTextures + TextureType + '/';
+		std::string path;
+		switch( TextureType )
+		{
+			case ETextureType::Skybox:
+				path = Config::CDirTextures + "skybox" + '/';
+				break;
+		}
 
 		int width, height, nrChannels;
 		for( uint32_t i = 0; i < 6; ++i )
 		{
-			unsigned char *data = stbi_load( ( path + m_faces[ i ] ).c_str( ), &width, &height, &nrChannels, 0 );
+			unsigned char* data = stbi_load((path + m_faces[ i ]).c_str(), &width, &height, &nrChannels, 0);
 
 			if( nullptr != data )
 			{

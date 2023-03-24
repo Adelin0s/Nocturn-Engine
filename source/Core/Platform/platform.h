@@ -4,6 +4,11 @@
 #define NOCTURN_CPP17V 201703L
 #define NOCTURN_CPP20V 202002L
 
+#define BREAK() psnip_trap()
+#else
+#define SKL_BREAK() 
+#endif
+
 #if __cplusplus >= NOCTURN_CPP17V
 /** @def NODISCARD
  *  @brief Marks a function as "NODISCARD" meaning that result must be captured and should not be discarded.
@@ -17,12 +22,9 @@
  *  @def FORCEINLINE
  *  @brief Force a function to be inline
  */
-#ifndef FORCE_INLINE
-#ifdef _WIN32
-	#define FORCE_INLINE __forceinline
-#elif __linux__
-	#define FORCE_INLINE inline __attribute__((always_inline))
-#endif
+#if defined(_MSC_VER)
+	#define FORCEINLINE [[msvc::forceinline]]
+    #define NOINLINE    [[msvc::noinline]]
 #endif
 
 #if __cplusplus >= NOCTURN_CPP17V
@@ -67,5 +69,3 @@
  *  @brief Marks a function as virtual
  */
 #define VIRTUAL virtual
-
-#endif

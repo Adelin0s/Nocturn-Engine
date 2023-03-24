@@ -21,30 +21,30 @@ namespace Nocturn
 		bool hit;
 	};
 
-	class Physics
+	class NPhysics
 	{
 	public:
-		Physics( ) noexcept = delete;
-		Physics( const Entity &player, ChunkManager &chunkManager, Transform &transform, RigidBody &rigidBody );
+		NPhysics( ) noexcept = delete;
+		NPhysics( const Entity &player, ChunkManager &chunkManager, NTransform &transform, NRigidBody &rigidBody );
 
 		// cant copy
-		Physics( const Physics &rigidBody ) = delete;
-		Physics &operator=( const Physics &rigidBody ) = delete;
+		NPhysics( const NPhysics &NPhysics ) = delete;
+		NPhysics &operator=( const NPhysics &NPhysics ) = delete;
 
 		// cant move
-		Physics &operator=( Physics &&rigidBody ) = delete;
-		Physics( Physics &&rigidBody ) = delete;
+		NPhysics &operator=( NPhysics &&Physics ) = delete;
+		NPhysics( NPhysics &&Physics ) = delete;
 
-		NODISCARD RaycastResult RaycastStatic( const vec3 &origin, const vec3 &normalDirection, float maxDistance, bool draw ) const noexcept;
-		void Update( double dt );
+		NODISCARD RaycastResult RaycastStatic( const vec3 &Origin, const vec3 &NormalDirection, float MaxDistance, bool bDraw = false ) const noexcept;
+		void Update( double DeltaTime );
 
-		~Physics( ) noexcept = default;
+		~NPhysics( ) noexcept = default;
 
 	private:
 		const Entity *m_pPlayer{ };
 		ChunkManager *m_pChunkManager{ };
-		Transform	 *m_pTransform{ };
-		RigidBody	 *m_pRigidBody{ };
+		NTransform	 *m_pTransform{ };
+		NRigidBody	 *m_pRigidBody{ };
 		vec3		  normal{ 0.0f };
 
 		static constexpr inline vec3  CMaxVelocity{ 5.0f };
@@ -56,7 +56,7 @@ namespace Nocturn
 		void ProcessCollision( float &minTime, const vec3 &velocity ) noexcept;
 		NODISCARD float SweptCollision( const vec3 &velocity, const vec3 &min, const vec3 &max, const vec3 &minI, const vec3 &maxI, float minTime, float x, float y, float z ) noexcept;
 
-		bool DoRaycast( const vec3 &origin, const vec3 &normalDirection, float maxDistance, bool draw, const vec3 &blockCorner, const vec3 &step, RaycastResult *out ) const noexcept;
+		bool DoRaycast( const vec3 &Origin, const vec3 &NormalDirection, float MaxDistance, bool Draw, const vec3 &BlockCorner, const vec3 &Step, RaycastResult *Out ) const noexcept;
 	};
 
 } // namespace Nocturn

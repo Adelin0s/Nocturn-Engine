@@ -6,9 +6,9 @@
 
 namespace Nocturn
 {
-	Spectator::Spectator( Transform &transform ) noexcept
-		:		Entity( transform.position, vec3(1.0f, 1.0f, 1.0f) )
-		,		m_pTransform( &transform )
+	Spectator::Spectator( NTransform &Transform) noexcept
+		:		Entity( Transform.Position, vec3(1.0f, 1.0f, 1.0f) )
+		,		m_pTransform( &Transform )
 		,		m_speed( 0.05f )
 	{ }
 
@@ -17,7 +17,7 @@ namespace Nocturn
 		return m_bound;
 	}
 
-	void Spectator::Update( double dt )
+	void Spectator::Update( double DeltaTime )
 	{
 		HandleKeyboardInput( );
 		HandleMouseInput( );
@@ -30,16 +30,16 @@ namespace Nocturn
 
 		if( dx || dy )
 		{
-			dx *= Player::CMouseSensitivity;
-			dy *= Player::CMouseSensitivity;
+			dx *= NPlayer::CMouseSensitivity;
+			dy *= NPlayer::CMouseSensitivity;
 
-			m_pTransform->rotation.x += dx;
-			m_pTransform->rotation.y += dy;
+			m_pTransform->Rotation.x += dx;
+			m_pTransform->Rotation.y += dy;
 
-			if( m_pTransform->rotation.y > 89.0f )
-				m_pTransform->rotation.y = 89.0f;
-			if( m_pTransform->rotation.y < -89.0f )
-				m_pTransform->rotation.y = -89.0f;
+			if( m_pTransform->Rotation.y > 89.0f )
+				m_pTransform->Rotation.y = 89.0f;
+			if( m_pTransform->Rotation.y < -89.0f )
+				m_pTransform->Rotation.y = -89.0f;
 		}
 	}
 
@@ -51,19 +51,19 @@ namespace Nocturn
 
 		if( Keyboard::key( GLFW_KEY_W ) )
 		{
-			m_pTransform->position += m_pTransform->forward * localSpeed;
+			m_pTransform->Position += m_pTransform->Forward * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_S ) )
 		{
-			m_pTransform->position -= m_pTransform->forward * localSpeed;
+			m_pTransform->Position -= m_pTransform->Forward * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_A ) )
 		{
-			m_pTransform->position -= m_pTransform->right * localSpeed;
+			m_pTransform->Position -= m_pTransform->Right * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_D ) )
 		{
-			m_pTransform->position += m_pTransform->right * localSpeed;
+			m_pTransform->Position += m_pTransform->Right * localSpeed;
 		}
 		if( Keyboard::key( GLFW_KEY_Q ) )
 		{

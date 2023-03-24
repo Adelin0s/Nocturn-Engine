@@ -1,13 +1,14 @@
-/****************************************************************************************
- * @ Author: Cucorianu Eusebiu Adelin                                                   *
- * @ Create Time: 01-12-2021 21:11:16                                                   *
- * @ Modified by: Cucorianu Eusebiu Adelin                                              *
- * @ Modified time: 07-12-2021 19:38:22                                                 *
- * @ Description:                                                                       *
- ****************************************************************************************/
+// =====================================================================
+//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
+//   @ Create Time: 01-12-2021 21:11:16                                                                                                                                             
+//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
+//   @ Modified time: 15-03-2023 12:58 AM                                                                                                                                    
+//   @ Description:                                                                                                                                                                                
+// =====================================================================
 
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
+
+#include "Context/GameFramework/Actor.h"
 
 #include "core/physics/AABB.h"
 #include "core/physics/rigidbody.h"
@@ -19,38 +20,31 @@
 
 namespace Nocturn
 {
-	class Player final: public Entity
+	class NPlayer: public NActor
 	{
 	public:
-		static inline constexpr double CMouseSensitivity = 0.1;
-		static inline constexpr vec3 CPlayerBound = { 0.55f, 1.8f, 0.55 };
+		static inline constexpr vec3 CNPlayerBound = { 0.55f, 1.8f, 0.55 };
 
-		Player( ) noexcept = delete;
-		Player( Transform &transform, RigidBody &rigidbody ) noexcept;
+		NPlayer( ) noexcept = delete;
 
 		// cant copy
-		Player( const Player &player ) = delete;
-		Player &operator=( const Player &player ) = delete;
+		NPlayer( const NPlayer &Player ) = delete;
+		NPlayer &operator=( const NPlayer &Player ) = delete;
 
 		// cant move
-		Player &operator=( Player &&player ) = delete;
-		Player( Player &&player ) = delete;
+		NPlayer &operator=( NPlayer &&Player ) = delete;
+		NPlayer( NPlayer &&Player ) = delete;
 
-		NODISCARD const AABB &GetBound( ) const noexcept override;
-		void Update( double dt ) override;
+		/** Method that is called every frame. */
+		void Update( double DeltaTime ) override;
 
-		~Player( ) noexcept override = default;
+		~NPlayer( ) noexcept override = default;
 
 	private:
-		Transform *m_pTransform{ };
-		RigidBody *m_pRigidBody{ };
-		vec3 m_position{ };
-		bool m_type = true;
-		float m_speed;
+		NTransform *m_pTransform{ };
+		NRigidBody *m_pRigidBody{ };
 
 		void HandleMouseInput( ) const noexcept;
 		void HandleKeyboardInput( ) const noexcept;
 	};
 } // namespace Nocturn
-
-#endif
