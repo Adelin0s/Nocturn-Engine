@@ -963,5 +963,5 @@ namespace Nocturn
 		extern const glm::vec4 green;
 		extern const glm::vec4 purple;
 	} // namespace Colors
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 #endif

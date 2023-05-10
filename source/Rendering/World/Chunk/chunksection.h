@@ -16,38 +16,38 @@
 #include "core/math/glm.hpp"
 #include "core/types/typedef.hpp"
 
+#include "core/components/constants.hpp"
 #include "rendering/Renderer/Data/model.hpp"
 #include "rendering/world/block/block.h"
 #include "rendering/world/block/blockdatabase.h"
 #include "rendering/world/chunk/chunkmesh.h"
-#include "core/components/constants.hpp"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	// Use std::vector instead of std::unordered_map because we need to init 16*16*256 block directly
 	// All of those blocks will be initialized with BlockId::Air
 	struct ChunkLayer
 	{
-		ChunkLayer( ) :
-			m_numberOfBlocks( 0 )
+		ChunkLayer() :
+			m_numberOfBlocks(0)
 		{}
 
-		void Increase( ) noexcept
+		void Increase() noexcept
 		{
 			++m_numberOfBlocks;
 		}
 
-		void Decrease( ) noexcept
+		void Decrease() noexcept
 		{
 			--m_numberOfBlocks;
 		}
 
-		NODISCARD bool IsAllSolid( ) const
+		NODISCARD bool IsAllSolid() const
 		{
-			return static_cast< uint32 >( m_numberOfBlocks ) == Constants::CChunkBase;
+			return static_cast< uint32 >(m_numberOfBlocks) == Constants::CChunkBase;
 		}
 
-		NODISCARD auto getNumberOfBlocks( ) const noexcept
+		NODISCARD auto getNumberOfBlocks() const noexcept
 		{
 			return m_numberOfBlocks;
 		}
@@ -66,16 +66,16 @@ namespace Nocturn::rendering
 
 	struct Neighbor
 	{
-		ChunkSection *left	 = nullptr;
-		ChunkSection *right	 = nullptr;
-		ChunkSection *top	 = nullptr;
-		ChunkSection *bottom = nullptr;
+		ChunkSection* left	 = nullptr;
+		ChunkSection* right	 = nullptr;
+		ChunkSection* top	 = nullptr;
+		ChunkSection* bottom = nullptr;
 	};
 
 	struct AdjacentChunk
 	{
-		AdjacentChunk( const int32 x, const int32 z ) noexcept;
-		AdjacentChunk( const ivec2 &vec ) noexcept;
+		AdjacentChunk(const int32 x, const int32 z) noexcept;
+		AdjacentChunk(const ivec2& vec) noexcept;
 
 		ivec2 front;
 		ivec2 back;
@@ -86,57 +86,70 @@ namespace Nocturn::rendering
 	class ChunkSection
 	{
 	public:
-		ChunkSection( ) noexcept = default;
-		explicit ChunkSection( const ivec2 &location );
+		ChunkSection() noexcept = default;
+		explicit ChunkSection(const ivec2& Location);
 		// TODO: Investigate the behavior of the default constructor
-		ChunkSection( const ChunkSection &chunk ) = default;
-		ChunkSection( ChunkSection &&chunk )	  = delete;
+		ChunkSection(const ChunkSection& chunk) = default;
+		ChunkSection(ChunkSection&& chunk)		= delete;
 
-		ChunkSection &operator=( const ChunkSection &chunk ) = delete;
-		ChunkSection &operator=( ChunkSection &&chunk ) = delete;
+		ChunkSection& operator=(const ChunkSection& chunk) = delete;
+		ChunkSection& operator=(ChunkSection&& chunk)	   = delete;
 
-		Block operator[]( const ivec3 &position ) const noexcept;
+		NBlock operator[](const ivec3& position) const noexcept;
 
-		void SetBlock( BlockId blockId, const ivec3 &worldPosition ) noexcept;
-		void SetBlock( BlockId blockId, int32 worldX, int32 worldY, int32 worldZ ) noexcept;
-		void SetNeighbor( NeighborType type, ChunkSection &chunk ) noexcept;
-		void SetRenderableChunk( ) noexcept;
-		void SetChunkMaxY( const uint8 maxy ) noexcept
+		/**
+		 * \brief Normalize from WorldPosition to BlockPosition and set the Block to BlockId
+		 * \param blockId: block id
+		 * \param worldPosition: world position vec3(x,y,z)
+		 */
+		void SetBlock(EBlockId blockId, const ivec3& worldPosition) noexcept;
+
+		/**
+		 * \brief Normalize from WorldPosition to BlockPosition and set the Block to BlockId
+		 * \param blockId: block id
+		 * \param worldX: world position X
+		 * \param worldY: world position Y
+		 * \param worldZ: world position Z
+		 */
+		void SetBlock(EBlockId blockId, int32 worldX, int32 worldY, int32 worldZ) noexcept;
+		void SetNeighbor(NeighborType type, ChunkSection& chunk) noexcept;
+		void SetRenderableChunk() noexcept;
+		void SetChunkMaxY(const uint8 maxy) noexcept
 		{
 			m_maxy = maxy;
 		}
 
-		NODISCARD ivec2                       getLocation( ) const;
-		NODISCARD const Render::RenderInfo&   GetRenderInfo( ) const;
-		NODISCARD const std::vector< Block >& getChunk( ) const;
-		NODISCARD ChunkLayer                  getLayer( int y ) const;
-		NODISCARD uint8                       GetChunkMaxY( ) const noexcept
+		NODISCARD ivec2				GetLocation() const;
+		NODISCARD const RenderInfo& GetRenderInfo() const;
+		NODISCARD const std::vector< NBlock >& GetChunk() const;
+		NODISCARD ChunkLayer				  GetLayer(int y) const;
+		NODISCARD uint8						  GetChunkMaxY() const noexcept
 		{
 			return m_maxy;
 		}
-		NODISCARD Block						  getBlock( int32_t x, int32_t y, int32_t z ) const noexcept;
-		NODISCARD Block						  getBlock( const ivec3 &coords ) const noexcept;
-		NODISCARD Block						  getAdjacentBlock( const ivec3 &coords ) const noexcept;
-		NODISCARD ChunkSection*				  tryGetNeighbor( NeighborType type ) const noexcept;
-		NODISCARD bool						  hasMesh( ) const noexcept;
-		NODISCARD bool						  hasLoaded( ) const noexcept;
-		NODISCARD bool						  shouldToRender( ) const noexcept;
-		NODISCARD bool						  isRenderable( ) const noexcept;
+		NODISCARD NBlock		GetBlock(int32_t x, int32_t y, int32_t z) const noexcept;
+		NODISCARD NBlock		GetBlock(const ivec3& coords) const noexcept;
+		NODISCARD NBlock		GetAdjacentBlock(const ivec3& coords) const noexcept;
+		NODISCARD ChunkSection* TryGetNeighbor(NeighborType type) const noexcept;
+		NODISCARD bool			HasMesh() const noexcept;
+		NODISCARD bool			HasLoaded() const noexcept;
+		NODISCARD bool			ShouldToRender() const noexcept;
+		NODISCARD bool			IsRenderable() const noexcept;
 
-		void createChunk( );
-		void loadBufferData( );
-		void DeleteMesh( ) noexcept;
+		void CreateChunk();
+		void LoadBufferData();
+		void DeleteMesh() noexcept;
 
-		static NODISCARD constexpr size_t getSizeOfBlock( ) noexcept;
-		static NODISCARD uint32			  getSizeFromIndex( uint32 x, uint32 y, uint32 z ) noexcept;
-		static NODISCARD uint32			  getSizeFromIndex( const ivec3 &vec ) noexcept;
-		static NODISCARD ivec3			  getIndexFromSize( uint32 size ) noexcept;
+		static NODISCARD constexpr size_t GetSizeOfBlock() noexcept;
+		static NODISCARD uint32			  GetSizeFromIndex(uint32 x, uint32 y, uint32 z) noexcept;
+		static NODISCARD uint32			  GetSizeFromIndex(const ivec3& vec) noexcept;
+		static NODISCARD ivec3			  GetIndexFromSize(uint32 size) noexcept;
 
-		~ChunkSection( ) noexcept = default;
+		~ChunkSection() noexcept = default;
 
 	private:
 		std::array< ChunkLayer, Constants::CChunkY > m_layers;
-		std::vector< Block >						 m_chunk;
+		std::vector< NBlock >						 m_chunk;
 
 		ChunkMesh m_mesh;
 		Neighbor  m_neighbor;
@@ -144,8 +157,8 @@ namespace Nocturn::rendering
 		bool	  m_renderableChunk = false;
 		uint8	  m_maxy;
 
-		static bool outOfBound( int32_t x, int32_t y, int32_t z ) noexcept;
+		static bool OutOfBound(int32_t x, int32_t y, int32_t z) noexcept;
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 
 #endif

@@ -1,6 +1,6 @@
 #include "rendering/components/textures/texturecube.h"
 
-namespace Nocturn::Render
+namespace Nocturn
 {
 	void NTextureCube::Generate( )
 	{
@@ -84,4 +84,4 @@ namespace Nocturn::Render
 	{
 		Cleanup( );
 	}
-} // namespace Nocturn::rendering
+} // namespace Nocturn

@@ -9,6 +9,7 @@
 #pragma once
 
 #include <string>
+#include <glm/vec3.hpp>
 
 namespace Nocturn::Config
 {
@@ -27,4 +28,5 @@ namespace Nocturn::Config
 
 	/* World Constants */
 	constexpr uint32_t CLoadDistance = 10;
+	constexpr inline glm::vec3 CDefaultPlayerPosition{82.f, 80.f, 60.f};
 } // namespace Nocturn::Config

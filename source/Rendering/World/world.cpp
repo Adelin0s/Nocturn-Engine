@@ -1,99 +1,128 @@
-#include "rendering/world/world.h"
-
-#include "Context/GameFramework/Character.h"
+#include "Rendering/World/World.h"
+#include "Application/Input/Keyboard.h"
+#include "Context/Components/BoxComponent.h"
 #include "Context/Components/CameraComponent.h"
-
-#include "application/input/keyboard.h"
-#include "rendering/components/entity/spectator.h"
-#include "rendering/renderer/renderer.h"
-#include "rendering/renderer/style.h"
-
-#include "Core/core.h"
+#include "Context/Components/TransformComponent.h"
+#include "Context/GameFramework/Character.h"
+#include "Core/Core.h"
+#include "Application/Config/Config.hpp"
+#include "Core/Physics/rigidbody.h"
+#include "Rendering/Renderer/MasterRenderer.h"
+#include "Rendering/Renderer/Renderer.h"
+#include "Rendering/Renderer/Skyboxrenderer.h"
+#include "Rendering/Renderer/Style.h"
 
 namespace Nocturn
 {
-	static NTransform PlayerTransform;
-	static NTransform SpectatorTransform;
-	static NRigidBody rigidbody;
-
-	static std::unique_ptr< NCamera >	Camera;
-	static std::unique_ptr< NFrustum >	CameraFrustum;
-	static std::unique_ptr< Entity >	Player;
-	static std::unique_ptr< NPhysics >	physics;
-	static std::unique_ptr< Spectator > spectator;
+	static UniquePtr< NFrustum > CameraFrustum;
+	//static UniquePtr< NPhysics > Physics;
 
 	const Style style1 = { Colors::deepBlue, 0.25f };
 	const Style style2 = { Colors::offWhite, 0.05f };
 
-	RStatus NWorld::Init( )
+	NWorld::NWorld() noexcept
+	:
+			MainCharacter(nullptr),
+			Controller(nullptr),
+			WorldLight(glm::vec3(10.0f, 15.0f, 10.0f), glm::vec3(1.0f, 1.0f, 1.0f), 0.8f)
+	{}
+
+	RStatus NWorld::Initialize(const SharedPtr< NController >& ControllerIn, const SharedPtr< NCharacter >& MainCharacterIn)
 	{
-		NCharacter Character;
-		Character.Initialize();
+		AssertInfo(MainCharacter != nullptr, "MainCameraComponent nullptr!");
 
-		NCameraComponent CameraComponent;
+		MasterRenderer = std::make_shared< NMasterRenderer >();
 
-		Character.AddComponent(&CameraComponent);
+		MainCameraComponent = MainCharacter->GetCameraComponent();
 
-		m_taskSystem   = std::make_unique< TaskSystem >(1);
-		m_skyboxRender = std::make_unique< Render::SkyboxRenderer >( );
-		m_chunkManager = std::make_unique< ChunkManager >(*m_taskSystem); // wtf is here?
+		// RigidBody = std::make_shared<NRigidBody>();
+		TaskSystem   = std::make_unique< NTaskSystem >(1);
+		ChunkManager = std::make_unique< NChunkManager >(*TaskSystem); // wtf is here?
 
-		PlayerTransform.Position = vec3(3.0f, 60.0f, 12.0f);
-		PlayerTransform.Rotation = vec3(0.0f);
+		auto &Position = MainCharacter->GetTransformComponent()->GetLocation();
+		Position = Config::CDefaultPlayerPosition;
 
-		SpectatorTransform.Position = vec3(3.0f, 40.0f, 12.0f);
-		SpectatorTransform.Rotation = vec3(0.0f);
+		//CameraFrustum = std::make_unique< NFrustum >();
+		Physics = std::make_unique< NPhysics >(MainCharacter.get(), *ChunkManager);
 
-		m_skyboxRender->Init();
-		Camera		  = std::make_unique< NCamera >(SpectatorTransform);
-		CameraFrustum = std::make_unique< NFrustum >( );
-		Player		  = std::make_unique< NPlayer >(PlayerTransform, rigidbody);
-		spectator	  = std::make_unique< Spectator >(SpectatorTransform);
-		physics		  = std::make_unique< NPhysics >(*Player, *m_chunkManager, PlayerTransform, rigidbody);
+		MasterRenderer->Initialize(this);
 
-		Render::Init( *Camera );
+		Render::Init(MainCameraComponent.get());
 
-		m_chunkRender.Init();
+		Controller = ControllerIn;
+		MainCharacter = MainCharacterIn;
 
 		return RSucces;
 	}
 
 	void NWorld::Update(const double DeltaTime)
 	{
-		const auto currentPosition = static_cast< ivec3 >(SpectatorTransform.Position);
+		ChunkManager->Update(DeltaTime);
 
-		m_chunkManager->Update( currentPosition );
+		Physics->Update(DeltaTime);
 
-		m_skyboxRender->Render( *Camera );
+		const auto& Position = MainCharacter->GetTransformComponent()->GetLocation();
+		const auto& Forward = MainCharacter->GetTransformComponent()->GetTransform().Forward;
 
-		// update forward, right and up vectors
-		TransformSystem::Update(&PlayerTransform);
-		TransformSystem::Update(&SpectatorTransform);
-
-		const auto projectionMatrix = Camera->GetProjectionMatrix( );
-		const auto viewMatrix		= Camera->GetViewMatrix( );
-
-		CameraFrustum->Update(projectionMatrix * viewMatrix);
-		physics->Update(DeltaTime);
-
-		const auto position = vec3{ PlayerTransform.Position.x, PlayerTransform.Position.y, PlayerTransform.Position.z };
-		const auto raycastResult = physics->RaycastStatic( position, PlayerTransform.Forward + vec3( 0.1f, 0.1f, 0.1f ), 8.0f, true );
+		//Render::DrawBox(vec3(Position.x + 0.5f, Position.y, Position.z + 0.5f), vec3(1.0f), style1);
+		Render::Render();
+		const auto RaycastResult = Physics->RaycastStatic(Position, Forward + vec3(0.1f, 0.1f, 0.1f), 8.0f, true);
 
 		if( Keyboard::keyWentDown(GLFW_KEY_0) )
 		{
-			const auto ZPosition = vec3{ position.x, position.y, position.z + 5.0f };
-			m_chunkManager->SetBlock(BlockId::Stone, ZPosition);
+			const auto ZPosition = vec3{ Position.x, Position.y, Position.z + 5.0f };
+			ChunkManager->SetBlock(EBlockId::Stone, ZPosition);
 		}
 
-		Player->Update(DeltaTime);
-		spectator->Update(DeltaTime);
+		const auto ChunkRenderer = MasterRenderer->GetRendererComponentByTag< NChunkRenderer >("ChunkRenderer");
 
-		Render::Render();
-
-		m_chunkManager->Render(*Camera, *CameraFrustum, m_chunkRender);
+		MasterRenderer->Render(MainCameraComponent.get());
+		//Render::Render();
 	}
 
-	void NWorld::Free( )
+	void NWorld::Free()
 	{
+	}
+
+	void NWorld::AttachMainCharacter(const SharedPtr< NCharacter >& MainCharacterIn) noexcept
+	{
+		if(MainCharacterIn == nullptr)
+		{
+			LogError("Invalid nullptr MainCharacterIn param!");
+			return;
+		}
+
+		MainCharacter = MainCharacterIn;
+	}
+
+	void NWorld::AttachController(const SharedPtr< NController >& ControllerIn) noexcept
+	{
+		if(ControllerIn == nullptr)
+		{
+			LogError("Invalid nullptr ControllerIn param!");
+			return;
+		}
+
+		Controller = ControllerIn;
+	}
+
+	SharedPtr<NChunkManager> NWorld::GetChunkManager() const noexcept
+	{
+		return ChunkManager;
+	}
+
+	NCharacter* NWorld::GetMainCharacter() const noexcept
+	{
+		return MainCharacter.get();
+	}
+
+	NController* NWorld::GetController() const noexcept
+	{
+		return Controller.get();
+	}
+
+	SharedPtr<NCameraComponent> NWorld::GetMainCameraComponent() const noexcept
+	{
+		return MainCameraComponent;
 	}
 } // namespace Nocturn

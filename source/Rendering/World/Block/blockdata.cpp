@@ -1,6 +1,6 @@
 #include "rendering/world/block/blockdata.h"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	BlockData::BlockData( const std::string &block_name )
 	{
@@ -55,4 +55,4 @@ namespace Nocturn::rendering
 	{
 		return m_blockDataHolder;
 	}
-} // namespace Nocturn::rendering
+} // namespace Nocturn

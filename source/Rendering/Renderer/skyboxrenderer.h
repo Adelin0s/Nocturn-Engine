@@ -10,37 +10,40 @@
 #define SKYBOX_RENDERER_H
 
 #include "core/GL/GLFunctions.h"
-#include "data/model.hpp"
+#include "Data/Model.hpp"
 
-#include "rendering/components/shaders/skyboxshader.h"
-#include "rendering/components/textures/texturecube.h"
-#include "rendering/renderer/baserenderer.h"
+#include "Rendering/Components/Shaders/SkyboxShader.h"
+#include "Rendering/Components/Textures/TextureCube.h"
+#include "Rendering/Renderer/IRenderer.h"
 
-namespace Nocturn::Render
+namespace Nocturn
 {
-	class SkyboxRenderer : IRenderer
+	class NSkyboxRenderer: public INRenderer
 	{
 	public:
-		SkyboxRenderer( ) noexcept = default;
+		NSkyboxRenderer() noexcept = default;
 
-		// cant copy
-		SkyboxRenderer( const SkyboxRenderer & ) = delete;
-		SkyboxRenderer( SkyboxRenderer && ) = delete;
+		/** Cant copy. */
+		NSkyboxRenderer(const NSkyboxRenderer& SkyboxRenderer) = delete;
+		NSkyboxRenderer(NSkyboxRenderer&& SkyboxRenderer) = delete;
 
-		// cant move
-		SkyboxRenderer &operator=( const SkyboxRenderer & ) = delete;
-		SkyboxRenderer &operator=( SkyboxRenderer && ) = delete;
+		/** Cant move. */
+		NSkyboxRenderer& operator=(const NSkyboxRenderer& SkyboxRenderer) = delete;
+		NSkyboxRenderer& operator=(NSkyboxRenderer&& SkyboxRenderer) = delete;
 
-		void Render( const NCamera &Camera ) override;
-		RStatus Init( ) override;
+		bool Initialize() override;
 
-		~SkyboxRenderer( ) noexcept = default;
+		void Render(const NCameraComponent* CameraComponent) override;
+
+		bool HasRendererTag(const std::string& RendererTagIn) override;
+
+		~NSkyboxRenderer() noexcept override = default;
 
 	private:
 		Model< VertexDataType::SkyboxDataType > m_model;
-		SkyboxShader m_skyboxShader;
-		NTextureCube m_textureCube;
+		SkyboxShader							m_skyboxShader;
+		NTextureCube							m_textureCube;
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 
 #endif

@@ -15,8 +15,6 @@
 
 #include "Core/core.h"
 
-#include "rendering/components/entity/camera.h"
-
 namespace Nocturn
 {
 	class NShader
@@ -49,8 +47,8 @@ namespace Nocturn
 		void Unbind( ) const;
 		void Cleanup( ) const;
 
-		virtual void SetViewMatrix( const NCamera& Camera ) const;
-		virtual void SetProjectionMatrix( const NCamera& Camera ) const;
+		virtual void SetViewMatrix( const mat4& ViewMatrix ) const;
+		virtual void SetProjectionMatrix( const mat4& ProjectionMatrix ) const;
 
 		virtual ~NShader( ) noexcept = default;
 

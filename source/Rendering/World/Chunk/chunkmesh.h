@@ -16,7 +16,7 @@
 #include "core/types/typedef.hpp"
 #include "Rendering/Renderer/Data/model.hpp"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	class ChunkSection;
 	class ChunkMesh;
@@ -56,7 +56,7 @@ namespace Nocturn::rendering
 		ChunkMesh &operator=( const ChunkMesh &mesh ) = delete;
 		ChunkMesh &operator=( ChunkMesh &&mesh ) = delete;
 
-		NODISCARD const Render::Model< Render::VertexDataType::ChunkDataType > &GetModel( ) const;
+		NODISCARD const Model< VertexDataType::ChunkDataType > &GetModel( ) const;
 		NODISCARD uint32		    GetIndicesSize( ) const noexcept;
 		void						MakeMesh( ChunkSection &pchunk );
 		void						LoadBufferData( );
@@ -71,14 +71,14 @@ namespace Nocturn::rendering
 		uint32_t	  m_index	  = 0; /* lolita lolita , cichi cichi bambita */
 		bool		  m_hasMesh	  = false;
 		bool		  m_hasLoaded = false;
-		Render::Model< Render::VertexDataType::ChunkDataType > m_model;
+		Model< VertexDataType::ChunkDataType > m_model;
 		ChunkSection *m_pChunk = nullptr; /* pointer to the current chunk */
-		Render::VertexType::ChunkVertex	  m_mesh;
+		VertexType::ChunkVertex	  m_mesh;
 
 		void		   makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const ivec3 &adjBlock );
 		NODISCARD bool shouldMakeFace( const Block_t &blockCoords, const ivec3 &adjCoords ) const noexcept;
 		NODISCARD bool shouldPassLayer( const int32 y ) const noexcept;
 		void		   addFace( const Vertices_t &face, const Textures_t &texturesCoords, const ivec2 &chunkPosition, const Block_t &blockPosition );
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 #endif

@@ -22,14 +22,14 @@ namespace Nocturn
 	constexpr RStatus RSystemTerminated		{ RStatus::SystemTerminated };
 	constexpr RStatus RInvalidArguments		{ RStatus::InvalidArguments };
 
-	FORCE_INLINE bool operator !(const RStatus& status)
-	{
-		return status != RSucces;
-	}
+	//FORCE_INLINE bool operator !(const RStatus& status)
+	//{
+	//	return status != RSucces;
+	//}
 
-	FORCE_INLINE bool RStatusToBool(const RStatus& status)
-	{
-		return status == RSucces;
-	}
+	//FORCE_INLINE bool RStatusToBool(const RStatus& status)
+	//{
+	//	return status == RSucces;
+	//}
 }
 #endif

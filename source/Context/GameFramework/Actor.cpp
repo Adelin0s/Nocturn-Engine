@@ -4,19 +4,26 @@
 
 namespace Nocturn
 {
-	void NActor::Initialize()
-	{
-		RootComponent = std::make_unique<NTransformComponent>();
-		AssertInfo(RootComponent != nullptr, "Failed to alloc memory for RootComponent!");
+	NActor::NActor() noexcept
+	:
+		Velocity(0.0f)
+	{}
 
-		RootComponent->OnComponenentActivated(this);
+	void NActor::Initialize(const SharedPtr< NWorld >& WorldIn)
+	{
+		World = WorldIn;
+
+		TransformComponent = std::make_shared<NTransformComponent>();
+		AssertInfo(TransformComponent != nullptr, "Failed to alloc memory for TransformComponent!");
+
+		TransformComponent->OnComponenentActivated(this);
 	}
 
 	void NActor::Update(const double DeltaTime)
 	{
-		RootComponent->Update(DeltaTime);
+		TransformComponent->Update(DeltaTime);
 
-		for (auto *Component : Components)
+		for (const auto Component : Components)
 		{
 			Component->Update(DeltaTime);
 		}
@@ -24,13 +31,33 @@ namespace Nocturn
 
 	void NActor::AddMovementInput(const vec3& Direction, const float Intensity) const noexcept
 	{
-		RootComponent->SetLocation(Direction * Intensity);
+		AssertInfo(TransformComponent != nullptr, "Invalid nullptr TransformComponent!");
+
+		TransformComponent->SetLocation(Direction * Intensity);
+	}
+
+	NTransformComponent* NActor::GetTransformComponent() const noexcept
+	{
+		AssertInfo(TransformComponent != nullptr, "Failed TransformComponent nullptr member!");
+
+		return TransformComponent.get();
+	}
+
+	vec3& NActor::GetVelocity() noexcept
+	{
+		return Velocity;
+	}
+
+	NWorld* NActor::GetWorld() const noexcept
+	{
+		return World.get();
 	}
 
 	void NActor::SetMovementMode(const EMovementMode MovementMode)
 	{
-		const auto& Transform = RootComponent->GetTransform();
+		AssertInfo(TransformComponent != nullptr, "Invalid nullptr TransformComponent!");
 
+		const auto& Transform = TransformComponent->GetTransform();
 		float LocalSpeed = CBaseActorVelocity;
 
 		switch (MovementMode)
@@ -87,10 +114,5 @@ namespace Nocturn
 		Components.erase(Component);
 
 		Component->OnComponenentDeactivated();
-	}
-
-	NTransformComponent* NActor::GetRootComponent() const noexcept
-	{
-		return RootComponent.get();
 	}
 } // namespace Nocturn

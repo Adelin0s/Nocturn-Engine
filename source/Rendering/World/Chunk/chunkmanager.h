@@ -1,9 +1,9 @@
 // =====================================================================
-//   @ Author: Cucorianu Eusebiu Adelin                                                                                      
-//   @ Create Time: 11-10-2021 6:34 PM                                                                                                                                                
-//   @ Contact: cucorianu.adelin@protonmail.com                                                                                                                          
-//   @ Modified time: 24-08-2022 11:45 PM                                                                                                                                    
-//   @ Description:                                                                                                                                                                                
+//   @ Author: Cucorianu Eusebiu Adelin
+//   @ Create Time: 11-10-2021 6:34 PM
+//   @ Contact: cucorianu.adelin@protonmail.com
+//   @ Modified time: 24-08-2022 11:45 PM
+//   @ Description:
 // =====================================================================
 
 #ifndef CHUNK_MANAGER_H
@@ -16,55 +16,103 @@
 #include <unordered_map>
 #include <vector>
 
-#include "core/async/task.h"
-#include "core/math/noise.h"
-#include "core/types/typedef.hpp"
-
-#include "rendering/components/entity/camera.h"
+#include "Core/Core.h"
+#include "Core/Async/Task.h"
+#include "Core/Math/Noise.h"
+#include "Core/Types/Typedef.hpp"
 #include "rendering/renderer/chunkrenderer.h"
-#include "rendering/world/chunk/chunksection.h"
+#include "Rendering/World/Chunk/ChunkSection.h"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
+	// Forward declares
+	// TODO: Review here
+	class NChunkRenderer;
+
 	using ChunkMap = std::unordered_map< vec2, ChunkSection >;
 
-	class ChunkManager
+	class NChunkManager
 	{
 	public:
-		ChunkManager( ) noexcept = delete;
-		explicit ChunkManager( TaskSystem &taskSystem ) noexcept;
-		ChunkManager( const ChunkManager &chunk ) = delete;
-		ChunkManager( ChunkManager &&chunk )      = delete;
+		NChunkManager() noexcept = delete;
+		explicit NChunkManager(NTaskSystem& taskSystem) noexcept;
 
-		ChunkManager operator=( const ChunkManager &chunk ) = delete;
-		ChunkManager operator=( ChunkManager &&chunk )      = delete;
+		NChunkManager(const NChunkManager& chunk) = delete;
+		NChunkManager(NChunkManager&& chunk) = delete;
 
-		const ChunkSection &operator[]( const ivec2 &index ) noexcept;
+		NChunkManager operator=(const NChunkManager& chunk) = delete;
+		NChunkManager operator=(NChunkManager&& chunk) = delete;
 
-		ChunkSection &GetChunk( const vec3 &worldPosition ) noexcept;
-		ChunkSection &GetChunk( const ivec2 &chunkPosition ) noexcept;
-		NODISCARD Block GetBlock( const vec3 &worldPosition ) noexcept;
+		/** Get chunk from a specific Index.
+		 * @param Index Chunk coord for the wanted chunk.
+		 */
+		const ChunkSection& operator[](const ivec2& Index) const noexcept;
 
-		void SetBlock( BlockId blockId, const vec3 &worldPosition) noexcept;
+		NODISCARD ChunkSection* GetChunk(const vec3& WorldPosition) noexcept;
+		NODISCARD ChunkSection* GetChunk(const ivec2& ChunkPosition) noexcept;
+		NODISCARD NBlock GetBlock(const vec3& WorldPosition) noexcept;
 
-		void GenerateChunkMesh( const ivec2 &chunkPosition ) noexcept;
-		void Update( const ivec3 &currentPosition );
-		void Render( const NCamera &camera, NFrustum &frustum, Render::ChunkRenderer &chunkRender );
+		/**
+		 * @brief This function set a block depending on BlockId & WorldPosition.
+		 * @warning This function is not thread safe!
+		 * @param BlockId the id of the block to be set
+		 * @param WorldPosition the world position block
+		 */
+		void SetBlock(EBlockId BlockId, const vec3& WorldPosition) noexcept;
 
-		void GenerateTree( ChunkSection &chunk, int32 px, int32 pymax, int32 pz );
+		/**
+		 * @brief This function generates the current chunk and its 4 neighbors(left, right, top and bottom). 
+		 * The main idea was to generate the current chunk and its neighbors then render only the current chunk.
+		 * Whether the current chunk was generated or not(it already exists) it is marked as a renderable chunk.
+		 * @TODO Need to update!!! Really? :))
+		 * @param ChunkPosition The current chunk's position
+		 */
+		void GenerateChunkMesh(const ivec2& ChunkPosition) noexcept;
 
-		~ChunkManager( ) noexcept = default;
+		/** Update function that is called every frame. */
+		void Update(double DeltaTime);
 
+		/**
+		 * Propagates light from light sources to neighboring blocks.
+		 * Uses a breadth-first search algorithm to update the light levels of adjacent blocks,
+		 * taking into account block opacity and light attenuation.
+		 * 
+		 * This function should be called every frame to update the light state of the world.
+		 */
+		void UpdateBlockLight();
+
+		/** Basic way to generate trees on the world. */
+		void GenerateTree(ChunkSection& chunk, int32 px, int32 pymax, int32 pz);
+
+		~NChunkManager() noexcept = default;
+
+		friend struct FChunkManagerRenderContext;
+		//friend void NChunkRenderer::Render(const NCameraComponent* CameraComponent);
+		// TODO: Decrease the acces of the class
+		friend class NChunkRenderer;
 	private:
-		void GenerateNewChunk( ChunkSection &chunk, bool shouldToCreateMesh = false ) noexcept;
+		void GenerateNewChunk(ChunkSection& chunk, bool shouldToCreateMesh = false) noexcept;
 
-		TaskSystem*                             m_pTaskSystem;
-		NoiseParams                             m_noiseParams{};
-		ivec3                                   m_lastPosition{};
-		ChunkMap                                m_mapChunks;
-		std::unordered_map< ivec2, bool >       m_hasLoaded;
-		std::vector< std::function< void( ) > > m_pendingChunks;
-		const uint32                            m_renderDistance;
+		NTaskSystem*						   m_pTaskSystem;
+		NoiseParams							   m_noiseParams{};
+		ivec3								   m_lastPosition{};
+		ChunkMap							   Chunks;
+		std::vector< std::function< void() > > m_pendingChunks;
+		const uint32						   m_renderDistance;
 	};
-} // namespace Nocturn::rendering
+
+	struct FChunkManagerRenderContext
+	{
+	public:
+		FChunkManagerRenderContext() noexcept = default;
+
+		explicit FChunkManagerRenderContext(const NChunkManager* ChunkManagerIn) noexcept;
+
+		const ChunkMap& GetChunkMap() const noexcept;
+
+		~FChunkManagerRenderContext() noexcept = default;
+	//private:
+		const NChunkManager* ChunkManager;
+	};
+} // namespace Nocturn
 #endif

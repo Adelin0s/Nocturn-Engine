@@ -158,7 +158,7 @@ namespace Nocturn
 #pragma endregion
 
 #pragma region "TaskSystem"
-	TaskSystem::TaskSystem( const uint32 nthreads ) :
+	NTaskSystem::NTaskSystem( const uint32 nthreads ) :
 		m_numberOfWorkers( std::min( std::thread::hardware_concurrency( ), nthreads ) ),
 		m_queue( nthreads )
 	{
@@ -166,11 +166,11 @@ namespace Nocturn
 
 		for( uint32 i = 0; i < nthreads; i++ )
 		{
-			m_threads.emplace_back( std::thread( &TaskSystem::RunTaskLoop, this, i ) );
+			m_threads.emplace_back( std::thread( &NTaskSystem::RunTaskLoop, this, i ) );
 		}
 	}
 
-	void TaskSystem::Async( PriorityTask task )
+	void NTaskSystem::Async( PriorityTask task )
 	{
 		assert( task );
 
@@ -185,7 +185,7 @@ namespace Nocturn
 		m_queue[ index % m_numberOfWorkers ].ForcePush( task );
 	}
 
-	void TaskSystem::Async( Task task, const ETaskPriorityLevel priority )
+	void NTaskSystem::Async( Task task, const ETaskPriorityLevel priority )
 	{
 		Async( PriorityTask{ std::move( task ), priority } );
 	}
@@ -194,7 +194,7 @@ namespace Nocturn
 	 * \brief The main function that all worker execute
 	 * \param queueIndex is the thread index used to select thread's PriorityQueue
 	 */
-	void TaskSystem::RunTaskLoop( const uint8 queueIndex )
+	void NTaskSystem::RunTaskLoop( const uint8 queueIndex )
 	{
 		while( true )
 		{
@@ -214,7 +214,7 @@ namespace Nocturn
 		}
 	}
 
-	void TaskSystem::TryRunTask( )
+	void NTaskSystem::TryRunTask( )
 	{
 		for( auto priority = CPriorityMaxIndex; priority >= 0; --priority )
 		{
@@ -230,17 +230,17 @@ namespace Nocturn
 		}
 	}
 
-	void TaskSystem::ForceQuit( ) const noexcept
+	void NTaskSystem::ForceQuit( ) const noexcept
 	{
-		this->~TaskSystem( );
+		this->~NTaskSystem( );
 	}
 
-	uint32 TaskSystem ::GetNumOfThreads( ) const noexcept
+	uint32 NTaskSystem ::GetNumOfThreads( ) const noexcept
 	{
 		return m_numberOfWorkers;
 	}
 
-	uint32 TaskSystem::GetNumOfTasks( ) const noexcept
+	uint32 NTaskSystem::GetNumOfTasks( ) const noexcept
 	{
 		uint32 s = 0;
 		for( int i = 0; i < 3; i++ )
@@ -248,13 +248,13 @@ namespace Nocturn
 		return s;
 	}
 
-	void TaskSystem::PrintTaskEachQueue( ) const noexcept
+	void NTaskSystem::PrintTaskEachQueue( ) const noexcept
 	{
 		for( uint32 i = 0; i < m_numberOfWorkers; ++i )
 			std::cout << "Worker_" << i << ' ' << m_queue[ i ].GetNumOfTasks( ) << '\n';
 	}
 
-	TaskSystem::~TaskSystem( ) noexcept
+	NTaskSystem::~NTaskSystem( ) noexcept
 	{
 		for( auto &q : m_queue )
 			q.ForceQuit( );

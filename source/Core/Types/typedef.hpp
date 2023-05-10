@@ -33,6 +33,11 @@ using int32	 = int32_t;
 using uint64 = uint64_t;
 using int64	 = int64_t;
 
+template<typename TPtr>
+using UniquePtr = std::unique_ptr<TPtr>;
+template<typename TPtr>
+using SharedPtr = std::shared_ptr<TPtr>;
+
 using Chunk_t	 = glm::ivec3;
 using Block_t	 = glm::ivec3;
 using Vertices_t = std::array< float, 12 >;

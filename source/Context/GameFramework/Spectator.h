@@ -17,7 +17,7 @@ namespace Nocturn
 		NSpectator(NSpectator&& Spectator) = delete;
 		NSpectator& operator=(NSpectator&& Spectator) = delete;
 
-		void Initialize() override;
+		void Initialize(const SharedPtr< NWorld >& WorldIn) override;
 
 		void Update(double DeltaTime) override;
 

@@ -1,13 +1,7 @@
-#ifndef PLATFORM_H
-#define PLATFORM_H
+#pragma once
 
 #define NOCTURN_CPP17V 201703L
 #define NOCTURN_CPP20V 202002L
-
-#define BREAK() psnip_trap()
-#else
-#define SKL_BREAK() 
-#endif
 
 #if __cplusplus >= NOCTURN_CPP17V
 /** @def NODISCARD
@@ -23,7 +17,7 @@
  *  @brief Force a function to be inline
  */
 #if defined(_MSC_VER)
-	#define FORCEINLINE [[msvc::forceinline]]
+	#define FORCE_INLINE [[msvc::forceinline]]
     #define NOINLINE    [[msvc::noinline]]
 #endif
 

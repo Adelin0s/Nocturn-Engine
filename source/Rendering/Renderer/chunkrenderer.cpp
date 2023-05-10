@@ -1,43 +1,85 @@
 #include "rendering/renderer/chunkrenderer.h"
 
-namespace Nocturn::Render
+#include "Context/Components/CameraComponent.h"
+#include "rendering/world/chunk/chunkmanager.h"
+
+namespace Nocturn
 {
-	RStatus ChunkRenderer::Init( )
+	bool NChunkRenderer::Initialize()
 	{
-		Shader = std::make_unique< NShader >( "block.vs", "block.fs" );
-		Shader->Init( );
-		Texture = std::make_unique< NTextureAtlas >( "block/default_pack.png" );
+		Shader = std::make_unique< NShader >("block.vs", "block.fs");
+		AssertInfo(Shader != nullptr, "Failed to allocate memory for Shader!");
 
-		return RSucces;
+		Shader->Init();
+		Texture = std::make_unique< NTextureAtlas >("block/default_pack.png");
+		AssertInfo(Texture != nullptr, "Failed to allocate memory for Texture!");
+
+		PhongShader = std::make_unique< NShader >("light.vs", "light.fs");
+		PhongShader->Init();
+
+		RendererTag = "ChunkRenderer";
+
+		return true;
 	}
 
-	void ChunkRenderer::Add( const RenderInfo &renderInfo )
+	void NChunkRenderer::Add(const RenderInfo& RenderInfo)
 	{
-		ChunksRenderInfo.emplace_back( renderInfo );
+		ChunksRenderInfo.emplace_back(RenderInfo);
 	}
 
-	NODISCARD size_t ChunkRenderer::Size( ) const noexcept
+	size_t NChunkRenderer::Size() const noexcept
 	{
-		return ChunksRenderInfo.size( );
+		return ChunksRenderInfo.size();
 	}
 
-	void ChunkRenderer::Render( const NCamera &Camera )
+	void NChunkRenderer::AttachRenderContext(const NChunkManager* ChunkManager) noexcept
 	{
-		if( ChunksRenderInfo.empty( ) )
+		ChunkManagerRenderContext = std::make_unique< FChunkManagerRenderContext >(ChunkManager);
+		AssertInfo(ChunkManagerRenderContext != nullptr, "Failed to allocate memory for ChunkManagerRenderContext");
+	}
+
+	void NChunkRenderer::Render(const NCameraComponent* CameraComponent)
+	{
+		auto& MapChunks = ChunkManagerRenderContext->GetChunkMap();
+		if (!MapChunks.empty())
+		for( const auto& [ position, chunk ] : MapChunks )
+		{
+			if( MapChunks.at(position).ShouldToRender() )
+			{
+				const auto maxy	   = chunk.GetChunkMaxY();
+				const auto minView = vec3(position[ 0 ] * Constants::CChunkX, maxy, position[ 1 ] * Constants::CChunkZ);
+				// if( frustum.IsBoxVisible( minView, minView + vec3( 16.0f ) ) )
+				{
+					// auto renderInfo = second.getRenderInfo( );
+					Add(chunk.GetRenderInfo());
+				}
+			}
+		}
+		std::cout << "Size-rendered:" << Size() << '\n';
+
+		if( ChunksRenderInfo.empty() )
+		{
+			LogWarning("Empty batch renderer!");
 			return;
+		}
 
 		Texture->Bind();
-		Shader->Bind( );
-		Shader->SetProjectionMatrix( Camera );
-		Shader->SetViewMatrix( Camera );
+		Shader->Bind();
+		Shader->SetViewMatrix(CameraComponent->GetViewMatrix());
+		Shader->SetProjectionMatrix(CameraComponent->GetProjectionMatrix());
 
-		for( const auto &chunk : ChunksRenderInfo )
+		for( const auto& ChunkBatch : ChunksRenderInfo )
 		{
-			GL::BindVao( chunk.vao );
-			GL::DrawElements( chunk.indicesCount );
+			GL::BindVao(ChunkBatch.vao);
+			GL::DrawElements(ChunkBatch.indicesCount);
 		}
-		GL::BindVao( 0 );
-		Shader->Unbind( );
-		ChunksRenderInfo.clear( );
+		GL::BindVao(0);
+		Shader->Unbind();
+		ChunksRenderInfo.clear();
 	}
-} // namespace Nocturn::rendering
+
+	bool NChunkRenderer::HasRendererTag(const std::string& RendererTagIn)
+	{
+		return RendererTag == RendererTagIn;
+	}
+} // namespace Nocturn

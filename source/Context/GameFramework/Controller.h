@@ -10,6 +10,9 @@ namespace Nocturn
 	class NController : public INController
 	{
 	public:
+		friend class NActor;
+		friend class NSpectator;
+
 		/** Default constructor. */
 		NController() noexcept;
 
@@ -27,7 +30,7 @@ namespace Nocturn
 		void Initialize() override;
 
 		/** Set a new actor. */
-		void ToggleActor(NActor* NewActor);
+		void SetActor(NActor* NewActor);
 
 		/** Get the current owner actor. */
 		NODISCARD NActor* GetActor() const noexcept;
@@ -54,7 +57,7 @@ namespace Nocturn
 		/** Get if we have a owned actor as a pointer to a Character.
 		 * @warning This may be slow in context of frame-to-frame. Use instead the approapite HasCharacter getter!
 		 */
-		NODISCARD bool HasValidCharacter() const noexcept;
+		NODISCARD bool HasValidCharacter() const;
 
 		/** Get if we have a owned actor as a pointer to a Spectator.
 		 * @warning This may be slow in context of frame-to-frame. Use instead the approapite HasSpectator getter!

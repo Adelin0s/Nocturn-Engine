@@ -68,14 +68,14 @@ namespace Nocturn
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		if( !monitor )
 		{
-			LogError("Failed to get primary monitor!");
+			////LogError("Failed to get primary monitor!");
 			return;
 		}
 
 		m_pWindow = glfwCreateWindow(Width, Height, m_pTitle, /* monitor */ nullptr, nullptr);
 		if( nullptr == m_pWindow )
 		{
-			LogError("Failed to create window!");
+			////LogError("Failed to create window!");
 			return;
 		}
 
@@ -83,7 +83,7 @@ namespace Nocturn
 
 		if( !gladLoadGLLoader(( GLADloadproc )glfwGetProcAddress) )
 		{
-			LogError("Failed to initialize GLAD!");
+			////LogError("Failed to initialize GLAD!");
 			glfwTerminate();
 			return;
 		}

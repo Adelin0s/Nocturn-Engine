@@ -1,9 +1,10 @@
 #pragma once
 
+#include <glad/glad.h>
 #include "glfw/glfw3.h"
-#include "core/math/glm.hpp"
-#include "Core/Misc/DebugTrap.h"
-#include "core/misc/AssertionMacros.h"
-#include "core/platform/platform.h"
-#include "core/types/rstatus.h"
-#include "core/types/typedef.hpp"
+#include "Application/Config/Config.hpp"
+#include "Core/Math/glm.hpp"
+#include "Core/Misc/AssertionMacros.h"
+#include "Core/Platform/Platform.h"
+#include "Core/Types/RStatus.h"
+#include "Core/Types/Typedef.hpp"

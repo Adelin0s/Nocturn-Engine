@@ -23,5 +23,5 @@ namespace Nocturn
 		static uint32_t ImageSize;
 		static uint32_t IndividualImageSize;
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 #endif

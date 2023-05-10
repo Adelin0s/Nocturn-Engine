@@ -5,65 +5,82 @@
 
 namespace Log
 {
-	void FormatLog( const NLogData &LogData, std::string &Buffer )
+	void FormatLog(const NLogData& LogData, std::string& Buffer)
 	{
 		switch( LogData.Level )
 		{
 			case Log::Debug:
-				Buffer.append( "[Debug]\t" );
+				Buffer.append("[Debug]\t");
 				break;
 			case Log::Info:
-				Buffer.append( "[Info]\t" );
+				Buffer.append("[Info]\t");
 				break;
 			case Log::Warning:
-				Buffer.append( "[Warning]\t" );
+				Buffer.append("[Warning]\t");
 				break;
 			case Log::Error:
-				Buffer.append( "[Error]\t" );
+				Buffer.append("[Error]\t");
 				break;
 			case Log::None:
 				break;
 		}
 
-		Buffer.append( "[" + std::string(__TIME__) + "]" );
+		Buffer.append("[" + std::string(__TIME__) + "]");
 
-		Buffer.append( "[" +  std::string(LogData.FileName) + "]" );
+		Buffer.append("[" + std::string(LogData.FileName) + "]");
 
-		const auto LineNumber = std::to_string( LogData.LineNumber );
-		Buffer.append( "[" + std::string(LogData.FunctionName) + ":" + LineNumber + "] - " );
+		const auto LineNumber = std::to_string(LogData.LineNumber);
+		Buffer.append("[" + std::string(LogData.FunctionName) + ":" + LineNumber + "] - ");
 
-		Buffer.append( LogData.Message, LogData.LogLen );
+		Buffer.append(LogData.Message, LogData.LogLen);
 
-		Buffer.append( "\n" );
+		Buffer.append("\n");
 	}
 
-	bool Initialize( )
+	bool Initialize()
 	{
-		FileHandle = ::CreateFileA( CLogName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );
+		FileHandle = ::CreateFileA(CLogName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 		if( FileHandle == INVALID_HANDLE_VALUE )
 		{
-			printf( "Failed to CreateFileA!" );
+			printf("Failed to CreateFileA!");
 			return false;
 		}
 		return true;
 	}
 
-	void LogWrite( const Log::ELevel Level, const char *FileName, const char *FunctionName, const uint32_t LineNumber, const char *Format, ... )
+	void LogWrite(const Log::ELevel Level, const char* FileName, const char* FunctionName, const uint32_t LineNumber, const char* Format, ...)
 	{
 		if( FileHandle == nullptr )
 		{
-			printf( "Uninitialised FileHandle!" );
+			printf("Uninitialised FileHandle!");
 			return;
 		}
 
-		Log::NLogData LogData{ };
+		Log::NLogData LogData{};
 
 		char Buffer[ 1024 ];
 
 		va_list Args;
-		va_start( Args, Format );
-		const auto LogLen = vsnprintf( nullptr, 0, Format, Args );
-		vsnprintf( Buffer, LogLen + 1, Format, Args );
+		va_start(Args, Format);
+		const auto LogLen = vsnprintf(nullptr, 0, Format, Args);
+		vsnprintf(Buffer, LogLen + 1, Format, Args);
+
+		if( typeid(glm::vec2) == typeid(va_arg(Args, void*)) )
+		{
+			glm::vec2 vec = va_arg(Args, glm::vec2);
+			char vecBuffer[ 256 ];
+
+			snprintf(vecBuffer, sizeof(vecBuffer), " (%.2f, %.2f)", vec.x, vec.y);
+			strcat(Buffer, vecBuffer);
+		}
+		else if( typeid(glm::vec3) == typeid(va_arg(Args, void*)) )
+		{
+			glm::vec3 vec = va_arg(Args, glm::vec3);
+			char vecBuffer[ 256 ];
+
+			snprintf(vecBuffer, sizeof(vecBuffer), " (%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
+			strcat(Buffer, vecBuffer);
+		}
 
 		LogData.Level		 = Level;
 		LogData.Message		 = Buffer;
@@ -73,13 +90,13 @@ namespace Log
 		LogData.LineNumber	 = LineNumber;
 		LogData.Format		 = Format;
 		LogData.Args		 = Args;
-		va_end( Args );
+		va_end(Args);
 
 		std::string FormatedString;
-		Log::FormatLog( LogData, FormatedString );
+		Log::FormatLog(LogData, FormatedString);
 		DWORD nNumberOfBytesWritten;
 
-		::WriteFile( FileHandle, FormatedString.data( ), FormatedString.length( ), &nNumberOfBytesWritten, nullptr );
+		::WriteFile(FileHandle, FormatedString.data(), FormatedString.length(), &nNumberOfBytesWritten, nullptr);
 		printf("%s", FileName);
 	}
 } // namespace Log

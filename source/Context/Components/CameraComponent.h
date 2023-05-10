@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Context/Components/ActorComponent.h"
+#include "Context/Components/ActorComponent.h"	
 
 namespace Nocturn
 {
@@ -17,8 +17,6 @@ namespace Nocturn
 		NCameraComponent(NCameraComponent&& CameraComponent) = delete;
 		NCameraComponent& operator=(NCameraComponent&& CameraComponet) = delete;
 
-		void Initialize() override;
-
 		void OnComponenentActivated(NActor* OwnedActor) override;
 
 		void OnComponenentDeactivated() override;
@@ -26,10 +24,14 @@ namespace Nocturn
 		/** Method that is called every frame. */
 		void Update(double DeltaTime) override;
 
-		/* Get ViewMatrix from current Camera. */
+		/** Get ViewMatrix from current Camera.
+		 * @return ViewMatrix and in case of failure return mat4(0.0f)
+		 */
 		NODISCARD mat4 GetViewMatrix() const noexcept;
 
-		/* Get ProjectionMatrix from current Camera. */
+		/** Get ProjectionMatrix from current Camera.
+		 * @return ViewMatrix and in case of failure return mat4(0.0f)
+		 */
 		NODISCARD mat4 GetProjectionMatrix() const noexcept;
 
 		~NCameraComponent() noexcept override = default;

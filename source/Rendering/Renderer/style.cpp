@@ -954,4 +954,4 @@ namespace Nocturn
 		constexpr glm::vec4 green				  = glm::vec4( 0.082, 0.690, 0.102, 1 );
 		constexpr glm::vec4 purple				  = glm::vec4( 0.494, 0.118, 0.612, 1 );
 	} // namespace Colors
-} // namespace Nocturn::rendering
+} // namespace Nocturn

@@ -52,4 +52,4 @@ namespace Nocturn
 
 		NTexture::Init( );
 	}
-} // namespace Nocturn::rendering
+} // namespace Nocturn

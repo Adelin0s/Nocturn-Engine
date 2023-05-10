@@ -18,7 +18,7 @@
 #include "application/config/config.hpp"
 #include "Core/core.h"
 
-namespace Nocturn::Render
+namespace Nocturn
 {
 	enum class ETextureType : uint8
 	{
@@ -44,6 +44,6 @@ namespace Nocturn::Render
 		uint32_t				   m_id;
 		std::vector< std::string > m_faces;
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 
 #endif

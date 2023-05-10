@@ -9,41 +9,64 @@
 #ifndef CHUNK_RENDERER_H
 #define CHUNK_RENDERER_H
 
+#include "MasterRenderer.h"
 #include "core/GL/GLFunctions.h"
 #include "core/math/frustum.h"
 
 #include "rendering/components/shaders/shader.h"
 #include "rendering/world/block/blockdatabase.h"
-#include "rendering/world/chunk/chunksection.h"
-#include "rendering/renderer/baserenderer.h"
+#include "rendering/renderer/IRenderer.h"
+#include "rendering/world/chunk/chunkmanager.h"
 
-namespace Nocturn::Render
+namespace Nocturn
 {
-	class ChunkRenderer : public IRenderer
+	/** Forward declares. */
+	struct RenderInfo;
+	struct FChunkManagerRenderContext;
+
+	class NChunkRenderer : public INRenderer
 	{
 	public:
-		ChunkRenderer( ) noexcept = default;
+		NChunkRenderer() noexcept = default;
 
-		// cant copy
-		ChunkRenderer( const ChunkRenderer & ) = delete;
-		ChunkRenderer &operator=( const ChunkRenderer & ) = delete;
+		/** Cant copy. */
+		NChunkRenderer(const NChunkRenderer& ChunkRendererComponent) = delete;
+		NChunkRenderer& operator=(const NChunkRenderer& ChunkRendererComponent) = delete;
 
-		// cant move
-		ChunkRenderer( ChunkRenderer && ) = delete;
-		ChunkRenderer &operator=( ChunkRenderer && ) = delete;
+		/** Cant move. */
+		NChunkRenderer(NChunkRenderer&& ChunkRendererComponent) = delete;
+		NChunkRenderer& operator=(NChunkRenderer&& ChunkRendererComponent) = delete;
 
-		RStatus Init( ) override;
-		void Render( const NCamera &Camera ) override;
+		bool Initialize() override;
 
-		void Add( const RenderInfo &RenderInfo );
-		NODISCARD size_t Size( ) const noexcept;
+		void Render(const NCameraComponent* CameraComponent) override;
 
-		~ChunkRenderer( ) noexcept override = default;
+		bool HasRendererTag(const std::string& RendererTagIn) override;
+
+		void Add(const RenderInfo& RenderInfo);
+
+		NODISCARD size_t Size() const noexcept;
+
+		~NChunkRenderer() noexcept override = default;
+
+		friend class NMasterRenderer;
 
 	private:
-		std::vector< RenderInfo >		 ChunksRenderInfo;
-		std::unique_ptr< NShader >		 Shader;
-		std::unique_ptr< NTextureAtlas > Texture;
+		/** Attach ChunkManager to be able to communicate. */
+		void AttachRenderContext(const NChunkManager* ChunkManager) noexcept;
+
+	private:
+		NChunkManager* ChunkManager;
+
+		std::vector< RenderInfo > ChunksRenderInfo;
+
+		UniquePtr< NShader > Shader;
+
+		UniquePtr< NShader > PhongShader;
+
+		UniquePtr< NTextureAtlas > Texture;
+
+		UniquePtr< FChunkManagerRenderContext > ChunkManagerRenderContext;
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 #endif

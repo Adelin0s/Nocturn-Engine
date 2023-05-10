@@ -103,4 +103,4 @@ namespace Nocturn
 
 		return true;
 	}
-} // namespace Nocturn::rendering
+} // namespace Nocturn

@@ -1,8 +1,10 @@
 #include "rendering/renderer/skyboxrenderer.h"
 
-namespace Nocturn::Render
+#include "Context/Components/CameraComponent.h"
+
+namespace Nocturn
 {
-	RStatus SkyboxRenderer::Init( )
+	bool NSkyboxRenderer::Initialize()
 	{
 		VertexType::SkyboxVertex vertexData;
 		vertexData.vertices = 
@@ -61,22 +63,23 @@ namespace Nocturn::Render
 		    "back.jpg"
 		} );
 		m_textureCube.LoadCubemap(ETextureType::Skybox);
-		m_skyboxShader.Init( );
+		m_skyboxShader.Init();
 
-		return RSucces;
+		RendererTag = "SkyboxRenderer";
+
+		return true;
 	}
 
-	void SkyboxRenderer::Render( const NCamera &Camera )
+	void NSkyboxRenderer::Render(const NCameraComponent* CameraComponent)
 	{
 		glDepthFunc( GL_LEQUAL );
 
 		m_model.BindVAO( );
-
 		m_textureCube.Bind( );
-
 		m_skyboxShader.Bind( );
-		m_skyboxShader.SetProjectionMatrix( Camera );
-		m_skyboxShader.SetViewMatrix( Camera );
+
+		m_skyboxShader.SetProjectionMatrix(CameraComponent->GetProjectionMatrix());
+		m_skyboxShader.SetViewMatrix(CameraComponent->GetViewMatrix());
 
 		GL::DrawArraysInstanced( );
 
@@ -85,4 +88,9 @@ namespace Nocturn::Render
 		m_skyboxShader.Unbind( );
 		glDepthFunc( GL_LESS );
 	}
-} // namespace Nocturn::rendering
+
+	bool NSkyboxRenderer::HasRendererTag(const std::string& RendererTagIn)
+	{
+		return RendererTag == RendererTagIn;
+	}
+} // namespace Nocturn

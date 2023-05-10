@@ -4,25 +4,30 @@
 #include "rendering/components/shaders/shader.h"
 #include "Rendering/Renderer/Data/model.hpp"
 
-#include <iostream>
+#include "Context/Components/CameraComponent.h"
 
 namespace Nocturn::Render
 {
-	static const NCamera *GlobalCamera;
-	Model< VertexType::GenericVertex > genericModel;
+	//Model< VertexType::GenericVertex > genericModel;
+	UniquePtr< Model< VertexType::GenericVertex > > GenericModel;
 	static NShader lineShader( "line.vs", "line.fs" );
+	static const NCameraComponent* CameraComponent;
 
-	void Init( const NCamera &Camera )
+	void Init(const NCameraComponent* CameraComponentIn)
 	{
+		AssertInfo(CameraComponentIn != nullptr, "Failed to Init because CameraComponentIn is nullptr!");
+
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		lineShader.Init( );
+		lineShader.Init();
 
-		GlobalCamera = &Camera;
+		CameraComponent = CameraComponentIn;
+
+		GenericModel = std::make_unique< Model< VertexType::GenericVertex > >();
 	}
 
 	void DrawLine( const vec3 &start, const vec3 &end, const Style &style )
@@ -35,7 +40,7 @@ namespace Nocturn::Render
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		genericModel.AddVertexData( v );
+		GenericModel->AddVertexData( v );
 
 		v.isStart	  = 1.0f;
 		v.start		  = start;
@@ -43,7 +48,7 @@ namespace Nocturn::Render
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		genericModel.AddVertexData( v );
+		GenericModel->AddVertexData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -51,7 +56,7 @@ namespace Nocturn::Render
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		genericModel.AddVertexData( v );
+		GenericModel->AddVertexData( v );
 
 		// Second triangle
 		v.isStart	  = 1.0f;
@@ -60,7 +65,7 @@ namespace Nocturn::Render
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		genericModel.AddVertexData( v );
+		GenericModel->AddVertexData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -68,7 +73,7 @@ namespace Nocturn::Render
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		genericModel.AddVertexData( v );
+		GenericModel->AddVertexData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -76,7 +81,7 @@ namespace Nocturn::Render
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		genericModel.AddVertexData( v );
+		GenericModel->AddVertexData( v );
 	}
 
 	void DrawBox( const vec3 &position, const glm::vec3 &size, const Style &style )
@@ -108,36 +113,37 @@ namespace Nocturn::Render
 		DrawLine( v3, v7, style );
 	}
 
-	void Render( )
+	void Render()
 	{
-		auto &vao = genericModel.m_renderInfo.vao;
-		auto &vbo = genericModel.m_renderInfo.vbo;
-		auto &indicesCount = genericModel.m_renderInfo.indicesCount;
+		auto &vao = GenericModel->m_renderInfo.vao;
+		auto &vbo = GenericModel->m_renderInfo.vbo;
+		auto &indicesCount = GenericModel->m_renderInfo.indicesCount;
 
 		if( indicesCount <= 0 )
 		{
 			return;
 		}
 
-		glDisable( GL_CULL_FACE ); 
+		glDisable(GL_CULL_FACE); 
 
-		assert( GlobalCamera != nullptr );
+		assert(CameraComponent != nullptr);
 
-		lineShader.Bind( );
-		lineShader.SetMatrix4( "uProjection", GlobalCamera->GetProjectionMatrix( ) );
-		lineShader.SetMatrix4( "uView", GlobalCamera->GetViewMatrix( ) );
-		lineShader.SetFloat( "uAspectRatio", Application::GetWindow( ).GetAspectRatio( ) );
+		lineShader.Bind();
+		lineShader.SetMatrix4("uProjection", CameraComponent->GetProjectionMatrix());
+		lineShader.SetMatrix4("uView", CameraComponent->GetViewMatrix());
+		lineShader.SetFloat("uAspectRatio", Application::GetWindow().GetAspectRatio());
 
 		// Draw the 3D screen space stuff
-		glBindBuffer( GL_ARRAY_BUFFER, vbo );
-		glBufferData( GL_ARRAY_BUFFER, sizeof(VertexType::GenericVertex) * CMaxGenericModelSize, genericModel.m_vertexData.data( ), GL_DYNAMIC_DRAW );
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexType::GenericVertex) * CMaxGenericModelSize, GenericModel->m_vertexData.data(), GL_DYNAMIC_DRAW);
 
-		glBindVertexArray( genericModel.m_renderInfo.vao );
+		glBindVertexArray( GenericModel->m_renderInfo.vao );
+		std::cout << "\n" << GenericModel->m_renderInfo.vao << "\n";
 		glDrawArrays( GL_TRIANGLES, 0, static_cast< int32 >( indicesCount ) );
 
 		// Clear the batch
 		indicesCount = 0;
-		genericModel.m_vertexData.clear( );
+		GenericModel->m_vertexData.clear( );
 
 		glEnable( GL_CULL_FACE );
 	}

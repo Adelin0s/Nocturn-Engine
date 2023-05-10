@@ -11,7 +11,6 @@
 
 #include <glm/glm.hpp>
 
-#include "core/components/transform.h"
 #include "core/types/typedef.hpp"
 
 namespace Nocturn
@@ -20,14 +19,14 @@ namespace Nocturn
 	{
 		void SetZeroForces( ) noexcept
 		{
-			velocity = vec3( 0.0f );
-			acceleration = vec3(0.0f);
+			Velocity = vec3( 0.0f );
+			Acceleration = vec3(0.0f);
 		}
 
-		bool useGravity = true;
-		bool onGround = false;
-		vec3 acceleration{1.0f, 0.0f, 1.0f};
-		vec3 velocity{ 0.0f, -5.0f, 0.0f };
+		bool UseGravity = true;
+		bool OnGround = false;
+		vec3 Acceleration{1.0f, 0.0f, 1.0f};
+		vec3 Velocity{ 0.0f, -5.0f, 0.0f };
 	};
 } // namespace Nocturn
 

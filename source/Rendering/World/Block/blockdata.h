@@ -17,13 +17,11 @@
 #include "core/types/typedef.hpp"
 #include "rendering/components/textures/texturecube.h"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
-	enum class BlockId : uint8_t;
-
 	struct BlockDataHolder
 	{
-		BlockId m_id;
+		uint8 m_id;
 
 		vec2 m_textureTop;
 		vec2 m_textureSide;
@@ -48,5 +46,5 @@ namespace Nocturn::rendering
 	private:
 		BlockDataHolder m_blockDataHolder;
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 #endif

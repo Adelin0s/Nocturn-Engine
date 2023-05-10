@@ -1,38 +1,40 @@
 #include "rendering/world/block/block.h"
 #include "rendering/world/block/blockdatabase.h"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
-	Block::Block( const uint8 id ) :
-		m_id( id )
+	NBlock::NBlock(const uint8 BlockId)
+	:
+		BlockType(static_cast<EBlockId>(BlockId))
 	{}
 
-	Block::Block( const BlockId id ) :
-		m_id( static_cast< uint8 >( id ) )
+	NBlock::NBlock(const EBlockId BlockId)
+	:
+		BlockType(BlockId)
 	{}
 
-	void Block::operator=( BlockId id )
+	void NBlock::operator=(const EBlockId BlockId)
 	{
-		m_id = static_cast< uint8 >( id );
+		BlockType = BlockId;
 	}
 
-	bool Block::operator==( const BlockId id ) const
+	bool NBlock::operator==(const EBlockId BlockId) const
 	{
-		return m_id == static_cast< uint8 >( id );
+		return BlockType == BlockId;
 	}
 
-	bool Block::operator==( const Block &block ) const
+	bool NBlock::operator==(const NBlock& Block) const
 	{
-		return m_id == block.m_id;
+		return Block == Block.BlockType;
 	}
 
-	bool Block::operator!=( const Block &block ) const
+	bool NBlock::operator!=(const NBlock& Block) const
 	{
-		return m_id != block.m_id;
+		return Block != Block.BlockType;
 	}
 
-	NODISCARD const BlockDataHolder &Block::getData( ) const
+	NODISCARD const BlockDataHolder& NBlock::GetData() const
 	{
-		return BlockDatabase::getInstance( ).getData( static_cast< BlockId >( m_id ) );
+		return BlockDatabase::GetInstance().GetData(static_cast< uint8 >(BlockType));
 	}
-} // namespace Nocturn::rendering
+} // namespace Nocturn

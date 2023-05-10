@@ -98,15 +98,15 @@ namespace Nocturn
 		bool												  m_end = false;
 	};
 
-	class TaskSystem
+	class NTaskSystem
 	{
 	public:
-		explicit TaskSystem( const uint32 nthreads = 1 );
-		TaskSystem( const TaskSystem &task ) = delete;
-		TaskSystem( TaskSystem && )			 = delete;
+		explicit NTaskSystem( const uint32 nthreads = 1 );
+		NTaskSystem( const NTaskSystem &task ) = delete;
+		NTaskSystem( NTaskSystem && )			 = delete;
 
-		TaskSystem operator=( const TaskSystem &task ) = delete;
-		TaskSystem operator=( TaskSystem &&task ) = delete;
+		NTaskSystem operator=( const NTaskSystem &task ) = delete;
+		NTaskSystem operator=( NTaskSystem &&task ) = delete;
 
 		void Async( PriorityTask task );
 		void Async( Task task, const ETaskPriorityLevel priority = ETaskPriorityLevel::Low );
@@ -118,7 +118,7 @@ namespace Nocturn
 		uint32 GetNumOfTasks( ) const noexcept;
 		void   PrintTaskEachQueue( ) const noexcept;
 
-		~TaskSystem( ) noexcept;
+		~NTaskSystem( ) noexcept;
 
 	private:
 		uint32 m_numberOfWorkers;
@@ -133,8 +133,8 @@ namespace Nocturn
 	class TaskGroup
 	{
 	public:
-		explicit TaskGroup( TaskSystem *taskSystem ) :
-			m_pTaskSystem( taskSystem )
+		explicit TaskGroup( NTaskSystem *taskSystem ) :
+			m_pNTaskSystem( taskSystem )
 		{}
 
 		TaskGroup( const TaskGroup & ) = delete;
@@ -191,8 +191,8 @@ namespace Nocturn
 		template< typename F >
 		void Run( F &&f )
 		{
-			// TODO : get current priority(static variable in TaskSystem)
-			constexpr auto priority = 0; /*=TaskSystem::GetCurrentTaskPriority();*/
+			// TODO : get current priority(static variable in NTaskSystem)
+			constexpr auto priority = 0; /*=NTaskSystem::GetCurrentTaskPriority();*/
 			Run( std::forward< F >( f ), priority );
 		}
 
@@ -201,14 +201,14 @@ namespace Nocturn
 		{
 			m_running = true;
 			++m_inFlight;
-			m_pTaskSystem->Async( PriorityTask{ MakeWrapFunction( std::forward< F >( f ), m_inFlight ), ETaskPriorityLevel::Low } );
+			m_pNTaskSystem->Async( PriorityTask{ MakeWrapFunction( std::forward< F >( f ), m_inFlight ), ETaskPriorityLevel::Low } );
 		}
 
 		void Wait( ) const
 		{
 			while( m_inFlight )
 			{
-				m_pTaskSystem->TryRunTask( );
+				m_pNTaskSystem->TryRunTask( );
 			}
 		}
 
@@ -218,7 +218,7 @@ namespace Nocturn
 
 	private:
 		bool		m_running = false;
-		TaskSystem *m_pTaskSystem;
+		NTaskSystem *m_pNTaskSystem;
 	};
 
 } // namespace Nocturn

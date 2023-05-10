@@ -16,9 +16,12 @@
 #include "core/core.h"
 #include "core/platform/platform.h"
 #include "core/types/typedef.hpp"
+// TODO: Possible circular deps
+#include "Rendering/Renderer/Renderer.h"
 
-namespace Nocturn::Render
+namespace Nocturn
 {
+
 	namespace VertexType
 	{
 		struct ChunkVertex
@@ -91,12 +94,12 @@ namespace Nocturn::Render
 		Model( ) noexcept = default;
 
 		// cant copy
-		Model( const Model &model ) = default;
-		Model &operator=( const Model &model ) = delete;
+		Model( const Model &Model ) = default;
+		Model &operator=( const Model &Model ) = delete;
 
 		// cant move
-		Model( Model &&model ) = delete;
-		Model &operator=( Model &&model ) = delete;
+		Model( Model &&Model ) = delete;
+		Model &operator=( Model &&Model ) = delete;
 
 		void BindVAO( ) const noexcept
 		{
@@ -107,6 +110,8 @@ namespace Nocturn::Render
 		{
 			glBindVertexArray( 0 );
 		}
+
+		void Smth() { std::cout << "Smth\n"; }
 
 		template< typename TVertexType > requires( std::is_same_v< TVertexType, VertexType::ChunkVertex > || std::is_same_v< TVertexType, VertexType::SkyboxVertex > || std::is_same_v< TVertexType, VertexType::GenericVertex > )
 		void AddVertexData( const TVertexType &mesh)
@@ -154,7 +159,7 @@ namespace Nocturn::Render
 			m_renderInfo.vao = 0;
 		}
 
-		friend void Render( );
+		friend void Render::Render();
 
 		~Model( ) noexcept = default;
 
@@ -229,5 +234,5 @@ namespace Nocturn::Render
 			glBufferData( GL_ELEMENT_ARRAY_BUFFER, indices.size( ) * sizeof( uint32_t ), indices.data( ), GL_DYNAMIC_DRAW );
 		}
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 #endif

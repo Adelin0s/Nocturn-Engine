@@ -1,17 +1,28 @@
 #include "Context/GameFramework/Character.h"
 
+#include "Context/Components/BoxComponent.h"
+#include "Context/GameFramework/Actor.h"
 #include "Context/Components/CameraComponent.h"
+#include "Context/Components/TransformComponent.h"
 
 namespace Nocturn
 {
-	void NCharacter::Initialize()
+	NCharacter::NCharacter() noexcept
+	:
+		NActor()
+	{}
+
+	void NCharacter::Initialize(const SharedPtr< NWorld >& WorldIn)
 	{
-		NActor::Initialize();
+		NActor::Initialize(WorldIn);
 
-		CameraComponent = std::make_unique<NCameraComponent>();
+		CameraComponent = std::make_shared< NCameraComponent >();
 		AssertInfo(CameraComponent != nullptr, "Failed to alloc memory for CameraComponent!");
-
 		CameraComponent->OnComponenentActivated(this);
+
+		//BoxComponent = std::make_shared< NBoxComponent >();
+		//AssertInfo(BoxComponent != nullptr, "Failed to alloc memory for CameraComponent!");
+		//BoxComponent->OnComponenentActivated(this);
 	}
 
 	void NCharacter::Jump()
@@ -34,13 +45,8 @@ namespace Nocturn
 		NActor::SetMovementMode(MovementMode);
 	}
 
-	NCameraComponent* NCharacter::GetCameraComponent() const noexcept
+	SharedPtr<NCameraComponent> NCharacter::GetCameraComponent() const noexcept
 	{
-		return CameraComponent.get();
-	}
-
-	NTransformComponent* NCharacter::GetRootComponent() const noexcept
-	{
-		return TransformComponent.get();
+		return CameraComponent;
 	}
 } 

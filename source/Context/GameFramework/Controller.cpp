@@ -26,24 +26,26 @@ namespace Nocturn
 
 	void NController::Initialize()
 	{
-
 	}
 
-	void NController::ToggleActor(NActor* NewActor)
+	void NController::SetActor(NActor* NewActor)
 	{
-		AssertInfo(OwnedActor != nullptr, "Invalid nullptr argument!");
+		AssertInfo(NewActor != nullptr, "Invalid nullptr OwnedActor member!");
 
 		OwnedActor = NewActor;
 
 		UpdateOwnedActorFlag();
 	}
 
-	bool NController::HasValidCharacter() const noexcept
+	bool NController::HasValidCharacter() const
 	{
-		AssertInfo(OwnedActor != nullptr, "Failed to check beacuse OwnedActor is nullptr!");
+		if (OwnedActor == nullptr)
+		{
+			return false;
+		}
 
-		const auto Result = dynamic_cast<NCharacter*>(OwnedActor);
-		if (Result == nullptr) UNLIKELY
+		const auto Result = dynamic_cast< NCharacter* >(OwnedActor);
+		if (Result == nullptr)
 		{
 			return false;
 		}
@@ -52,10 +54,13 @@ namespace Nocturn
 
 	bool NController::HasValidSpectator() const noexcept
 	{
-		AssertInfo(OwnedActor != nullptr, "Failed to check beacuse OwnedActor is nullptr!");
+		if (OwnedActor == nullptr)
+		{
+			return false;
+		}
 
 		const auto Result = dynamic_cast<NSpectator*>(OwnedActor);
-		if (Result == nullptr) UNLIKELY
+		if (Result == nullptr)
 		{
 			return false;
 		}
@@ -94,15 +99,15 @@ namespace Nocturn
 		double dx = Mouse::getDx();
 		double dy = Mouse::getDy();
 
-		if (dx > 0.0 || dy > 0.0)
+		if( dx != 0.0 || dy != 0.0 )
 		{
-			auto Rotation = OwnedActor->GetRootComponent()->GetRotation();
+			auto& Rotation = OwnedActor->GetTransformComponent()->GetRotation();
 
 			dx *= Mouse::CMouseSensitivity;
 			dy *= Mouse::CMouseSensitivity;
 
-			Rotation.x += dx;
-			Rotation.y += dy;
+			Rotation.x += static_cast< float >(dx);
+			Rotation.y += static_cast< float >(dy);
 
 			if (Rotation.y > 89.0f)
 				Rotation.y = 89.0f;
@@ -113,47 +118,47 @@ namespace Nocturn
 
 	void NController::HandleKeyboardInput() const noexcept
 	{
-		Assert(OwnedActor != nullptr, "Invalid Actor nullptr!");
+		AssertInfo(OwnedActor != nullptr, "Invalid OwnedActor nullptr member!");
 
-		if (bHasCharacter)
+		if( bHasCharacter )
 		{
-			const auto Character = reinterpret_cast<NCharacter*>(OwnedActor);
-			if (Keyboard::key(GLFW_KEY_SPACE))
+			const auto Character = reinterpret_cast< NCharacter* >(OwnedActor);
+			if( Keyboard::key(GLFW_KEY_SPACE) )
 			{
 				Character->Jump();
 			}
 		}
 
-		if (bHasSpectator)
+		if( bHasSpectator )
 		{
-			const auto Spectator = reinterpret_cast<NSpectator*>(OwnedActor);
-			if (Keyboard::key(GLFW_KEY_Q))
+			const auto Spectator = reinterpret_cast< NSpectator* >(OwnedActor);
+			if( Keyboard::key(GLFW_KEY_Q) )
 			{
 				Spectator->SetMovementMode(EMovementMode::ClimbDown);
 			}
-			if (Keyboard::key(GLFW_KEY_E))
+			if( Keyboard::key(GLFW_KEY_E) )
 			{
 				Spectator->SetMovementMode(EMovementMode::ClimbUp);
 			}
 		}
 
-		if (Keyboard::key(GLFW_KEY_LEFT_SHIFT))
+		if( Keyboard::key(GLFW_KEY_LEFT_SHIFT) )
 		{
 			OwnedActor->SetMovementMode(EMovementMode::MoveFast);
 		}
-		if (Keyboard::key(GLFW_KEY_UP))
+		if( Keyboard::key(GLFW_KEY_UP) || Keyboard::key(GLFW_KEY_W) )
 		{
 			OwnedActor->SetMovementMode(EMovementMode::MoveForward);
 		}
-		if (Keyboard::key(GLFW_KEY_DOWN))
+		if( Keyboard::key(GLFW_KEY_DOWN) || Keyboard::key(GLFW_KEY_S) )
 		{
 			OwnedActor->SetMovementMode(EMovementMode::MoveBackward);
 		}
-		if (Keyboard::key(GLFW_KEY_LEFT))
+		if( Keyboard::key(GLFW_KEY_LEFT) || Keyboard::key(GLFW_KEY_A) )
 		{
 			OwnedActor->SetMovementMode(EMovementMode::MoveLeft);
 		}
-		if (Keyboard::key(GLFW_KEY_RIGHT))
+		if( Keyboard::key(GLFW_KEY_RIGHT) || Keyboard::key(GLFW_KEY_D) )
 		{
 			OwnedActor->SetMovementMode(EMovementMode::MoveRight);
 		}

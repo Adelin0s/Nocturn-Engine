@@ -6,53 +6,102 @@
 //   @ Description:                                                                                                                                                                                
 // =====================================================================
 
-#ifndef WORLD_H
-#define WORLD_H
+#pragma once
 
 #include <memory>
 
-#include "application/config/config.hpp"
-#include "rendering/components/entity/player.h"
-
-#include "core/async/task.h"
-#include "core/physics/physics.h"
-
-#include "rendering/components/entity/camera.h"
-#include "rendering/renderer/chunkrenderer.h"
-#include "rendering/renderer/skyboxrenderer.h"
-
-#include "rendering/components/shaders/shader.h"
-#include "rendering/world/chunk/chunkmanager.h"
+#include "Core/Core.h"
+#include "Core/Async/Task.h"
+#include "Core/Physics/Physics.h"
+#include "Rendering/Renderer/ChunkRenderer.h"
 
 namespace Nocturn
 {
-	using namespace rendering;
+	//Forward declares
+	class NController;
+
+	class NWorldLight
+	{
+	public:
+	    glm::vec3 Position;
+	    glm::vec3 Color;
+	    float Intensity;
+
+	    NWorldLight(const glm::vec3& position, const glm::vec3& color, float intensity)
+		:
+			Position(position), Color(color), Intensity(intensity)
+		{}
+	};
 
 	class NWorld
 	{
 	public:
-		NWorld( ) noexcept = default;
+		/** Default constructor. */
+		NWorld() noexcept;
 
-		// cant copy
-		NWorld( const NWorld & ) = delete;
-		NWorld( NWorld && ) = delete;
+		/** Cant copy. */
+		NWorld(const NWorld& World) = delete;
+		NWorld(NWorld&& World) = delete;
 
-		// cant move
-		NWorld &operator=( const NWorld & ) = delete;
-		NWorld &operator=( NWorld && ) = delete;
+		/** Cant move. */
+		NWorld& operator=(const NWorld& World) = delete;
+		NWorld& operator=(NWorld&& World) = delete;
 
-		RStatus Init( );
-		void Update( double DeltaTime );
-		void Free( );
+		/** Initialize world stuff. */
+		RStatus Initialize(const SharedPtr< NController >& ControllerIn, const SharedPtr< NCharacter >& MainCharacterIn);
 
-		~NWorld( ) noexcept = default;
+		/** Update all components from the World. */
+		void Update(double DeltaTime);
+
+		/** Attach the main character to the World instance. */
+		void AttachMainCharacter(const SharedPtr< NCharacter >& MainCharacterIn) noexcept;
+
+		/** Attach the controller to World instance. */
+		void AttachController(const SharedPtr< NController >& ControllerIn) noexcept;
+
+		/** Get a shared pointer to the ChunkManager. */
+		NODISCARD SharedPtr< NChunkManager > GetChunkManager() const noexcept;
+
+		/** Get the main Character. */
+		NODISCARD NCharacter* GetMainCharacter() const noexcept;
+
+		/** Get the main Character. */
+		NODISCARD NController* GetController() const noexcept;
+
+		/** Get the main Character. */
+		NODISCARD SharedPtr< NCameraComponent > GetMainCameraComponent() const noexcept;
+
+		/** Free all ressources from the World. */
+		void Free();
+
+		/** Default destructor. */
+		~NWorld() noexcept = default;
 
 	private:
-		Render::ChunkRenderer              m_chunkRender;
-		std::unique_ptr< Render::SkyboxRenderer > m_skyboxRender;
-		std::unique_ptr< ChunkManager >    m_chunkManager;
-		std::unique_ptr< TaskSystem >      m_taskSystem;
+		/** Pointer to the MainCharacter of the world. Mainly, this is the character controlled by the Controller.
+		 * @todo Change with NActor* for more flow control. Main character can be a Spectator too for example
+		 */
+		SharedPtr< NCharacter > MainCharacter;
+
+		/** Pointer to the Controller that acts as a owner of the Character. */
+		SharedPtr< NController > Controller;
+
+		/** Main camera component. This component contain a pointer to actor's camera that is currently activated. */
+		SharedPtr< NCameraComponent > MainCameraComponent;
+
+		/** Shared pointer from master renderer where we can manage all of things about the renderer. */
+		SharedPtr< NMasterRenderer > MasterRenderer;
+
+		/** Shared pointer from ChunkManager where we can manage all of things about the chunks. */
+		SharedPtr< NChunkManager > ChunkManager;
+
+		/** Async task system. */
+		UniquePtr< NTaskSystem > TaskSystem;
+
+		/** The physics engine that is attached to the World. */
+		UniquePtr< NPhysics > Physics;
+
+		/** World light */
+		NWorldLight WorldLight;
 	};
 } // namespace Nocturn
-
-#endif

@@ -11,7 +11,7 @@
 
 int main( )
 {
-	const auto Status = Log::Initialize( );
+	const auto Status = Log::Initialize();
 	if( Status == false )
 	{
 		printf( "Failed to Initialize NocturnLog!" );

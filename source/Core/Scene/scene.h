@@ -18,7 +18,13 @@ namespace Nocturn
 		void Free( );
 
 	private:
-		NWorld World;
+		SharedPtr< NWorld > World;
+
+		SharedPtr< NCharacter > Character;
+
+		SharedPtr< NController > Controller;
+
+		SharedPtr< class NBoxComponent > BoxComponent;
 	};
 } // namespace Nocturn::Scene
 

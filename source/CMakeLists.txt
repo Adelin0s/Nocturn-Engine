@@ -35,7 +35,6 @@ file(GLOB _core_util_files							LIST_DIRECTORIES false "${_src_root_path}/Core/
 file(GLOB _gui_files								LIST_DIRECTORIES false "${_src_root_path}/Gui/*.h" "${_src_root_path}/Gui/*.hpp" "${_src_root_path}/Gui/*.cpp")
 
 file(GLOB _rendering_components_files				LIST_DIRECTORIES false "${_src_root_path}/Rendering/Components/*.h" "${_src_root_path}/Rendering/Components/*.hpp" "${_src_root_path}/Rendering/Components/*.cpp")
-file(GLOB _rendering_components_entity_files		LIST_DIRECTORIES false "${_src_root_path}/Rendering/Components/Entity/*.h" "${_src_root_path}/Rendering/Components/Entity/*.hpp" "${_src_root_path}/Rendering/Components/Entity/*.cpp")
 file(GLOB _rendering_components_shaders_files		LIST_DIRECTORIES false "${_src_root_path}/Rendering/Components/Shaders/*.h" "${_src_root_path}/Rendering/Components/Shaders/*.hpp" "${_src_root_path}/Rendering/Components/Shaders/*.cpp")
 file(GLOB _rendering_components_textures_files		LIST_DIRECTORIES false "${_src_root_path}/Rendering/Components/Textures/*.h" "${_src_root_path}/Rendering/Components/Textures/*.hpp" "${_src_root_path}/Rendering/Components/Textures/*.cpp")
 file(GLOB _rendering_renderer_files					LIST_DIRECTORIES false "${_src_root_path}/Rendering/Renderer/*.h" "${_src_root_path}/Rendering/Renderer/*.hpp" "${_src_root_path}/Rendering/Renderer/*.cpp")
@@ -74,7 +73,6 @@ add_executable(NocturnProject
 	${_gui_files}
 	
 	${_rendering_components_files}
-	${_rendering_components_entity_files}
 	${_rendering_components_shaders_files}
 	${_rendering_components_textures_files}
 	${_rendering_renderer_files}
@@ -137,7 +135,6 @@ source_group("Gui" FILES ${_gui_files})
 
 source_group("Rendering" FILES ${_rendering_files})
 source_group("Rendering/Components" FILES ${_rendering_components_files})
-source_group("Rendering/Components/Entity" FILES ${_rendering_components_entity_files})
 source_group("Rendering/Components/Shaders" FILES ${_rendering_components_shaders_files})
 source_group("Rendering/Components/Textures" FILES ${_rendering_components_textures_files})
 source_group("Rendering/Renderer" FILES ${_rendering_renderer_files})
@@ -146,4 +143,3 @@ source_group("Rendering/World" FILES ${_rendering_world_files})
 source_group("Rendering/World/Block" FILES ${_rendering_world_block_files})
 source_group("Rendering/World/Chunk" FILES ${_rendering_world_chunk_files})
 source_group("Rendering/World/Generation" FILES ${_rendering_world_generation_files})
-

@@ -7,13 +7,13 @@ namespace Nocturn
 		NShader("skybox.vs" , "skybox.fs")
 	{}
 
-	void SkyboxShader::SetViewMatrix( const NCamera& Camera ) const
+	void SkyboxShader::SetViewMatrix(const mat4& ViewMatrix) const
 	{
-		SetMatrix4( "projection", Camera.GetProjectionMatrix( ) );
+		SetMatrix4("view", mat4(mat3(ViewMatrix)));
 	}
 
-	void SkyboxShader::SetProjectionMatrix( const NCamera &Camera ) const
+	void SkyboxShader::SetProjectionMatrix(const mat4& ProjectionMatrix) const
 	{
-		SetMatrix4( "view", glm::mat4( glm::mat3( Camera.GetViewMatrix( ) ) ) );
+		SetMatrix4("projection", ProjectionMatrix);
 	}
 } // namespace Nocturn

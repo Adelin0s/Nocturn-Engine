@@ -6,7 +6,7 @@
 #include "rendering/world/chunk/chunksection.h"
 #include "core/components/constants.hpp"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	inline void AdjacentBlock::update( const uint32_t x, const uint32_t y, const uint32_t z )
 	{
@@ -22,7 +22,7 @@ namespace Nocturn::rendering
 		:		m_pChunk( &chunk )
 	{}
 
-	const Render::Model< Render::VertexDataType::ChunkDataType > &ChunkMesh::GetModel( ) const
+	const Model< VertexDataType::ChunkDataType > &ChunkMesh::GetModel( ) const
 	{
 		return m_model;
 	}
@@ -40,7 +40,7 @@ namespace Nocturn::rendering
 		m_pChunk = &pchunk;
 		AdjacentBlock directions;
 
-		auto chunk = m_pChunk->getChunk( );
+		auto chunk = m_pChunk->GetChunk( );
 
 		for( int32 z = 0; z < Constants::CChunkZ; z++ )
 		{
@@ -53,7 +53,7 @@ namespace Nocturn::rendering
 				continue;
 			}
 
-			const auto &data = chunk[ ChunkSection::getSizeFromIndex( x, y, z ) ].getData( );
+			const auto &data = chunk[ ChunkSection::GetSizeFromIndex( x, y, z ) ].GetData( );
 
 			const Block_t position( x, y, z );
 			directions.update( x, y, z );
@@ -113,16 +113,16 @@ namespace Nocturn::rendering
 		if( shouldMakeFace( blockPosition, adjBlock ) )
 		{
 			const auto &Coords = NTextureAtlas::GetTexture( textureCoords );
-			addFace( blockFace, Coords, m_pChunk->getLocation( ), blockPosition );
+			addFace( blockFace, Coords, m_pChunk->GetLocation( ), blockPosition );
 		}
 	}
 
 	NODISCARD bool ChunkMesh::shouldMakeFace( const Block_t &blockCoords, const ivec3 &adjCoords ) const noexcept
 	{
-		if( m_pChunk->getBlock( blockCoords ) == BlockId::Air )
+		if( m_pChunk->GetBlock( blockCoords ) == EBlockId::Air )
 			return false;
 
-		if( m_pChunk->getAdjacentBlock( adjCoords ) != BlockId::Air )
+		if( m_pChunk->GetAdjacentBlock( adjCoords ) != EBlockId::Air )
 		{
 			return false;
 		}
@@ -137,43 +137,43 @@ namespace Nocturn::rendering
 	/// <returns>True if all blocks are set or False</returns>
 	NODISCARD bool ChunkMesh::shouldPassLayer( const int32 y ) const noexcept
 	{
-		if( y + 1 < Constants::CChunkY && !m_pChunk->getLayer( y + 1 ).IsAllSolid( ) )
+		if( y + 1 < Constants::CChunkY && !m_pChunk->GetLayer( y + 1 ).IsAllSolid( ) )
 		{
 			return false;
 		}
 
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Left ); nullptr != neighbor )
+		if( const auto neighbor = m_pChunk->TryGetNeighbor( NeighborType::Left ); nullptr != neighbor )
 		{
-			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			if( !neighbor->GetLayer( y ).IsAllSolid( ) )
 			{
-				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
 		}
 
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Right ); nullptr != neighbor )
+		if( const auto neighbor = m_pChunk->TryGetNeighbor( NeighborType::Right ); nullptr != neighbor )
 		{
-			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			if( !neighbor->GetLayer( y ).IsAllSolid( ) )
 			{
-				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
 		}
 
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Front ); nullptr != neighbor )
+		if( const auto neighbor = m_pChunk->TryGetNeighbor( NeighborType::Front ); nullptr != neighbor )
 		{
-			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			if( !neighbor->GetLayer( y ).IsAllSolid( ) )
 			{
-				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
 		}
 
-		if( const auto neighbor = m_pChunk->tryGetNeighbor( NeighborType::Back ); nullptr != neighbor )
+		if( const auto neighbor = m_pChunk->TryGetNeighbor( NeighborType::Back ); nullptr != neighbor )
 		{
-			if( !neighbor->getLayer( y ).IsAllSolid( ) )
+			if( !neighbor->GetLayer( y ).IsAllSolid( ) )
 			{
-				// std::cout << neighbor->getLayer( y ).getNumberOfBlocks( ) << ' ';
+				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
 		}
@@ -201,4 +201,4 @@ namespace Nocturn::rendering
 		}
 		textures.insert( textures.end( ), texturesCoords.begin( ), texturesCoords.end( ) );
 	}
-} // namespace Nocturn::rendering
+} // namespace Nocturn

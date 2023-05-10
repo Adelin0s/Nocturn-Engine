@@ -4,14 +4,16 @@
 
 namespace Nocturn
 {
-	void NTransformComponent::Initialize()
-	{
-		NActorComponent::Initialize();
-	}
-
 	void NTransformComponent::OnComponenentActivated(NActor* OwnedActor)
 	{
 		NActorComponent::OnComponenentActivated(OwnedActor);
+
+		const auto Result = NActorComponent::InitializeBaseComponent("TransformComponent");
+		if (Result == false)
+		{
+			LogError("Failed to Initialize TransformComponent!");
+			return;
+		}
 	}
 
 	void NTransformComponent::OnComponenentDeactivated()
@@ -23,13 +25,13 @@ namespace Nocturn
 	{
 		NActorComponent::Update(DeltaTime);
 
-		Transform->Direction.x = cos( glm::radians( Transform->Rotation.x ) ) * cos( glm::radians( Transform->Rotation.y ) );
-		Transform->Direction.y = sin( glm::radians( Transform->Rotation.y ) );
-		Transform->Direction.z = sin( glm::radians( Transform->Rotation.x ) ) * cos( glm::radians( Transform->Rotation.y ) );
+		Transform.Direction.x = cos( glm::radians( Rotation.x ) ) * cos( glm::radians( Rotation.y ) );
+		Transform.Direction.y = sin( glm::radians( Rotation.y ) );
+		Transform.Direction.z = sin( glm::radians( Rotation.x ) ) * cos( glm::radians( Rotation.y ) );
 
-		Transform->Forward	= glm::normalize( Transform->Direction );
-		Transform->Right	= glm::normalize( glm::cross( Transform->Forward, glm::vec3( 0, 1, 0 ) ) );
-		Transform->Up		= glm::normalize( glm::cross( Transform->Right, Transform->Forward ) );
+		Transform.Forward	= glm::normalize( Transform.Direction );
+		Transform.Right		= glm::normalize( glm::cross( Transform.Forward, glm::vec3( 0, 1, 0 ) ) );
+		Transform.Up		= glm::normalize( glm::cross( Transform.Right, Transform.Forward ) );
 	}
 
 	void NTransformComponent::SetLocation(const vec3& NewLocation) noexcept
@@ -67,8 +69,28 @@ namespace Nocturn
 		return Rotation;
 	}
 
+	const vec3& NTransformComponent::GetLocation() const noexcept
+	{
+		return Position;
+	}
+
+	const vec3& NTransformComponent::GetScale() const noexcept
+	{
+		return Scale;
+	}
+
+	const vec3& NTransformComponent::GetRotation() const noexcept
+	{
+		return Rotation;
+	}
+
 	FTransform& NTransformComponent::GetTransform() noexcept
 	{
-		return &Transform;
+		return Transform;
+	}
+
+	const FTransform& NTransformComponent::GetTransform() const noexcept
+	{
+		return Transform;
 	}
 }

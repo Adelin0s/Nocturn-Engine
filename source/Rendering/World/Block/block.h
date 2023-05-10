@@ -4,7 +4,7 @@
 #include "core/platform/platform.h"
 #include "core/types/typedef.hpp"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	struct BlockDataHolder; /* forward decalartion */
 
@@ -32,7 +32,7 @@ namespace Nocturn::rendering
 		0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1
 	};
 
-	enum class BlockId : uint8
+	enum class EBlockId : uint8
 	{
 		Air = 0
 		,	Grass
@@ -46,31 +46,49 @@ namespace Nocturn::rendering
 		,	Rose
 		,	TallGrass
 		,	DeadShrub
-
-		,	End
+		, End
 	};
 
-	struct Block
+	struct NBlockLight
 	{
-		Block( ) noexcept = default;
-		Block( BlockId id );
-		Block( uint8 id );
-		Block( const Block &block ) = default;
-		Block( Block &&block ) = default;
+	    uint8_t Level;  // Nivelul luminii (de la 0 la 15)
+	    uint8_t Light;  // Luminozitatea (de la 0 la 15)
 
-		Block &operator=( const Block &block ) = default;
-		Block &operator=( Block &&block ) = default;
-		void   operator=( BlockId id );
-		bool   operator==( BlockId id ) const;
-		bool   operator==( const Block &block ) const;
-		bool   operator!=( const Block &block ) const;
+	    NBlockLight()
+		:
+			Level(0), Light(0)
+		{}
 
-		NODISCARD const BlockDataHolder &getData( ) const;
-
-		~Block( ) noexcept = default;
-
-		uint8 m_id = static_cast< uint8 >( BlockId::Air ); /* default BlockId::Air */
+	    NBlockLight(const uint8 LevelIn, const uint8_t LightIn)
+		:
+			Level(LevelIn), Light(LightIn)
+		{}
 	};
-} // namespace Nocturn::rendering
+
+	struct NBlock
+	{
+		NBlock() noexcept = default;
+		NBlock(EBlockId BlockId);
+		NBlock(uint8 BlockId);
+
+		NBlock(const NBlock& Block) = default;
+		NBlock(NBlock&& Block) = default;
+
+		NBlock& operator=(const NBlock& Block) = default;
+		NBlock& operator=(NBlock&& Block) = default;
+
+		void operator=(EBlockId BlockId);
+		bool operator==(EBlockId BlockId) const;
+		bool operator==(const NBlock& Block) const;
+		bool operator!=(const NBlock& Block) const;
+
+		NODISCARD const BlockDataHolder& GetData() const;
+
+		~NBlock() noexcept = default;
+
+		EBlockId BlockType = EBlockId::Air;
+		NBlockLight BlockLight;
+	};
+} // namespace Nocturn
 
 #endif

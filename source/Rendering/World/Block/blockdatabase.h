@@ -17,7 +17,7 @@
 #include "rendering/world/block/block.h"
 #include "rendering/world/block/blockdata.h"
 
-namespace Nocturn::rendering
+namespace Nocturn
 {
 	/* HIERARCHY : BlockDatabase : m_blocks<BlockType> -> BlockType : m_blockData<BlockData> -> BlockData : m_blockDataHolder<BlockDataHolder> */
 
@@ -26,21 +26,21 @@ namespace Nocturn::rendering
 	class BlockDatabase
 	{
 	public:
-		BlockDatabase( const BlockDatabase &smth ) = delete;
-		BlockDatabase( BlockDatabase &&smth )	   = delete;
+		BlockDatabase(const BlockDatabase& smth) = delete;
+		BlockDatabase(BlockDatabase&& smth)		 = delete;
 
-		BlockDatabase &operator=( const BlockDatabase &smth ) = delete;
-		BlockDatabase &operator=( BlockDatabase &&smth ) = delete;
+		BlockDatabase& operator=(const BlockDatabase& smth) = delete;
+		BlockDatabase& operator=(BlockDatabase&& smth)		= delete;
 
-		static BlockDatabase &getInstance( ); /* get instance  */
-		NODISCARD const BlockDataHolder &getData( const BlockId id ) const noexcept;
+		static BlockDatabase& GetInstance(); /* get instance  */
+		NODISCARD const BlockDataHolder& GetData(uint8 BlockId) const noexcept;
 
 	private:
-		BlockDatabase( ) noexcept;
-		~BlockDatabase( ) noexcept = default;
+		BlockDatabase() noexcept;
+		~BlockDatabase() noexcept = default;
 
-		std::array< std::unique_ptr< BlockData >, static_cast< unsigned >( BlockId::End ) > m_blocks;
+		std::array< std::unique_ptr< BlockData >, static_cast< unsigned >(EBlockId::End) > m_blocks;
 	};
-} // namespace Nocturn::rendering
+} // namespace Nocturn
 
 #endif

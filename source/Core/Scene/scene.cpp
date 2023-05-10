@@ -1,29 +1,49 @@
 #include "scene.h"
 
-#include "core/components/transform.h"
-
+#include "Context/Components/BoxComponent.h"
+#include "Context/GameFramework/Character.h"
+#include "Context/GameFramework/Controller.h"
 #include "rendering/renderer/renderer.h"
 #include "rendering/world/world.h"
 
 namespace Nocturn
 {
-	void NScene::Init( )
+	void NScene::Init()
 	{
-		const auto Status = World.Init( );
-		if (RSucces == Status)
+		World = std::make_shared< NWorld >();
+		AssertInfo(World != nullptr, "Failed to allocate memory for World!");
+
+		Character = std::make_shared< NCharacter >();
+		Character->Initialize(World);
+
+		// TODO: Move to inner scope
+		BoxComponent = std::make_shared< NBoxComponent >();
+		Character->AddComponent(BoxComponent.get());
+
+		Controller = std::make_shared< NController >();
+		Controller->SetActor(Character.get());
+
+		World->AttachController(Controller);
+		World->AttachMainCharacter(Character);
+		const auto Status = World->Initialize(Controller, Character);
+		if( RSucces == Status )
 		{
 			Log("World init succesfully!");
 		}
 	}
 
-	void NScene::Update( const double DeltaTime )
+	void NScene::Update(const double DeltaTime)
 	{
-		World.Update( DeltaTime );
+		Controller->Update();
+
+		Character->Update(DeltaTime);
+
+		World->Update(DeltaTime);
 	}
 
-	void NScene::Free( )
+	void NScene::Free()
 	{
-		World.Free( );
+		World->Free();
 	}
 
-} // namespace Nocturn::Scene
+} // namespace Nocturn
