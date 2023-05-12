@@ -65,7 +65,6 @@ namespace Nocturn
 		const auto& Forward = MainCharacter->GetTransformComponent()->GetTransform().Forward;
 
 		//Render::DrawBox(vec3(Position.x + 0.5f, Position.y, Position.z + 0.5f), vec3(1.0f), style1);
-		Render::Render();
 		const auto RaycastResult = Physics->RaycastStatic(Position, Forward + vec3(0.1f, 0.1f, 0.1f), 8.0f, true);
 
 		if( Keyboard::keyWentDown(GLFW_KEY_0) )

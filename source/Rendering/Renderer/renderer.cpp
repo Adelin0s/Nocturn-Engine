@@ -115,6 +115,11 @@ namespace Nocturn::Render
 
 	void Render()
 	{
+		if (GenericModel->m_vertexData.empty())
+		{
+			return;
+		}
+
 		auto &vao = GenericModel->m_renderInfo.vao;
 		auto &vbo = GenericModel->m_renderInfo.vbo;
 		auto &indicesCount = GenericModel->m_renderInfo.indicesCount;

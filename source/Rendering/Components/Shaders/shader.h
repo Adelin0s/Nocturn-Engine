@@ -40,6 +40,8 @@ namespace Nocturn
 		void Set3Float( const std::string& Name, float Value1, float Value2, float Value3 ) const;
 		void SetMatrix4( const char* Name, const mat4& Matrix ) const;
 
+		NODISCARD vec3 GetVec3(const std::string& uniformName) const;
+
 		NODISCARD uint32 GetId( ) const noexcept;
 
 		RStatus Init( );

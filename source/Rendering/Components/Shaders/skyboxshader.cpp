@@ -2,9 +2,9 @@
 
 namespace Nocturn
 {
-	SkyboxShader::SkyboxShader( ) noexcept
+	SkyboxShader::SkyboxShader() noexcept
 		:
-		NShader("skybox.vs" , "skybox.fs")
+		NShader("skybox.vs", "skybox.fs")
 	{}
 
 	void SkyboxShader::SetViewMatrix(const mat4& ViewMatrix) const

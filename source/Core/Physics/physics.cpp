@@ -265,11 +265,11 @@ namespace Nocturn
 		const Style style = { Colors::offWhite, 0.1f };
 
 		auto CurrentOrigin = Origin + vec3(Origin.x + 0.5f, Origin.y, Origin.z + 0.5f);
-		LogScreen( "Origin{} {} {}", CurrentOrigin.x, CurrentOrigin.y, CurrentOrigin.z);
+		//LogScreen( "Origin{} {} {}", CurrentOrigin.x, CurrentOrigin.y, CurrentOrigin.z);
 		auto PointOnRay = Origin /*- 1.0f*/;
 
 		// Draw player bounding box
-		Render::DrawBox( PointOnRay, {1.0f, 1.65f, 1.0f}, style );
+		//Render::DrawBox( PointOnRay, {1.0f, 1.65f, 1.0f}, style );
 		bool hit = false;
 		for( float i = 0.0f; i < MaxDistance; i += 0.1f )
 		{
@@ -284,8 +284,8 @@ namespace Nocturn
 				if( bDraw && block != EBlockId::Air && !hit )
 				{
 					hit = true;
-					Render::DrawBox(Position, Size, style);
-					Render::Render();
+					//Render::DrawBox(Position, Size, style);
+					//Render::Render();
 				}
 			}
 			PointOnRay += NormalDirection * 0.1f;
@@ -302,8 +302,8 @@ namespace Nocturn
 		{
 			std::cout << "Origin: " << Origin << ' ';
 			const auto StartPosition = Origin - vec3( 0.5f, 0.0f, 0.5f );
-			Render::DrawLine( StartPosition, Origin + NormalDirection * MaxDistance, style );
-			Render::Render( );
+			//Render::DrawLine( StartPosition, Origin + NormalDirection * MaxDistance, style );
+			//Render::Render( );
 		}
 		vec3 rayEnd = Origin + NormalDirection * MaxDistance;
 		vec3 blockCenter = glm::ceil( Origin );

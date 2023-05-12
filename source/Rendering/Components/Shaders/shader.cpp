@@ -134,9 +134,22 @@ namespace Nocturn
 		glUniform3f(glGetUniformLocation(id, Name.c_str()), Value1, Value2, Value3);
 	}
 
-	void NShader::SetMatrix4(const char* const Name, const glm::mat4& mat) const
+	void NShader::SetMatrix4(const char* const Name, const glm::mat4& Matrix) const
 	{
-		glUniformMatrix4fv(glGetUniformLocation(id, Name), 1, GL_FALSE, glm::value_ptr(mat));
+		glUniformMatrix4fv(glGetUniformLocation(id, Name), 1, GL_FALSE, glm::value_ptr(Matrix));
+	}
+
+	vec3 NShader::GetVec3(const std::string& uniformName) const
+	{
+		const auto location = glGetUniformLocation(id, uniformName.c_str());
+		if (location == -1)
+		{
+			return glm::vec3(0.0f);
+		}
+
+		glm::vec3 value;
+		glGetUniformfv(id, location, glm::value_ptr(value));
+		return value;
 	}
 
 	uint32_t NShader::GetId() const noexcept
