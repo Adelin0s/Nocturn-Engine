@@ -31,18 +31,42 @@ namespace Nocturn
 		NSkyboxRenderer& operator=(const NSkyboxRenderer& SkyboxRenderer) = delete;
 		NSkyboxRenderer& operator=(NSkyboxRenderer&& SkyboxRenderer) = delete;
 
+		/**
+		 * @brief Initializes the skybox renderer.
+		 * @return True if initialization is successful, false otherwise.
+		 */
 		bool Initialize() override;
 
-		void Render(const NCameraComponent* CameraComponent) override;
-
+		/**
+		 * @brief Checks if the renderer has a specific renderer tag.
+		 * @param RendererTagIn The renderer tag to check.
+		 * @return True if the renderer has the specified tag, false otherwise.
+		 */
 		bool HasRendererTag(const std::string& RendererTagIn) override;
+
+		/**
+		 * @brief Reloads the shaders used by the skybox renderer.
+		 */
+		void ReloadShaders() override;
+
+		/**
+		 * @brief Renders the skybox using the specified camera component.
+		 * @param CameraComponent The camera component to use for rendering.
+		 * @param bShouldReloadShaders Flag indicating whether the shaders should be reloaded before rendering.
+		 */
+		void Render(const NCameraComponent* CameraComponent, bool bShouldReloadShaders = false) override;
 
 		~NSkyboxRenderer() noexcept override = default;
 
 	private:
+		/**< The model of the skybox. */
 		Model< VertexDataType::SkyboxDataType > m_model;
-		SkyboxShader							m_skyboxShader;
-		NTextureCube							m_textureCube;
+
+		/**< The skybox shader. */
+		SkyboxShader m_skyboxShader;
+
+		/**< The skybox texture cube. */
+		NTextureCube m_textureCube;
 	};
 } // namespace Nocturn
 

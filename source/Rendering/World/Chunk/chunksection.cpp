@@ -6,15 +6,16 @@
 
 namespace Nocturn
 {
-	ChunkSection::ChunkSection(const ivec2& Location) :
-		m_chunk(Constants::CChunkMaxSize),
+	ChunkSection::ChunkSection(const ivec2& Location)
+	:
+		m_chunk(CChunkMaxSize),
 		m_location(Location)
 	{
 	}
 
-	NBlock ChunkSection::operator[](const ivec3& position) const noexcept
+	NBlock ChunkSection::operator[](const ivec3& Position) const noexcept
 	{
-		return m_chunk[ GetSizeFromIndex(position) ];
+		return m_chunk[ GetSizeFromIndex(Position) ];
 	}
 
 	void ChunkSection::SetBlock(const EBlockId blockId, const int32 worldX, const int32 worldY, const int32 worldZ) noexcept
@@ -22,6 +23,16 @@ namespace Nocturn
 		// Normalize to chunk coords
 		const auto& chunkPosition = Math::ToBlockCoords(worldX, worldY, worldZ);
 		SetBlock(blockId, chunkPosition);
+	}
+
+	void ChunkSection::SetLight(const vec3& BlockPosition, const uint8 LightLevel) noexcept
+	{
+		m_chunk[GetSizeFromIndex(BlockPosition)].SetLight(LightLevel);
+	}
+
+	void ChunkSection::SetSkyLight(const vec3& BlockPosition, const uint8 LightLevel) noexcept
+	{
+		m_chunk[GetSizeFromIndex(BlockPosition)].SetSkyLight(LightLevel);
 	}
 
 	void ChunkSection::SetBlock(const EBlockId blockId, const ivec3& worldPosition) noexcept
@@ -61,7 +72,7 @@ namespace Nocturn
 
 	void ChunkSection::SetRenderableChunk() noexcept
 	{
-		m_renderableChunk = true;
+		bIsRenderableChunk = true;
 	}
 
 	ChunkSection* ChunkSection::TryGetNeighbor(const NeighborType type) const noexcept
@@ -81,7 +92,7 @@ namespace Nocturn
 		return nullptr;
 	}
 
-	ivec2 ChunkSection::GetLocation() const
+	ivec2 ChunkSection::GetLocation() const noexcept
 	{
 		return m_location;
 	}
@@ -91,18 +102,13 @@ namespace Nocturn
 		return m_chunk;
 	}
 
-	ChunkLayer ChunkSection::GetLayer(const int y) const
-	{
-		return m_layers[ y ];
-	}
-
 	NBlock ChunkSection::GetBlock(const int32_t x, const int32_t y, const int32_t z) const noexcept
 	{
 		if( OutOfBound(x, y, z) )
 			return EBlockId::Air;
 
 		const auto SizeFromIndex = GetSizeFromIndex(x, y, z);
-		if (SizeFromIndex > Constants::CChunkMaxSize)
+		if (SizeFromIndex > CChunkMaxSize)
 		{
 			LogWarning("Invalid index to get block from vector chunk!");
 			return EBlockId::Air;
@@ -117,13 +123,37 @@ namespace Nocturn
 			return EBlockId::Air;
 
 		const auto SizeFromIndex = GetSizeFromIndex(coords);
-		if (SizeFromIndex > Constants::CChunkMaxSize)
+		if (SizeFromIndex > CChunkMaxSize)
 		{
-			LogWarning("Invalid index to get block from vector chunk!");
+			LogWarning("The index to retrieve block from the chunk vector is invalid!");
 			return EBlockId::Air;
 		}
 		
 		return m_chunk[ SizeFromIndex ];
+	}
+
+	uint8 ChunkSection::GetLight(const vec3& BlockPosition) const noexcept
+	{
+		const auto Size = GetSizeFromIndex(BlockPosition);
+		if( Size > CChunkMaxSize )
+		{
+			LogWarning("The index to retrieve light from the chunk vector is invalid!")
+			return 0;
+		}
+
+		return m_chunk[ Size ].GetLight();
+	}
+
+	uint8 ChunkSection::GetSkyLight(const vec3& BlockPosition) const noexcept
+	{
+		const auto Size = GetSizeFromIndex(BlockPosition);
+		if( Size > CChunkMaxSize )
+		{
+			LogWarning("The index to retrieve light from the chunk vector is invalid!")
+			return 0;
+		}
+
+		return m_chunk[ Size ].GetSkyLight();
 	}
 
 	NBlock ChunkSection::GetAdjacentBlock(const ivec3& coords) const noexcept
@@ -138,9 +168,9 @@ namespace Nocturn
 
 			assert(neighbor != nullptr);
 
-			return neighbor->GetBlock(Constants::CChunkX - 1, py, pz);
+			return neighbor->GetBlock(CChunkX - 1, py, pz);
 		}
-		if( px == Constants::CChunkX )
+		if( px == CChunkX )
 		{
 			const auto& neighbor = TryGetNeighbor(NeighborType::Front);
 
@@ -154,9 +184,9 @@ namespace Nocturn
 
 			assert(neighbor != nullptr);
 
-			return neighbor->GetBlock(px, py, Constants::CChunkZ - 1);
+			return neighbor->GetBlock(px, py, CChunkZ - 1);
 		}
-		if( pz == Constants::CChunkZ )
+		if( pz == CChunkZ )
 		{
 			const auto& neighbor = TryGetNeighbor(NeighborType::Right);
 
@@ -173,23 +203,13 @@ namespace Nocturn
 		return sizeof(NBlock);
 	}
 
-	/// <summary>
-	/// Return size from (x, y, z) to chunk position (uint32)
-	/// </summary>
-	/// <param name="x">column</param>
-	/// <param name="y">height</param>
-	/// <param name="z">row</param>
-	/// <returns>uint32 size</returns>
+	// TODO: Review here, should to revers z and x
 	uint32 ChunkSection::GetSizeFromIndex(const uint32 x, const uint32 y, const uint32 z) noexcept
 	{
 		return z * 16 + y * 256 + x;
 	}
 
-	/// <summary>
-	/// Return a size from (ivec3) to chunk position
-	/// </summary>
-	/// <param name="vec">vec3 stands for chunk position</param>
-	/// <returns>uint32 stands for size of current chunk</returns>
+	// Same here
 	uint32 ChunkSection::GetSizeFromIndex(const ivec3& vec) noexcept
 	{
 		return vec.z * 16 + vec.y * 256 + vec.x;
@@ -197,8 +217,8 @@ namespace Nocturn
 
 	ivec3 ChunkSection::GetIndexFromSize(const uint32 size) noexcept
 	{
-		const auto pz = size % Constants::CChunkY;
-		return { pz % Constants::CChunkZ, pz / Constants::CChunkX, pz };
+		const auto pz = size % CChunkY;
+		return { pz % CChunkZ, pz / CChunkX, pz };
 	}
 
 	bool ChunkSection::HasMesh() const noexcept
@@ -213,12 +233,12 @@ namespace Nocturn
 
 	bool ChunkSection::ShouldToRender() const noexcept
 	{
-		return HasMesh() && m_renderableChunk;
+		return HasMesh() && bIsRenderableChunk;
 	}
 
 	bool ChunkSection::IsRenderable() const noexcept
 	{
-		return m_renderableChunk;
+		return bIsRenderableChunk;
 	}
 
 	const RenderInfo& ChunkSection::GetRenderInfo() const
@@ -243,7 +263,7 @@ namespace Nocturn
 
 	bool ChunkSection::OutOfBound(const int32_t x, const int32_t y, const int32_t z) noexcept
 	{
-		if( x < 0 || x >= Constants::CChunkX || y < 0 || y >= Constants::CChunkY || z < 0 || z >= Constants::CChunkZ )
+		if( x < 0 || x >= CChunkX || y < 0 || y >= CChunkY || z < 0 || z >= CChunkZ )
 			return true;
 		return false;
 	}

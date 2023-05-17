@@ -1,4 +1,6 @@
 #include "Rendering/Renderer/MasterRenderer.h"
+
+#include "application/input/keyboard.h"
 #include "Rendering/Renderer/ChunkRenderer.h"
 #include "Rendering/Renderer/SkyboxRenderer.h"
 #include "Rendering/world/world.h"
@@ -32,7 +34,14 @@ namespace Nocturn
 
 	void NMasterRenderer::Render(const NCameraComponent* CameraComponent) const
 	{
-		AssertInfo(CameraComponent != nullptr, "Failed nullptr CameraComponent!")
+		AssertInfo(CameraComponent != nullptr, "Failed nullptr CameraComponent!");
+
+		// todo: Should we create a separate method to handle all keyboard input?
+		bool bShouldReloadShaders{ false };
+		if (Keyboard::keyWentDown(GLFW_KEY_F4))
+		{
+			bShouldReloadShaders = true;
+		}
 
 		bool bShouldLogWarning = true;
 		for( const auto& RendererComponent : RendererComponents )
@@ -46,7 +55,7 @@ namespace Nocturn
 				}
 			}
 
-			RendererComponent->Render(CameraComponent);
+			RendererComponent->Render(CameraComponent, bShouldReloadShaders);
 		}
 	}
 

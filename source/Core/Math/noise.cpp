@@ -21,8 +21,8 @@ namespace Nocturn
 
 	double Noise::getHeight( const int32 x, const int32 z, const int32 chunkX, const int32 chunkZ ) const noexcept
 	{
-		const auto newX = ( x + ( chunkX * Constants::CChunkX ) );
-		const auto newZ = ( z + ( chunkZ * Constants::CChunkZ ) );
+		const auto newX = ( x + ( chunkX * CChunkX ) );
+		const auto newZ = ( z + ( chunkZ * CChunkZ ) );
 
 		auto totalValue = 0.0;
 

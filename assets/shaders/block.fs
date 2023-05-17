@@ -14,7 +14,7 @@ uniform vec3 objectColor;
 
 void main()
 {
-    vec3 Normal = vec3(0.0f, 1.0f, 0.0f);
+    vec3 Normal = vec3(1.0f, 1.0f, 0.0f);
 
     // ambient 
     float ambientStrength = 0.1;
@@ -39,4 +39,5 @@ void main()
     vec3 skyColour = vec3(0.5, 0.5, 0.5);
     OutColor = texture(textureSampler, textureCoords);
 	OutColor = mix(vec4(skyColour, 1.0), OutColor, visibility) * LightColorResult;
+    //OutColor = mix(vec4(skyColour, 1.0), OutColor, visibility);
 } 

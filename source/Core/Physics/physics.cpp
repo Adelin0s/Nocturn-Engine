@@ -65,7 +65,7 @@ namespace Nocturn
 		}
 
 		if( normal.y == 1.0f )
-			velocity.y = 0;
+			velocity.y = 0.0f;
 		else
 			velocity += CGravity * static_cast< float >(DeltaTime);
 	}
@@ -96,8 +96,8 @@ namespace Nocturn
 		MinTime = 1.0f;
 		std::cout << Position.x << ' ' << Position.y << ' ' << Position.z << '\n';
 
-		const auto ChunkX		= static_cast< int32 >(Position.x / Constants::CChunkX);
-		const auto ChunkZ		= static_cast< int32 >(Position.z / Constants::CChunkZ);
+		const auto ChunkX		= static_cast< int32 >(Position.x / CChunkX);
+		const auto ChunkZ		= static_cast< int32 >(Position.z / CChunkZ);
 		const auto CurrentChunk = m_pChunkManager->GetChunk({ ChunkX, ChunkZ });
 		if (CurrentChunk == nullptr)
 		{
@@ -113,7 +113,7 @@ namespace Nocturn
 				for( int32 z = MinZ; z <= MaxZ; z++ )
 				{
 					const auto ChunkCoords = Math::WorldCoordsToChunkCoords({x, y, z});
-					if( y >= 0 && y < Constants::CChunkY && CurrentChunk->GetBlock( ChunkCoords ) != EBlockId::Air )
+					if( y >= 0 && y < CChunkY && CurrentChunk->GetBlock( ChunkCoords ) != EBlockId::Air )
 					{
 						const float collisionTime = SweptCollision( Velocity, MinBound, MaxBound, MinBoundVelocity, MaxBoundVelocity, MinTime, x, y, z );
 						if( collisionTime < MinTime )

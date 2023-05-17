@@ -1,5 +1,6 @@
 #include "rendering/renderer/skyboxrenderer.h"
 
+#include "application/input/keyboard.h"
 #include "Context/Components/CameraComponent.h"
 
 namespace Nocturn
@@ -70,10 +71,24 @@ namespace Nocturn
 		return true;
 	}
 
-	void NSkyboxRenderer::Render(const NCameraComponent* CameraComponent)
+	bool NSkyboxRenderer::HasRendererTag(const std::string& RendererTagIn)
+	{
+		return RendererTag == RendererTagIn;
+	}
+
+	void NSkyboxRenderer::ReloadShaders()
+	{
+		m_skyboxShader.ReloadShader();	
+	}
+
+	void NSkyboxRenderer::Render(const NCameraComponent* CameraComponent, const bool bShouldReloadShaders)
 	{
 		glDepthFunc( GL_LEQUAL );
 
+		if (bShouldReloadShaders)
+		{
+			m_skyboxShader.ReloadShader();
+		}
 		m_model.BindVAO( );
 		m_textureCube.Bind( );
 		m_skyboxShader.Bind( );
@@ -87,10 +102,5 @@ namespace Nocturn
 		m_textureCube.Unbind( );
 		m_skyboxShader.Unbind( );
 		glDepthFunc( GL_LESS );
-	}
-
-	bool NSkyboxRenderer::HasRendererTag(const std::string& RendererTagIn)
-	{
-		return RendererTag == RendererTagIn;
 	}
 } // namespace Nocturn

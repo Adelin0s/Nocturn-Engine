@@ -7,7 +7,8 @@ namespace Nocturn
 	NShader::NShader() noexcept
 		:
 		VertexShaderFileName(nullptr), FragmentShaderFileName(nullptr), id(0)
-	{}
+	{
+	}
 
 	NShader::NShader(const char* VertexShaderFileNameIn, const char* FragmentShaderFileNameIn) :
 		id(0)
@@ -139,16 +140,29 @@ namespace Nocturn
 		glUniformMatrix4fv(glGetUniformLocation(id, Name), 1, GL_FALSE, glm::value_ptr(Matrix));
 	}
 
-	vec3 NShader::GetVec3(const std::string& uniformName) const
+	vec2 NShader::GetVec2(const std::string& UniformName) const
 	{
-		const auto location = glGetUniformLocation(id, uniformName.c_str());
-		if (location == -1)
+		const auto Location = glGetUniformLocation(id, UniformName.c_str());
+		if (Location == -1)
+		{
+			return vec2(0.0f);
+		}
+
+		glm::vec2 value;
+		glGetUniformfv(id, Location, glm::value_ptr(value));
+		return value;
+	}
+
+	vec3 NShader::GetVec3(const std::string& UniformName) const
+	{
+		const auto Location = glGetUniformLocation(id, UniformName.c_str());
+		if (Location == -1)
 		{
 			return glm::vec3(0.0f);
 		}
 
 		glm::vec3 value;
-		glGetUniformfv(id, location, glm::value_ptr(value));
+		glGetUniformfv(id, Location, glm::value_ptr(value));
 		return value;
 	}
 
@@ -174,6 +188,20 @@ namespace Nocturn
 		assert(bIsInit);
 
 		SetMatrix4("projection", ProjectionMatrix);
+	}
+
+	bool NShader::ReloadShader()
+	{
+		Cleanup();
+
+		const auto Result = Init();
+		if (Result != RSucces)
+		{
+			LogWarning("Failed to reload the shader with fragment{%s}/vertex{%s} name and id %d!", FragmentShaderFileName, VertexShaderFileName, id);
+			return false;
+		}
+
+		return true;
 	}
 
 	void NShader::CheckCompileErrors(const uint32_t Shader, const std::string& Type)

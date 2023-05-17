@@ -37,4 +37,14 @@ namespace Nocturn
 	{
 		return BlockDatabase::GetInstance().GetData(static_cast< uint8 >(BlockType));
 	}
+
+	void NBlock::SetLight(const uint8 LightLevel) noexcept
+	{
+		BlockLight = LightLevel > CMaxLightLevel ? CMaxLightLevel : LightLevel;
+	}
+
+	void NBlock::SetSkyLight(const uint8 LightLevel) noexcept
+	{
+		SkyLight = LightLevel > CMaxLightLevel ? CMaxLightLevel : LightLevel;
+	}
 } // namespace Nocturn

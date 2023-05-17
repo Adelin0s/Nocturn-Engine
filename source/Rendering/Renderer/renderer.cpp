@@ -143,7 +143,7 @@ namespace Nocturn::Render
 		glBufferData(GL_ARRAY_BUFFER, sizeof(VertexType::GenericVertex) * CMaxGenericModelSize, GenericModel->m_vertexData.data(), GL_DYNAMIC_DRAW);
 
 		glBindVertexArray( GenericModel->m_renderInfo.vao );
-		std::cout << "\n" << GenericModel->m_renderInfo.vao << "\n";
+		//std::cout << "\n" << GenericModel->m_renderInfo.vao << "\n";
 		glDrawArrays( GL_TRIANGLES, 0, static_cast< int32 >( indicesCount ) );
 
 		// Clear the batch

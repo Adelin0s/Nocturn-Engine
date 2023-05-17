@@ -14,7 +14,9 @@
 #include <shared_mutex>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
+#include <queue>
 
 #include "Core/Core.h"
 #include "Core/Async/Task.h"
@@ -79,7 +81,9 @@ namespace Nocturn
 		 * 
 		 * This function should be called every frame to update the light state of the world.
 		 */
-		void UpdateBlockLight();
+		void CalculateLighting(const ivec2& PlayerChunkCoords);
+
+		void CalculateLightingUpdate(ChunkSection* Chunk, const ivec2& ChunkCoordinates, const vec3& BlockPosition, bool bRemovedLightSource, std::unordered_set<ChunkSection*>& ChunksToRetesselate);
 
 		/** Basic way to generate trees on the world. */
 		void GenerateTree(ChunkSection& chunk, int32 px, int32 pymax, int32 pz);
@@ -91,7 +95,21 @@ namespace Nocturn
 		// TODO: Decrease the acces of the class
 		friend class NChunkRenderer;
 	private:
-		void GenerateNewChunk(ChunkSection& chunk, bool shouldToCreateMesh = false) noexcept;
+		void GenerateNewChunk(ChunkSection& Chunk, bool bShouldToCreateMesh = false) noexcept;
+
+		void CalculateLightingChunkSky(ChunkSection* Chunk, const ivec2& ChunkCoordinates) const;
+
+		void CalculateLightingChunk(ChunkSection* Chunk, const ivec2& ChunkCoordinates);
+
+		void CalculateNextLightLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck);
+
+		void RemoveNextLightLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck, std::queue<glm::ivec3>& LightSources, bool bIgnoreThisSolidBlock);
+
+		void CalculateNextSkyLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck);
+
+		void RemoveNextSkyLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck, std::queue<glm::ivec3>& LightSources, bool bIgnoreThisSolidBlock);
+
+		bool CheckPositionInBounds(const ChunkSection& Chunk, int32& x, int32 y, int32& z) const;
 
 		NTaskSystem*						   m_pTaskSystem;
 		NoiseParams							   m_noiseParams{};

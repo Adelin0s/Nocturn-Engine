@@ -45,24 +45,24 @@ namespace Nocturn::Math
 	static ivec2 ToChunkCoords( const vec3 &WorldCoords )
 	{
 		ivec2 chunkCoords = {WorldCoords.x, WorldCoords.z};
-		chunkCoords[ 0 ]  = chunkCoords[ 0 ] / Constants::CChunkX;
-		chunkCoords[ 1 ]  = chunkCoords[ 1 ] / Constants::CChunkZ;
+		chunkCoords[ 0 ]  = chunkCoords[ 0 ] / CChunkX;
+		chunkCoords[ 1 ]  = chunkCoords[ 1 ] / CChunkZ;
 
 		return chunkCoords;
 	}
 
 	static vec3 WorldCoordsToChunkCoords(const vec3& WorldCoords)
 	{
-		return ivec3(WorldCoords) % ivec3(Constants::CChunkX, Constants::CChunkY, Constants::CChunkZ);
+		return ivec3(WorldCoords) % ivec3(CChunkX, CChunkY, CChunkZ);
 	}
 
 	// TODO: Review here -- need it?
 	static ivec3 ToBlockCoords( const vec3 &worldCoords )
 	{
 		ivec3 chunkCoords = glm::round( worldCoords );
-		chunkCoords[ 0 ]  = chunkCoords[ 0 ] % Constants::CChunkX;
-		chunkCoords[ 1 ]  = chunkCoords[ 1 ] % Constants::CChunkY;
-		chunkCoords[ 2 ]  = chunkCoords[ 2 ] % Constants::CChunkZ;
+		chunkCoords[ 0 ]  = chunkCoords[ 0 ] % CChunkX;
+		chunkCoords[ 1 ]  = chunkCoords[ 1 ] % CChunkY;
+		chunkCoords[ 2 ]  = chunkCoords[ 2 ] % CChunkZ;
 
 		return chunkCoords;
 	}

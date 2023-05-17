@@ -58,28 +58,31 @@ namespace Nocturn
 		AssertInfo(TransformComponent != nullptr, "Invalid nullptr TransformComponent!");
 
 		const auto& Transform = TransformComponent->GetTransform();
-		float LocalSpeed = CBaseActorVelocity;
+		float LocalVelocity = CBaseActorVelocity;
+
+		if (MovementMode == EMovementMode::MoveFast)
+		{
+			std::cout << "Move fast\n!";
+			LocalVelocity += 35.0f;
+		}
 
 		switch (MovementMode)
 		{
 		case EMovementMode::MoveForward:
-			Velocity.x = Transform.Forward.x * CBaseActorVelocity;
-			Velocity.z = Transform.Forward.z * CBaseActorVelocity;
+			Velocity.x = Transform.Forward.x * LocalVelocity;
+			Velocity.z = Transform.Forward.z * LocalVelocity;
 			break;
 		case EMovementMode::MoveBackward:
-			Velocity.x = -Transform.Forward.x * CBaseActorVelocity;
-			Velocity.z = -Transform.Forward.z * CBaseActorVelocity;
+			Velocity.x = -Transform.Forward.x * LocalVelocity;
+			Velocity.z = -Transform.Forward.z * LocalVelocity;
 			break;
 		case EMovementMode::MoveLeft:
-			Velocity.x = -Transform.Right.x * CBaseActorVelocity;
-			Velocity.z = -Transform.Right.z * CBaseActorVelocity;
+			Velocity.x = -Transform.Right.x * LocalVelocity;
+			Velocity.z = -Transform.Right.z * LocalVelocity;
 			break;
 		case EMovementMode::MoveRight:
-			Velocity.x = Transform.Right.x * CBaseActorVelocity;
-			Velocity.z = Transform.Right.z * CBaseActorVelocity;
-			break;
-		case EMovementMode::MoveFast:
-			LocalSpeed += CBaseActorVelocity + 5.0f;
+			Velocity.x = Transform.Right.x * LocalVelocity;
+			Velocity.z = Transform.Right.z * LocalVelocity;
 			break;
 		}
 	}
