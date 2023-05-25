@@ -94,7 +94,7 @@ namespace Nocturn
 		const auto MaxZ = static_cast< int32 >(glm::floor(glm::max(MaxBoundVelocity.z, MaxBound.z)));
 
 		MinTime = 1.0f;
-		std::cout << Position.x << ' ' << Position.y << ' ' << Position.z << '\n';
+		//std::cout << Position.x << ' ' << Position.y << ' ' << Position.z << '\n';
 
 		const auto ChunkX		= static_cast< int32 >(Position.x / CChunkX);
 		const auto ChunkZ		= static_cast< int32 >(Position.z / CChunkZ);
@@ -104,7 +104,7 @@ namespace Nocturn
 			LogWarning("Failed to get chunk from chunk position (%.2f, %.2f)", ChunkX, ChunkZ);
 			return;
 		}
-		std::cout << ChunkX << ' ' << ChunkZ << '\n';
+		//std::cout << ChunkX << ' ' << ChunkZ << '\n';
 
 		for( int32 x = MinX; x <= MaxX; x++ )
 		{

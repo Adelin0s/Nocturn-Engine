@@ -18,106 +18,134 @@ namespace Nocturn
 		back   = { x, y, z - 1 };
 	}
 
-	ChunkMesh::ChunkMesh(ChunkSection& chunk) :
-		m_pChunk(&chunk)
-	{}
-
-	const Model< VertexDataType::ChunkDataType >& ChunkMesh::GetModel() const
+	void ChunkMesh::Initialize(const NChunkSection* ChunkIn)
 	{
-		return m_model;
+		if( ChunkIn == nullptr )
+		{
+			LogError("Invalid nullptr ChunkIn parameter!");
+		}
+
+		Chunk = ChunkIn;
 	}
 
 	NODISCARD uint32 ChunkMesh::GetIndicesSize() const noexcept
 	{
-		return static_cast< uint32 >(m_mesh.indices.size());
+		return static_cast< uint32 >(Mesh.indices.size());
 	}
 
-	void ChunkMesh::MakeMesh(ChunkSection& pchunk)
+	void ChunkMesh::MakeMesh(const NChunkSection* ChunkIn)
 	{
 		// We don't need to generate where our chunk's neighbors have all blocks solid.
 		// Can continue because the current layer is basically hidden in real scenario.
-		m_pChunk = &pchunk;
-		AdjacentBlock directions;
+		if (Chunk == nullptr)
+		{
+			LogError("Invalid nullptr Chunk parameter!");
+			return;
+		}
+		Chunk = ChunkIn;
 
-		auto chunk = m_pChunk->GetChunk();
+		auto &ChunkBlocks = Chunk->GetBlocks();
+		for( int32 LayerY = 0; LayerY < CChunkY; LayerY++ )
+		{
+			if( ShouldPassLayer(LayerY) )
+			{
+				continue;
+			}
 
-		for( int32 z = 0; z < CChunkZ; z++ )
-			for( int32 y = 0; y < CChunkY; y++ )
-				for( int32 x = 0; x < CChunkX; x++ )
-				{
-					if( shouldPassLayer(y) )
-					{
-						continue;
-					}
+			GenerateMeshLayer(LayerY);
+		}
+			
+		bHasMesh = true; // flag to know if the buffer data can be loaded
+	}
 
-					const auto& data = chunk[ ChunkSection::GetSizeFromIndex(x, y, z) ].GetData();
-
-					const Block_t position(x, y, z);
-					directions.update(x, y, z);
-
-					/* Up/Down */
-					makeFace(topFace, data.m_textureTop, position, directions.top);
-					makeFace(bottomFace, data.m_textureBottom, position, directions.bottom);
-
-					/* Left/Right */
-					makeFace(leftFace, data.m_textureSide, position, directions.left);
-					makeFace(rightFace, data.m_textureSide, position, directions.right);
-
-					/* Back/Front */
-					makeFace(backFace, data.m_textureSide, position, directions.back);
-					makeFace(frontFace, data.m_textureSide, position, directions.front);
-				}
-		m_hasMesh = true; // flag to know if the buffer data can be loaded
+	void ChunkMesh::ReloadMesh(const NChunkSection* ChunkIn)
+	{
+		MakeMesh(ChunkIn);
+		bShouldToReloadMesh = true;
 	}
 
 	void ChunkMesh::LoadBufferData()
 	{
-		if( m_hasMesh && !m_hasLoaded )
+		if( bHasMesh && !bHasLoaded )
 		{
-			m_model.AddVertexData(m_mesh);
-			m_hasLoaded = true;
+			std::cout << "Loading buffer data!\n";
+			m_model.AddData(Mesh);
+			bHasLoaded = true;
 		}
-	}
 
-	NODISCARD bool ChunkMesh::HasMesh() const noexcept
-	{
-		return m_hasMesh;
-	}
+		if( bShouldToReloadMesh )
+		{
+			std::cout << "Reloading data!\n";
+			m_model.ReloadData(Mesh);
 
-	NODISCARD bool ChunkMesh::HasLoaded() const noexcept
-	{
-		return m_hasLoaded;
+			bShouldToReloadMesh = false;
+		}
 	}
 
 	void ChunkMesh::DeleteMesh() noexcept
 	{
-		if( m_hasMesh )
+		if( bHasMesh )
 		{
 			m_index		= 0;
-			m_faces		= 0;
-			m_hasLoaded = false;
-			m_hasMesh	= false;
+			bHasLoaded = false;
+			bHasMesh	= false;
 
-			m_mesh.Clear();
-			m_model.DeleteData();
+			Mesh.Clear();
+			//m_model.DeleteData();
 		}
 	}
 
-	void ChunkMesh::makeFace(const Vertices_t& blockFace, const glm::vec2& textureCoords, const Block_t& blockPosition, const ivec3& adjBlock)
+	void ChunkMesh::GenerateMeshLayer(const uint32 LayerY)
 	{
-		if( shouldMakeFace(blockPosition, adjBlock) )
+		AdjacentBlock directions;
+
+		for( int32 x = 0; x < CChunkX; x++ )
+		{
+			for( int32 z = 0; z < CChunkZ; z++ )
+			{
+				const auto BlockData = Chunk->GetBlocks().at(NChunkSection::GetSizeFromIndex(x, LayerY, z)).GetData();
+
+				const Block_t position(x, LayerY, z);
+				directions.update(x, LayerY, z);
+
+				AddBlockDataLight({x, LayerY, z});
+
+				/* Up/Down */
+				MakeFace(topFace, BlockData.m_textureTop, position, directions.top);
+				MakeFace(bottomFace, BlockData.m_textureBottom, position, directions.bottom);
+
+				/* Left/Right */
+				MakeFace(leftFace, BlockData.m_textureSide, position, directions.left);
+				MakeFace(rightFace, BlockData.m_textureSide, position, directions.right);
+
+				/* Back/Front */
+				MakeFace(backFace, BlockData.m_textureSide, position, directions.back);
+				MakeFace(frontFace, BlockData.m_textureSide, position, directions.front);
+			}
+		}
+	}
+
+	void ChunkMesh::MakeFace(const Vertices_t& blockFace, const glm::vec2& textureCoords, const Block_t& BlockPosition, const ivec3& adjBlock)
+	{
+		if( ShouldMakeFace(BlockPosition, adjBlock) )
 		{
 			const auto& Coords = NTextureAtlas::GetTexture(textureCoords);
-			addFace(blockFace, Coords, m_pChunk->GetLocation(), blockPosition);
+			AddFace(blockFace, Coords, Chunk->GetLocation(), BlockPosition);
 		}
 	}
 
-	NODISCARD bool ChunkMesh::shouldMakeFace(const Block_t& blockCoords, const ivec3& adjCoords) const noexcept
+	void ChunkMesh::AddBlockDataLight(const vec3& BlockCoords)
 	{
-		if( m_pChunk->GetBlock(blockCoords) == EBlockId::Air )
+		
+	}
+
+
+	bool ChunkMesh::ShouldMakeFace(const Block_t& blockCoords, const ivec3& adjCoords) const noexcept
+	{
+		if( Chunk->GetBlock(blockCoords) == EBlockId::Air )
 			return false;
 
-		if( m_pChunk->GetAdjacentBlock(adjCoords) != EBlockId::Air )
+		if( Chunk->GetAdjacentBlock(adjCoords) != EBlockId::Air )
 		{
 			return false;
 		}
@@ -125,48 +153,43 @@ namespace Nocturn
 		return true;
 	}
 
-	/// <summary>
-	/// Checks if the neighbors have all the blocks set on the current layer y
-	/// </summary>
-	/// <param name="y">current layer</param>
-	/// <returns>True if all blocks are set or False</returns>
-	NODISCARD bool ChunkMesh::shouldPassLayer(const int32 y) const noexcept
+	bool ChunkMesh::ShouldPassLayer(const uint32 LayerY) const noexcept
 	{
-		if( y + 1 < CChunkY && !m_pChunk->GetLayer(y + 1).IsAllSolid() )
+		if( LayerY + 1 < CChunkY && !Chunk->GetLayer(LayerY + 1).IsAllSolid() )
 		{
 			return false;
 		}
 
-		if( const auto neighbor = m_pChunk->TryGetNeighbor(NeighborType::Left); nullptr != neighbor )
+		if( const auto neighbor = Chunk->TryGetNeighbor(NeighborType::Left); nullptr != neighbor )
 		{
-			if( !neighbor->GetLayer(y).IsAllSolid() )
+			if( !neighbor->GetLayer(LayerY).IsAllSolid() )
 			{
 				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
 		}
 
-		if( const auto neighbor = m_pChunk->TryGetNeighbor(NeighborType::Right); nullptr != neighbor )
+		if( const auto neighbor = Chunk->TryGetNeighbor(NeighborType::Right); nullptr != neighbor )
 		{
-			if( !neighbor->GetLayer(y).IsAllSolid() )
+			if( !neighbor->GetLayer(LayerY).IsAllSolid() )
 			{
 				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
 		}
 
-		if( const auto neighbor = m_pChunk->TryGetNeighbor(NeighborType::Front); nullptr != neighbor )
+		if( const auto neighbor = Chunk->TryGetNeighbor(NeighborType::Front); nullptr != neighbor )
 		{
-			if( !neighbor->GetLayer(y).IsAllSolid() )
+			if( !neighbor->GetLayer(LayerY).IsAllSolid() )
 			{
 				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
 			}
 		}
 
-		if( const auto neighbor = m_pChunk->TryGetNeighbor(NeighborType::Back); nullptr != neighbor )
+		if( const auto neighbor = Chunk->TryGetNeighbor(NeighborType::Back); nullptr != neighbor )
 		{
-			if( !neighbor->GetLayer(y).IsAllSolid() )
+			if( !neighbor->GetLayer(LayerY).IsAllSolid() )
 			{
 				// std::cout << neighbor->GetLayer( y ).getNumberOfBlocks( ) << ' ';
 				return false;
@@ -176,13 +199,11 @@ namespace Nocturn
 		return true;
 	}
 
-	void ChunkMesh::addFace(const Vertices_t& face, const Textures_t& texturesCoords, const ivec2& chunkPosition, const Block_t& blockPosition)
+	void ChunkMesh::AddFace(const Vertices_t& Face, const Textures_t& TexturesCoords, const ivec2& ChunkPosition, const Block_t& BlockPosition)
 	{
-		m_faces++;
-
-		auto& indices  = m_mesh.indices;
-		auto& vertices = m_mesh.vertices;
-		auto& textures = m_mesh.textures;
+		auto& indices  = Mesh.indices;
+		auto& vertices = Mesh.vertices;
+		auto& textures = Mesh.textures;
 
 		indices.insert(indices.end(), { m_index, m_index + 1, m_index + 2, m_index + 2, m_index + 3, m_index });
 		m_index += 4;
@@ -190,10 +211,10 @@ namespace Nocturn
 		/* we have 4 set of vertices with 3 coords x, y, z  */
 		for( uint32_t i = 0, index = 0; i < 4; i++ )
 		{
-			vertices.push_back(face[ index++ ] + chunkPosition[ 0 ] * CChunkX + blockPosition.x);
-			vertices.push_back(face[ index++ ] + blockPosition.y);
-			vertices.push_back(face[ index++ ] + chunkPosition[ 1 ] * CChunkZ + blockPosition.z);
+			vertices.push_back(Face[ index++ ] + ChunkPosition[ 0 ] * CChunkX + BlockPosition.x);
+			vertices.push_back(Face[ index++ ] + BlockPosition.y);
+			vertices.push_back(Face[ index++ ] + ChunkPosition[ 1 ] * CChunkZ + BlockPosition.z);
 		}
-		textures.insert(textures.end(), texturesCoords.begin(), texturesCoords.end());
+		textures.insert(textures.end(), TexturesCoords.begin(), TexturesCoords.end());
 	}
 } // namespace Nocturn

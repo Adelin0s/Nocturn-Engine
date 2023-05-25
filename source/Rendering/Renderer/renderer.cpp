@@ -40,7 +40,7 @@ namespace Nocturn::Render
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		GenericModel->AddVertexData( v );
+		GenericModel->AddData( v );
 
 		v.isStart	  = 1.0f;
 		v.start		  = start;
@@ -48,7 +48,7 @@ namespace Nocturn::Render
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		GenericModel->AddVertexData( v );
+		GenericModel->AddData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -56,7 +56,7 @@ namespace Nocturn::Render
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		GenericModel->AddVertexData( v );
+		GenericModel->AddData( v );
 
 		// Second triangle
 		v.isStart	  = 1.0f;
@@ -65,7 +65,7 @@ namespace Nocturn::Render
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		GenericModel->AddVertexData( v );
+		GenericModel->AddData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -73,7 +73,7 @@ namespace Nocturn::Render
 		v.direction	  = 1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		GenericModel->AddVertexData( v );
+		GenericModel->AddData( v );
 
 		v.isStart	  = 0.0f;
 		v.start		  = start;
@@ -81,7 +81,7 @@ namespace Nocturn::Render
 		v.direction	  = -1.0f;
 		v.color		  = style.color;
 		v.strokeWidth = style.strokeWidth;
-		GenericModel->AddVertexData( v );
+		GenericModel->AddData( v );
 	}
 
 	void DrawBox( const vec3 &position, const glm::vec3 &size, const Style &style )

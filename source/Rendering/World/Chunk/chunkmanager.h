@@ -31,7 +31,7 @@ namespace Nocturn
 	// TODO: Review here
 	class NChunkRenderer;
 
-	using ChunkMap = std::unordered_map< vec2, ChunkSection >;
+	using ChunkMap = std::unordered_map< vec2, NChunkSection >;
 
 	class NChunkManager
 	{
@@ -48,10 +48,10 @@ namespace Nocturn
 		/** Get chunk from a specific Index.
 		 * @param Index Chunk coord for the wanted chunk.
 		 */
-		const ChunkSection& operator[](const ivec2& Index) const noexcept;
+		const NChunkSection& operator[](const ivec2& Index) const noexcept;
 
-		NODISCARD ChunkSection* GetChunk(const vec3& WorldPosition) noexcept;
-		NODISCARD ChunkSection* GetChunk(const ivec2& ChunkPosition) noexcept;
+		NODISCARD NChunkSection* GetChunk(const vec3& WorldPosition) noexcept;
+		NODISCARD NChunkSection* GetChunk(const ivec2& ChunkPosition) noexcept;
 		NODISCARD NBlock GetBlock(const vec3& WorldPosition) noexcept;
 
 		/**
@@ -83,10 +83,10 @@ namespace Nocturn
 		 */
 		void CalculateLighting(const ivec2& PlayerChunkCoords);
 
-		void CalculateLightingUpdate(ChunkSection* Chunk, const ivec2& ChunkCoordinates, const vec3& BlockPosition, bool bRemovedLightSource, std::unordered_set<ChunkSection*>& ChunksToRetesselate);
+		void CalculateLightingUpdate(NChunkSection* Chunk, const ivec2& ChunkCoordinates, const vec3& BlockPosition, bool bRemovedLightSource, std::unordered_set<NChunkSection*>& ChunksToRetesselate);
 
 		/** Basic way to generate trees on the world. */
-		void GenerateTree(ChunkSection& chunk, int32 px, int32 pymax, int32 pz);
+		void GenerateTree(NChunkSection& chunk, int32 px, int32 pymax, int32 pz);
 
 		~NChunkManager() noexcept = default;
 
@@ -95,21 +95,21 @@ namespace Nocturn
 		// TODO: Decrease the acces of the class
 		friend class NChunkRenderer;
 	private:
-		void GenerateNewChunk(ChunkSection& Chunk, bool bShouldToCreateMesh = false) noexcept;
+		void GenerateNewChunk(NChunkSection& Chunk, bool bShouldToCreateMesh = false) noexcept;
 
-		void CalculateLightingChunkSky(ChunkSection* Chunk, const ivec2& ChunkCoordinates) const;
+		void CalculateLightingChunkSky(NChunkSection* Chunk, const ivec2& ChunkCoordinates) const;
 
-		void CalculateLightingChunk(ChunkSection* Chunk, const ivec2& ChunkCoordinates);
+		void CalculateLightingChunk(NChunkSection* Chunk, const ivec2& ChunkCoordinates);
 
-		void CalculateNextLightLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck);
+		void CalculateNextLightLevel(NChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<NChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck);
 
-		void RemoveNextLightLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck, std::queue<glm::ivec3>& LightSources, bool bIgnoreThisSolidBlock);
+		void RemoveNextLightLevel(NChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<NChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck, std::queue<glm::ivec3>& LightSources, bool bIgnoreThisSolidBlock);
 
-		void CalculateNextSkyLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck);
+		void CalculateNextSkyLevel(NChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<NChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck);
 
-		void RemoveNextSkyLevel(ChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck, std::queue<glm::ivec3>& LightSources, bool bIgnoreThisSolidBlock);
+		void RemoveNextSkyLevel(NChunkSection* OriginalChunk, const glm::ivec2& ChunkCoordinates, std::unordered_set<NChunkSection*>& ChunksToRetesselate, std::queue<glm::ivec3>& BlocksToCheck, std::queue<glm::ivec3>& LightSources, bool bIgnoreThisSolidBlock);
 
-		bool CheckPositionInBounds(const ChunkSection& Chunk, int32& x, int32 y, int32& z) const;
+		bool CheckPositionInBounds(const NChunkSection& Chunk, int32& x, int32 y, int32& z) const;
 
 		NTaskSystem*						   m_pTaskSystem;
 		NoiseParams							   m_noiseParams{};

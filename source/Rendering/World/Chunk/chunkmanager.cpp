@@ -41,22 +41,22 @@ namespace Nocturn
 		m_noiseParams.offset	 = 10;
 		m_noiseParams.roughness	 = 0.51;*/
 
-		for( int x = 0; x < 10; x++ )
-		for( int z = 0; z < 10; z++ )
+		for( int x = 0; x < 2; x++ )
+		for( int z = 0; z < 2; z++ )
 		{
-			m_pendingChunks.emplace_back( [ =, Self = this ]( ) -> void
+			m_pendingChunks.emplace_back([ =, Self = this ]() -> void
 			{
-				Self->GenerateChunkMesh( { x, z } );
-			} );
+				Self->GenerateChunkMesh({ x, z });
+			});
 		}
 	}
 
-	const ChunkSection &NChunkManager::operator[]( const ivec2 &Index ) const noexcept
+	const NChunkSection &NChunkManager::operator[]( const ivec2 &Index ) const noexcept
 	{
 		return Chunks.at(Index);
 	}
 
-	ChunkSection* NChunkManager::GetChunk(const vec3& WorldPosition) noexcept
+	NChunkSection* NChunkManager::GetChunk(const vec3& WorldPosition) noexcept
 	{
 		const auto ChunkPosition = Math::ToChunkCoords(WorldPosition);
 		if (!Chunks.contains(ChunkPosition))
@@ -68,7 +68,7 @@ namespace Nocturn
 		return &Chunks[ ChunkPosition ];
 	}
 
-	ChunkSection* NChunkManager::GetChunk( const ivec2 &ChunkPosition ) noexcept
+	NChunkSection* NChunkManager::GetChunk( const ivec2 &ChunkPosition ) noexcept
 	{
 		if (!Chunks.contains(ChunkPosition))
 		{
@@ -113,18 +113,18 @@ namespace Nocturn
 	void NChunkManager::GenerateChunkMesh( const ivec2 &ChunkPosition ) noexcept
 	{
 		AdjacentChunk adjacentChunk{ ChunkPosition };
-		ChunkSection  middleChunk{ ChunkPosition };
+		NChunkSection  middleChunk{ ChunkPosition };
 		auto *pMiddleChunk = &middleChunk;
 
-		if( Chunks.contains( ChunkPosition ) )
+		if( Chunks.contains(ChunkPosition) )
 		{
 			pMiddleChunk = &Chunks[ ChunkPosition ];
 		}
 
 		// Top Chunk
-		if( !Chunks.contains( adjacentChunk.front ) )
+		if( !Chunks.contains(adjacentChunk.front) )
 		{
-			Chunks.emplace( adjacentChunk.front, ChunkSection{ adjacentChunk.front } );
+			Chunks.emplace( adjacentChunk.front, NChunkSection{ adjacentChunk.front } );
 			auto &chunk = Chunks[ adjacentChunk.front ];
 			GenerateNewChunk( chunk );
 			pMiddleChunk->SetNeighbor( NeighborType::Front, chunk );
@@ -138,7 +138,7 @@ namespace Nocturn
 		// Bottom Chunk
 		if( !Chunks.contains( adjacentChunk.back ) )
 		{
-			Chunks.emplace( adjacentChunk.back, ChunkSection{ adjacentChunk.back } );
+			Chunks.emplace( adjacentChunk.back, NChunkSection{ adjacentChunk.back } );
 			auto &chunk = Chunks[ adjacentChunk.back ];
 			GenerateNewChunk( chunk );
 			pMiddleChunk->SetNeighbor( NeighborType::Back, chunk );
@@ -152,7 +152,7 @@ namespace Nocturn
 		// Left Chunk
 		if( !Chunks.contains( adjacentChunk.left ) )
 		{
-			Chunks.emplace( adjacentChunk.left, ChunkSection{ adjacentChunk.left } );
+			Chunks.emplace( adjacentChunk.left, NChunkSection{ adjacentChunk.left } );
 			auto &chunk = Chunks[ adjacentChunk.left ];
 			GenerateNewChunk( chunk );
 			pMiddleChunk->SetNeighbor( NeighborType::Left, chunk );
@@ -166,7 +166,7 @@ namespace Nocturn
 		// Right Chunk
 		if( !Chunks.contains( adjacentChunk.right ) )
 		{
-			Chunks.emplace( adjacentChunk.right, ChunkSection{ adjacentChunk.right } );
+			Chunks.emplace( adjacentChunk.right, NChunkSection{ adjacentChunk.right } );
 			auto &chunk = Chunks[ adjacentChunk.right ];
 			GenerateNewChunk( chunk );
 			pMiddleChunk->SetNeighbor( NeighborType::Right, chunk );
@@ -194,9 +194,8 @@ namespace Nocturn
 		if( Keyboard::key(GLFW_KEY_O) )
 		{
 			auto* Chunk = GetChunk({0, 1});
-			Chunk->DeleteMesh();
 			Chunk->SetBlock(EBlockId::Sand, 2, 44, 19);
-			Chunk->CreateChunk();
+			Chunk->ReloadChunk();
 		}
 
 		for( const auto& chunk : m_pendingChunks )
@@ -207,25 +206,24 @@ namespace Nocturn
 
 		if( Keyboard::keyWentDown(GLFW_KEY_B) )
 		{
-			auto& chunk = Chunks[ { 0, 0 } ];
-			chunk.DeleteMesh();
-			chunk.SetBlock(EBlockId::Air, 3, y--, 1);
-			chunk.CreateChunk();
+			auto& Chunk = Chunks[ { 0, 0 } ];
+			Chunk.DeleteMesh();
+			Chunk.SetBlock(EBlockId::Air, 3, y--, 1);
+			Chunk.ReloadChunk();
+			//Chunk.CreateChunk();
 		}
 
 		if( Keyboard::keyWentDown(GLFW_KEY_LEFT_CONTROL) )
 		{
-			auto& chunk = Chunks[ { 0, 0 } ];
-			chunk.DeleteMesh();
-			chunk.SetBlock(EBlockId::Stone, x++, 35, 1);
-			chunk.CreateChunk();
+			auto& Chunk = Chunks[ { 0, 0 } ];
+			Chunk.SetBlock(EBlockId::Stone, x++, 35, 1);
+			Chunk.ReloadChunk();
 		}
 
 		if( Keyboard::keyWentDown(GLFW_KEY_C) )
 		{
-			auto& chunk = Chunks[ { 1, 1 } ];
-			chunk.DeleteMesh();
-			chunk.CreateChunk();
+			auto& Chunk = Chunks[ { 1, 1 } ];
+			Chunk.ReloadChunk();
 		}
 
 		for( const auto& [ first, second ] : Chunks )
@@ -239,7 +237,7 @@ namespace Nocturn
 
 	void NChunkManager::CalculateLighting(const ivec2& PlayerChunkCoords)
 	{
-		for (int32 LightIteration = 0; LightIteration < 2; ++LightIteration)
+		for( int32 LightIteration = 0; LightIteration < 2; ++LightIteration )
 		{
 			for (int32 ChunkZ = PlayerChunkCoords.y - CChunkRadius; ChunkZ <= PlayerChunkCoords.y + CChunkRadius; ChunkZ++)
 			{
@@ -281,7 +279,7 @@ namespace Nocturn
 		}
 	}
 
-	void NChunkManager::CalculateLightingUpdate(ChunkSection* Chunk, const ivec2& ChunkCoordinates, const vec3& BlockPosition, const bool bRemovedLightSource, std::unordered_set<ChunkSection*>& ChunksToRetesselate)
+	void NChunkManager::CalculateLightingUpdate(NChunkSection* Chunk, const ivec2& ChunkCoordinates, const vec3& BlockPosition, const bool bRemovedLightSource, std::unordered_set<NChunkSection*>& ChunksToRetesselate)
 	{
 		const ivec3 LocalPosition = glm::floor(BlockPosition - vec3(ChunkCoordinates.x * 16.0f, 0.0f, ChunkCoordinates.y * 16.0f));
 		const auto LocalX = LocalPosition.x;
@@ -426,7 +424,7 @@ namespace Nocturn
 		//}
 	}
 
-	void NChunkManager::GenerateNewChunk( ChunkSection &Chunk, const bool bShouldToCreateMesh ) noexcept
+	void NChunkManager::GenerateNewChunk( NChunkSection &Chunk, const bool bShouldToCreateMesh ) noexcept
 	{
 		const Noise noise( m_noiseParams, 2432 );
 		const auto pchunk = Chunk.GetLocation( );
@@ -463,7 +461,7 @@ namespace Nocturn
 		}
 	}
 
-	void NChunkManager::CalculateLightingChunkSky(ChunkSection* Chunk, const ivec2& ChunkCoordinates) const
+	void NChunkManager::CalculateLightingChunkSky(NChunkSection* Chunk, const ivec2& ChunkCoordinates) const
 	{
 		for (int32 x = 0; x < CChunkX; x++)
 		{
@@ -483,7 +481,7 @@ namespace Nocturn
 		}
 	}
 
-	void NChunkManager::CalculateLightingChunk(ChunkSection* Chunk, const ivec2& ChunkCoordinates)
+	void NChunkManager::CalculateLightingChunk(NChunkSection* Chunk, const ivec2& ChunkCoordinates)
 	{
 		std::queue<ivec3> SkyBlocksToUpdate = {};
 		for( int32 y = CChunkY - 1; y >= 0; y-- )
@@ -493,7 +491,7 @@ namespace Nocturn
 			{
 				for (int32 z = 0; z < CChunkZ; z++)
 				{
-					uint32 arrayExpansion = ChunkSection::GetSizeFromIndex(x, y, z);
+					uint32 arrayExpansion = NChunkSection::GetSizeFromIndex(x, y, z);
 					if (Chunk->GetBlock(x, y, z) != EBlockId::Air)
 					{
 						continue;
@@ -525,14 +523,14 @@ namespace Nocturn
 			}
 		}
 
-		std::unordered_set< ChunkSection* > SkyChunksToRetesselate = {};
+		std::unordered_set< NChunkSection* > SkyChunksToRetesselate = {};
 		while (!SkyBlocksToUpdate.empty())
 		{
 			CalculateNextSkyLevel(Chunk, ChunkCoordinates, SkyChunksToRetesselate, SkyBlocksToUpdate);
 		}
 	}
 
-	void NChunkManager::CalculateNextLightLevel(ChunkSection* OriginalChunk, const ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<ivec3>& BlocksToCheck)
+	void NChunkManager::CalculateNextLightLevel(NChunkSection* OriginalChunk, const ivec2& ChunkCoordinates, std::unordered_set<NChunkSection*>& ChunksToRetesselate, std::queue<ivec3>& BlocksToCheck)
 	{
 		const ivec3 BlockToUpdate = BlocksToCheck.front();
 		BlocksToCheck.pop();
@@ -546,7 +544,7 @@ namespace Nocturn
 		int32 BlockToUpdateX = BlockToUpdate.x;
 		int32 BlockToUpdateY = BlockToUpdate.y;
 		int32 BlockToUpdateZ = BlockToUpdate.z;
-		ChunkSection* BlockToUpdateChunk = OriginalChunk;
+		NChunkSection* BlockToUpdateChunk = OriginalChunk;
 		if (BlockToUpdateX >= CChunkX || BlockToUpdateX < 0 || BlockToUpdateZ >= CChunkZ || BlockToUpdateZ < 0)
 		{
 			if (!CheckPositionInBounds(*BlockToUpdateChunk, BlockToUpdateX, BlockToUpdateY, BlockToUpdateZ))
@@ -575,7 +573,7 @@ namespace Nocturn
 
 				if (NeighborLight <= MyLightLevel - 2 && Neighbor.IsTransparent())
 				{
-					ChunkSection* neighborChunk = BlockToUpdateChunk;
+					NChunkSection* neighborChunk = BlockToUpdateChunk;
 					int neighborLocalX = Pos.x;
 					int neighborLocalZ = Pos.z;
 					if (CheckPositionInBounds(*neighborChunk, neighborLocalX, Pos.y, neighborLocalZ))
@@ -589,7 +587,7 @@ namespace Nocturn
 		}
 	}
 
-	void NChunkManager::RemoveNextLightLevel(ChunkSection* OriginalChunk, const ivec2& chunkCoordinates, std::unordered_set<ChunkSection*>& chunksToRetesselate, std::queue<ivec3>& blocksToCheck, std::queue<ivec3>& lightSources, bool bIgnoreThisSolidBlock)
+	void NChunkManager::RemoveNextLightLevel(NChunkSection* OriginalChunk, const ivec2& chunkCoordinates, std::unordered_set<NChunkSection*>& chunksToRetesselate, std::queue<ivec3>& blocksToCheck, std::queue<ivec3>& lightSources, bool bIgnoreThisSolidBlock)
 	{
 		ivec3 blockToUpdate = blocksToCheck.front();
 		blocksToCheck.pop();
@@ -603,7 +601,7 @@ namespace Nocturn
 		int blockToUpdateX = blockToUpdate.x;
 		int blockToUpdateY = blockToUpdate.y;
 		int blockToUpdateZ = blockToUpdate.z;
-		ChunkSection* blockToUpdateChunk = OriginalChunk;
+		NChunkSection* blockToUpdateChunk = OriginalChunk;
 		if (blockToUpdateX >= CChunkX || blockToUpdateX < 0 || blockToUpdateZ >= CChunkZ || blockToUpdateZ < 0)
 		{
 			if (!CheckPositionInBounds(*blockToUpdateChunk, blockToUpdateX, blockToUpdateY, blockToUpdateZ))
@@ -629,7 +627,7 @@ namespace Nocturn
 			const int neighborLight = Neighbor.GetLight();
 			if (neighborLight != 0 && neighborLight < myOldLightLevel && Neighbor.IsTransparent())
 			{
-				ChunkSection* neighborChunk = blockToUpdateChunk;
+				NChunkSection* neighborChunk = blockToUpdateChunk;
 				int neighborLocalX = pos.x;
 				int neighborLocalZ = pos.z;
 				if (CheckPositionInBounds(*neighborChunk, neighborLocalX, pos.y, neighborLocalZ))
@@ -640,7 +638,7 @@ namespace Nocturn
 			}
 			else if (neighborLight > myOldLightLevel)
 			{
-				ChunkSection* neighborChunk = blockToUpdateChunk;
+				NChunkSection* neighborChunk = blockToUpdateChunk;
 				int neighborLocalX = pos.x;
 				int neighborLocalZ = pos.z;
 				if (CheckPositionInBounds(*neighborChunk, neighborLocalX, pos.y, neighborLocalZ))
@@ -653,7 +651,7 @@ namespace Nocturn
 	}
 
 	// TODO: Think about removing this duplication if it doesn't effect performance
-	void NChunkManager::CalculateNextSkyLevel(ChunkSection* OriginalChunk, const ivec2& chunkCoordinates, std::unordered_set<ChunkSection*>& chunksToRetesselate, std::queue<ivec3>& blocksToCheck)
+	void NChunkManager::CalculateNextSkyLevel(NChunkSection* OriginalChunk, const ivec2& chunkCoordinates, std::unordered_set<NChunkSection*>& chunksToRetesselate, std::queue<ivec3>& blocksToCheck)
 	{
 		ivec3 blockToUpdate = blocksToCheck.front();
 		blocksToCheck.pop();
@@ -667,7 +665,7 @@ namespace Nocturn
 		int blockToUpdateX = blockToUpdate.x;
 		int blockToUpdateY = blockToUpdate.y;
 		int blockToUpdateZ = blockToUpdate.z;
-		ChunkSection* blockToUpdateChunk = OriginalChunk;
+		NChunkSection* blockToUpdateChunk = OriginalChunk;
 		if (blockToUpdateX >= CChunkX || blockToUpdateX < 0 || blockToUpdateZ >= CChunkZ || blockToUpdateZ < 0)
 		{
 			if (!CheckPositionInBounds(*blockToUpdateChunk, blockToUpdateX, blockToUpdateY, blockToUpdateZ))
@@ -693,7 +691,7 @@ namespace Nocturn
 				int neighborLight = neighbor.GetSkyLight();
 				if (neighborLight <= MyLightLevel - 2 && neighbor.IsTransparent())
 				{
-					ChunkSection* neighborChunk = blockToUpdateChunk;
+					NChunkSection* neighborChunk = blockToUpdateChunk;
 					int neighborLocalX = pos.x;
 					int neighborLocalZ = pos.z;
 					if (CheckPositionInBounds(*neighborChunk, neighborLocalX, pos.y, neighborLocalZ))
@@ -708,7 +706,7 @@ namespace Nocturn
 		}
 	}
 
-	void NChunkManager::RemoveNextSkyLevel(ChunkSection* OriginalChunk, const ivec2& ChunkCoordinates, std::unordered_set<ChunkSection*>& ChunksToRetesselate, std::queue<ivec3>& BlocksToCheck, std::queue<ivec3>& LightSources, const bool bIgnoreThisSolidBlock)
+	void NChunkManager::RemoveNextSkyLevel(NChunkSection* OriginalChunk, const ivec2& ChunkCoordinates, std::unordered_set<NChunkSection*>& ChunksToRetesselate, std::queue<ivec3>& BlocksToCheck, std::queue<ivec3>& LightSources, const bool bIgnoreThisSolidBlock)
 	{
 		ivec3 blockToUpdate = BlocksToCheck.front();
 		BlocksToCheck.pop();
@@ -722,7 +720,7 @@ namespace Nocturn
 		int blockToUpdateX = blockToUpdate.x;
 		int blockToUpdateY = blockToUpdate.y;
 		int blockToUpdateZ = blockToUpdate.z;
-		ChunkSection* blockToUpdateChunk = OriginalChunk;
+		NChunkSection* blockToUpdateChunk = OriginalChunk;
 		if (blockToUpdateX >= CChunkX || blockToUpdateX < 0 || blockToUpdateZ >= CChunkZ || blockToUpdateZ < 0)
 		{
 			if (!CheckPositionInBounds(*blockToUpdateChunk, blockToUpdateX, blockToUpdateY, blockToUpdateZ))
@@ -748,7 +746,7 @@ namespace Nocturn
 			bool neighborLightEffectedByMe = (neighborLight < myOldLightLevel) || (myOldLightLevel == 31 && iNormal.y == -1);
 			if (neighborLight != 0 && neighborLightEffectedByMe && neighbor.IsTransparent())
 			{
-				ChunkSection* neighborChunk = blockToUpdateChunk;
+				NChunkSection* neighborChunk = blockToUpdateChunk;
 				int neighborLocalX = pos.x;
 				int neighborLocalZ = pos.z;
 				if (CheckPositionInBounds(*neighborChunk, neighborLocalX, pos.y, neighborLocalZ))
@@ -759,7 +757,7 @@ namespace Nocturn
 			}
 			else if (neighborLight > myOldLightLevel)
 			{
-				ChunkSection* neighborChunk = blockToUpdateChunk;
+				NChunkSection* neighborChunk = blockToUpdateChunk;
 				int neighborLocalX = pos.x;
 				int neighborLocalZ = pos.z;
 				if (CheckPositionInBounds(*neighborChunk, neighborLocalX, pos.y, neighborLocalZ))
@@ -771,7 +769,7 @@ namespace Nocturn
 		}
 	}
 
-	bool NChunkManager::CheckPositionInBounds(const ChunkSection& Chunk, int32& x, int32 y, int32& z) const
+	bool NChunkManager::CheckPositionInBounds(const NChunkSection& Chunk, int32& x, int32 y, int32& z) const
 	{
 		if (y < 0 || y >= CChunkY)
 		{
@@ -820,7 +818,7 @@ namespace Nocturn
 	}
 
 
-	void NChunkManager::GenerateTree( ChunkSection &chunk, const int px, const int pymax, const int pz )
+	void NChunkManager::GenerateTree( NChunkSection &chunk, const int px, const int pymax, const int pz )
 	{
 		const auto leaf1 = pymax + 4;
 		const auto leaf2 = pymax + 5;

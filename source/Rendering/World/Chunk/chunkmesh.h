@@ -18,7 +18,7 @@
 
 namespace Nocturn
 {
-	class ChunkSection;
+	class NChunkSection;
 	class ChunkMesh;
 	struct Block;
 	struct BlockDataHolder;
@@ -48,37 +48,62 @@ namespace Nocturn
 	class ChunkMesh
 	{
 	public:
-		ChunkMesh( ) noexcept = default;
-		ChunkMesh( ChunkSection &chunk );
-		ChunkMesh( const ChunkMesh &chunk ) = default;
-		ChunkMesh( ChunkMesh &&mesh )		= delete;
+		ChunkMesh() noexcept = default;
+
+		ChunkMesh(const ChunkMesh& chunk) = default;
+		ChunkMesh(ChunkMesh&& mesh) = delete;
 
 		ChunkMesh &operator=( const ChunkMesh &mesh ) = delete;
 		ChunkMesh &operator=( ChunkMesh &&mesh ) = delete;
 
-		NODISCARD const Model< VertexDataType::ChunkDataType > &GetModel( ) const;
-		NODISCARD uint32		    GetIndicesSize( ) const noexcept;
-		void						MakeMesh( ChunkSection &pchunk );
-		void						LoadBufferData( );
-		NODISCARD bool				HasMesh( ) const noexcept;
-		NODISCARD bool				HasLoaded( ) const noexcept;
+		void Initialize(const NChunkSection* ChunkIn);
+		NODISCARD const Model< VertexDataType::ChunkDataType >& GetModel() const
+		{
+			return m_model;
+		}
+		NODISCARD uint32 GetIndicesSize() const noexcept;
+		void			 MakeMesh(const NChunkSection* ChunkIn);
+		void			 ReloadMesh(const NChunkSection* ChunkIn);
+		void			 LoadBufferData();
+		NODISCARD bool	 HasMesh() const noexcept
+		{
+			return bHasMesh;
+		}
+		NODISCARD bool   HasLoaded() const noexcept
+		{
+			return bHasLoaded;
+		}
+
 		void						DeleteMesh( ) noexcept;
 
 		~ChunkMesh( ) noexcept = default;
 
 	private:
-		uint32_t	  m_faces	  = 0;
-		uint32_t	  m_index	  = 0; /* lolita lolita , cichi cichi bambita */
-		bool		  m_hasMesh	  = false;
-		bool		  m_hasLoaded = false;
-		Model< VertexDataType::ChunkDataType > m_model;
-		ChunkSection *m_pChunk = nullptr; /* pointer to the current chunk */
-		VertexType::ChunkVertex	  m_mesh;
+		uint32_t m_index		= 0; /* lolita lolita , cichi cichi bambita */
 
-		void		   makeFace( const Vertices_t &blockFace, const glm::vec2 &textureCoords, const Block_t &blockPosition, const ivec3 &adjBlock );
-		NODISCARD bool shouldMakeFace( const Block_t &blockCoords, const ivec3 &adjCoords ) const noexcept;
-		NODISCARD bool shouldPassLayer( const int32 y ) const noexcept;
-		void		   addFace( const Vertices_t &face, const Textures_t &texturesCoords, const ivec2 &chunkPosition, const Block_t &blockPosition );
+		bool bHasMesh : 1 = false;
+		bool bHasLoaded : 1 = false;
+		bool bShouldToReloadMesh : 1 = false;
+
+		Model< VertexDataType::ChunkDataType > m_model;
+
+		/** Pointer to the current chunk. */
+		const NChunkSection *Chunk = nullptr;
+
+		VertexType::ChunkVertex	  Mesh;
+
+		void GenerateMeshLayer(uint32 LayerY);
+		void MakeFace( const Vertices_t &TlockFace, const glm::vec2 &TextureCoords, const Block_t &BlockPosition, const ivec3 &AdjBlock );
+		void AddBlockDataLight(const vec3& BlockCoords);
+		NODISCARD bool ShouldMakeFace( const Block_t &BlockCoords, const ivec3 &AdjCoords ) const noexcept;
+
+		/**
+		 * @brief Checks if the neighbors have all the blocks set on the current layer y.
+		 * @param LayerY Current layer.
+		 * @return True if all blocks are set or False
+		 */
+		NODISCARD bool ShouldPassLayer( uint32 LayerY ) const noexcept;
+		void AddFace( const Vertices_t &Face, const Textures_t &TexturesCoords, const ivec2 &ChunkPosition, const Block_t &BlockPosition );
 	};
 } // namespace Nocturn
 #endif

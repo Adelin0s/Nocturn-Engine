@@ -67,13 +67,7 @@ namespace Nocturn
 		//Render::DrawBox(vec3(Position.x + 0.5f, Position.y, Position.z + 0.5f), vec3(1.0f), style1);
 		const auto RaycastResult = Physics->RaycastStatic(Position, Forward + vec3(0.1f, 0.1f, 0.1f), 8.0f, true);
 
-		if( Keyboard::keyWentDown(GLFW_KEY_0) )
-		{
-			const auto ZPosition = vec3{ Position.x, Position.y, Position.z + 5.0f };
-			ChunkManager->SetBlock(EBlockId::Stone, ZPosition);
-		}
-
-		const auto ChunkRenderer = MasterRenderer->GetRendererComponentByTag< NChunkRenderer >("ChunkRenderer");
+		//const auto ChunkRenderer = MasterRenderer->GetRendererComponentByTag< NChunkRenderer >("ChunkRenderer");
 
 		MasterRenderer->Render(MainCameraComponent.get());
 		//Render::Render();

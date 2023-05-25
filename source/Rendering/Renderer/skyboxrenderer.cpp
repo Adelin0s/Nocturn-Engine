@@ -52,7 +52,7 @@ namespace Nocturn
 			-1.0f, -1.0f, 1.0f,
 			1.0f, -1.0f, 1.0f
 		};
-		m_model.AddVertexData( vertexData );
+		m_model.AddData( vertexData );
 
 		m_textureCube.SetFaces(
 		{

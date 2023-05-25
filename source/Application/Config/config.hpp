@@ -28,5 +28,5 @@ namespace Nocturn::Config
 
 	/* World Constants */
 	constexpr uint32_t CLoadDistance = 10;
-	constexpr inline glm::vec3 CDefaultPlayerPosition{82.f, 80.f, 60.f};
+	constexpr inline glm::vec3 CDefaultPlayerPosition{10.f, 80.f, 10.f};
 } // namespace Nocturn::Config

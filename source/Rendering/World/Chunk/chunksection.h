@@ -81,10 +81,10 @@ namespace Nocturn
      */
 	struct Neighbor
 	{
-		ChunkSection* left	 = nullptr;
-		ChunkSection* right	 = nullptr;
-		ChunkSection* top	 = nullptr;
-		ChunkSection* bottom = nullptr;
+		NChunkSection* left	 = nullptr;
+		NChunkSection* right	 = nullptr;
+		NChunkSection* top	 = nullptr;
+		NChunkSection* bottom = nullptr;
 	};
 
     /**
@@ -101,19 +101,19 @@ namespace Nocturn
 		ivec2 right;
 	};
 
-	class ChunkSection
+	class NChunkSection
 	{
 	public:
-		ChunkSection() noexcept = default;
+		NChunkSection() noexcept = default;
 
-		explicit ChunkSection(const ivec2& Location);
+		explicit NChunkSection(const ivec2& Location);
 
 		// TODO: Investigate the behavior of the default constructor
-		ChunkSection(const ChunkSection& chunk) = default;
-		ChunkSection(ChunkSection&& chunk) = delete;
+		NChunkSection(const NChunkSection& chunk) = default;
+		NChunkSection(NChunkSection&& chunk) = delete;
 
-		ChunkSection& operator=(const ChunkSection& chunk) = delete;
-		ChunkSection& operator=(ChunkSection&& chunk) = delete;
+		NChunkSection& operator=(const NChunkSection& chunk) = delete;
+		NChunkSection& operator=(NChunkSection&& chunk) = delete;
 
 		/**
          * @brief Retrieves the block at the specified position.
@@ -147,7 +147,7 @@ namespace Nocturn
 	     * @param type The neighbor type.
 	     * @param chunk The neighbor chunk.
 	     */
-		void SetNeighbor(NeighborType type, ChunkSection& chunk) noexcept;
+		void SetNeighbor(NeighborType type, NChunkSection& chunk) noexcept;
 
 		/**
 	     * @brief Marks the chunk section as a renderable chunk.
@@ -179,16 +179,16 @@ namespace Nocturn
 	     * @brief Gets the vector of blocks in the chunk section.
 	     * @return The vector of blocks.
 	     */
-		const std::vector< NBlock >& GetChunk() const;
+		const std::vector< NBlock >& GetBlocks() const;
 
 	    /**
 	     * @brief Gets the layer of the chunk section at the specified Y coordinate.
-	     * @param y The Y coordinate.
+	     * @param LayerY The Y coordinate of the layer.
 	     * @return The chunk layer.
 	     */
-	    NODISCARD ChunkLayer GetLayer(int y) const
+	    NODISCARD ChunkLayer GetLayer(const uint32 LayerY) const
 	    {
-			return m_layers[ y ];
+			return m_layers[ LayerY ];
 	    }
 
 	    /**
@@ -232,7 +232,7 @@ namespace Nocturn
 	     * @param type The neighbor type.
 	     * @return A pointer to the neighbor chunk, or nullptr if not found.
 	     */
-	    ChunkSection* TryGetNeighbor(NeighborType type) const noexcept;
+	    NChunkSection* TryGetNeighbor(NeighborType type) const noexcept;
 
 	    /**
 	     * @brief Checks if the chunk section has a mesh.
@@ -267,6 +267,8 @@ namespace Nocturn
 	     * @brief Creates the chunk section.
 	     */
 	    void CreateChunk();
+
+		void ReloadChunk();
 
 	    /**
 	     * @brief Loads the buffer data for rendering the chunk section.
@@ -307,7 +309,7 @@ namespace Nocturn
 	     */
 	    static ivec3 GetIndexFromSize(uint32 size) noexcept;
 
-		~ChunkSection() noexcept = default;
+		~NChunkSection() noexcept = default;
 
 	private:
 		/** Layers of the chunk section. */

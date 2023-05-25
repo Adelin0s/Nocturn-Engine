@@ -109,15 +109,6 @@ namespace Log
 
 	bool Initialize();
 
-	// TODO: Exclude <iostream> from header
-	template< typename... TArgs >
-	void LogWriteScreen(std::_Fmt_string< TArgs... > fmt, TArgs&&... Args)
-	{
-		std::cout << std::format("[{} : {}]: ", __FILE__, __LINE__);
-		std::cout << std::format(fmt, std::forward< TArgs >(Args)...);
-		std::cout << '\n';
-	}
-
 	NOINLINE NORETURN inline void AssertFailHandler(const char* InExpressionAsString, const char* InFileName, const size_t LineNumber) noexcept
 	{
 		( void )snprintf(AssertWorkBuffer.data(), AssertWorkBuffer.size(), "\u001b[31mAssert \"%s\" failed!\nAt:%s:%llu \n\u001b[37m", InExpressionAsString, InFileName, LineNumber);
