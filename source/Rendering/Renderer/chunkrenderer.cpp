@@ -65,9 +65,8 @@ namespace Nocturn
 		}
 		
 		Shader->Bind();
-		Shader->SetVec3("objectColor", vec3(1.0f, 0.5f, 0.31f));
-		Shader->SetVec3("lightColor", vec3(1.0f));
-		Shader->SetVec3("lightPos", vec3(20.0f, 120.0f, 20.0f));
+		Shader->SetVec3("uObjectColor", vec3(1.0f, 0.5f, 0.31f));
+		Shader->SetVec3("uLightPos", vec3(20.0f, 120.0f, 20.0f));
 		Shader->SetViewMatrix(CameraComponent->GetViewMatrix());
 		Shader->SetProjectionMatrix(CameraComponent->GetProjectionMatrix());
 

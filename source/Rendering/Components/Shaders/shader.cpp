@@ -5,12 +5,15 @@
 namespace Nocturn
 {
 	NShader::NShader() noexcept
-		:
-		VertexShaderFileName(nullptr), FragmentShaderFileName(nullptr), id(0)
+	:
+		VertexShaderFileName(nullptr),
+		FragmentShaderFileName(nullptr),
+		id(0)
 	{
 	}
 
-	NShader::NShader(const char* VertexShaderFileNameIn, const char* FragmentShaderFileNameIn) :
+	NShader::NShader(const char* VertexShaderFileNameIn, const char* FragmentShaderFileNameIn)
+	:
 		id(0)
 	{
 		VertexShaderFileName   = VertexShaderFileNameIn;
@@ -53,7 +56,7 @@ namespace Nocturn
 		}
 		catch( std::ifstream::failure& e )
 		{
-			std::cerr << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ: " << VertexShaderFileName << " with exception: " << e.what() << std::endl;
+			LogError("File not succesfully read: %d with exception: %s!", VertexShaderFileName, e.what());
 		}
 		const char* vertexShaderCode   = vertexCode.c_str();
 		const char* fragmentShaderCode = fragmentCode.c_str();
@@ -180,14 +183,14 @@ namespace Nocturn
 	{
 		assert(bIsInit);
 
-		SetMatrix4("view", ViewMatrix);
+		SetMatrix4("uView", ViewMatrix);
 	}
 
 	void NShader::SetProjectionMatrix(const mat4& ProjectionMatrix) const
 	{
 		assert(bIsInit);
 
-		SetMatrix4("projection", ProjectionMatrix);
+		SetMatrix4("uProjection", ProjectionMatrix);
 	}
 
 	bool NShader::ReloadShader()
@@ -215,6 +218,7 @@ namespace Nocturn
 			{
 				glGetProgramInfoLog(Shader, 512, nullptr, log);
 				std::cerr << "ERROR_PROGRAM_LINKING::LINKING_FAILED\n " << log << std::endl;
+				LogError("Shader: Failed to linking program: %s", log);
 			}
 		}
 		else
@@ -224,6 +228,7 @@ namespace Nocturn
 			{
 				glGetShaderInfoLog(Shader, 512, nullptr, log);
 				std::cerr << "ERROR_" << Type << "_SHADER::COMPILATION_FAILED\n " << log << std::endl;
+				LogError("Shader: Compilation failed with error: %s", log);
 			}
 		}
 	}

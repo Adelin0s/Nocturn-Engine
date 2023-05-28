@@ -59,9 +59,9 @@ namespace Nocturn
 		View				  = glm::translate( View, glm::vec3( 0.0f, 0.0f, -3.0f ) );
 
 		/* Note: Currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once */
-		Shader->SetMatrix4( "view", View );
-		Shader->SetMatrix4( "model", Model );
-		Shader->SetMatrix4( "projection", Projection );
+		Shader->SetMatrix4( "uView", View );
+		Shader->SetMatrix4( "uModel", Model );
+		Shader->SetMatrix4( "uProjection", Projection );
 	}
 
 	void NHUD::Update( )

@@ -93,7 +93,7 @@ namespace Nocturn
 		VertexType::ChunkVertex	  Mesh;
 
 		void GenerateMeshLayer(uint32 LayerY);
-		void MakeFace( const Vertices_t &TlockFace, const glm::vec2 &TextureCoords, const Block_t &BlockPosition, const ivec3 &AdjBlock );
+		void MakeFace( const Vertices_t &BlockFace, const glm::vec2 &TextureCoords, const Block_t &BlockPosition, const ivec3 &AdjBlock );
 		void AddBlockDataLight(const vec3& BlockCoords);
 		NODISCARD bool ShouldMakeFace( const Block_t &BlockCoords, const ivec3 &AdjCoords ) const noexcept;
 

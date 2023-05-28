@@ -91,6 +91,7 @@ namespace Nocturn
 			bHasMesh	= false;
 
 			Mesh.Clear();
+			// todo: Free memory!!
 			//m_model.DeleteData();
 		}
 	}
@@ -125,12 +126,12 @@ namespace Nocturn
 		}
 	}
 
-	void ChunkMesh::MakeFace(const Vertices_t& blockFace, const glm::vec2& textureCoords, const Block_t& BlockPosition, const ivec3& adjBlock)
+	void ChunkMesh::MakeFace(const Vertices_t& BlockFace, const glm::vec2& TextureCoords, const Block_t& BlockPosition, const ivec3& AdjBlock)
 	{
-		if( ShouldMakeFace(BlockPosition, adjBlock) )
+		if( ShouldMakeFace(BlockPosition, AdjBlock) )
 		{
-			const auto& Coords = NTextureAtlas::GetTexture(textureCoords);
-			AddFace(blockFace, Coords, Chunk->GetLocation(), BlockPosition);
+			const auto& Coords = NTextureAtlas::GetTexture(TextureCoords);
+			AddFace(BlockFace, Coords, Chunk->GetLocation(), BlockPosition);
 		}
 	}
 
@@ -140,12 +141,12 @@ namespace Nocturn
 	}
 
 
-	bool ChunkMesh::ShouldMakeFace(const Block_t& blockCoords, const ivec3& adjCoords) const noexcept
+	bool ChunkMesh::ShouldMakeFace(const Block_t& BlockCoords, const ivec3& AdjCoords) const noexcept
 	{
-		if( Chunk->GetBlock(blockCoords) == EBlockId::Air )
+		if( Chunk->GetBlock(BlockCoords) == EBlockId::Air )
 			return false;
 
-		if( Chunk->GetAdjacentBlock(adjCoords) != EBlockId::Air )
+		if( Chunk->GetAdjacentBlock(AdjCoords) != EBlockId::Air )
 		{
 			return false;
 		}

@@ -27,8 +27,8 @@ namespace Nocturn
 		{
 			std::vector< float >  vertices;
 			std::vector< float >  textures;
+			std::vector< float >  light;
 			std::vector< uint32 > indices;
-			std::vector< int32 >  light;
 
 			void Clear() noexcept
 			{
@@ -133,7 +133,7 @@ namespace Nocturn
 				AddVBO(3, Mesh.vertices);
 				AddVBO(2, Mesh.textures);
 				// Add block light data -> BlockLight, BlockSkyLight
-				// AddVBO(3, Mesh.light);
+				AddVBO(2, Mesh.light);
 				AddEBO(Mesh.indices);
 			}
 			else if constexpr( std::is_same_v< TVertexType, VertexType::SkyboxVertex > )
@@ -156,20 +156,24 @@ namespace Nocturn
 		template< Concepts::ChunkType TChunkVertex >
 		void ReloadData(const TChunkVertex& Mesh)
 		{
-			const auto VertexDataSize  = static_cast< GLsizei >(Mesh.vertices.size() * sizeof(float));
-			const auto TextureDataSize = static_cast< GLsizei >(Mesh.textures.size() * sizeof(float));
-			const auto IndexDataSize   = static_cast< GLsizei >(Mesh.indices.size() * sizeof(uint32));
+			const auto VertexDataSize = static_cast<GLsizei>(Mesh.vertices.size() * sizeof(float));
+			const auto TextureDataSize = static_cast<GLsizei>(Mesh.textures.size() * sizeof(float));
+			const auto LightDataSize = static_cast<GLsizei>(Mesh.light.size() * sizeof(float));
+			const auto IndexDataSize = static_cast<GLsizei>(Mesh.indices.size() * sizeof(uint32));
 
 			glBindVertexArray(m_renderInfo.vao);
 
-			glBindBuffer(GL_ARRAY_BUFFER, m_buffers[ 0 ]);
+			glBindBuffer(GL_ARRAY_BUFFER, m_buffers[0]);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, VertexDataSize, Mesh.vertices.data());
 
-			glBindBuffer(GL_ARRAY_BUFFER, m_buffers[ 1 ]);
+			glBindBuffer(GL_ARRAY_BUFFER, m_buffers[1]);
 			glBufferSubData(GL_ARRAY_BUFFER, VertexDataSize, TextureDataSize, Mesh.textures.data());
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[ 2 ]);
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, VertexDataSize + TextureDataSize, IndexDataSize, Mesh.indices.data());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[2]);
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, VertexDataSize + TextureDataSize, LightDataSize, Mesh.indices.data());
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffers[3]);
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, VertexDataSize + TextureDataSize + LightDataSize, IndexDataSize, Mesh.indices.data());
 
 			glBindVertexArray(0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -250,12 +254,13 @@ namespace Nocturn
 			glGenBuffers(1, &vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			glBufferData(GL_ARRAY_BUFFER, Data.size() * sizeof(float), Data.data(), GL_DYNAMIC_DRAW);
-
+						
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			glVertexAttribPointer(m_vboIndex, Size, GL_FLOAT, GL_FALSE, Size * sizeof(float), ( void* )0);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-			glEnableVertexAttribArray(m_vboIndex++);
+			glEnableVertexAttribArray(m_vboIndex);
+			++m_vboIndex;
 
 			m_buffers.push_back(vbo);
 		}
